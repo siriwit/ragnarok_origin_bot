@@ -1,3 +1,10 @@
+is_active ?= True
+preset ?= tank
+element ?= None
+tribe ?= None
+size ?= None
+mode ?= None
+
 farm:
 	python .\ragnarok.py farm
 
@@ -43,5 +50,38 @@ boss_fight:
 oracle:
 	python .\ragnarok.py oracle
 
+dbbb:
+	python .\ragnarok.py dbbb
+
 boss_hunt:
-	python .\ragnarok.py boss_hunt
+	python .\ragnarok.py boss_hunt $(is_active)
+
+picky_boss:
+	python .\ragnarok.py picky_boss
+
+preset:
+	python .\ragnarok.py preset $(preset)
+
+preset_daily:
+	python .\ragnarok.py preset_daily
+
+preset_farm:
+	python .\ragnarok.py preset_farm
+
+preset_boss:
+	python .\ragnarok.py preset_boss
+
+preset_tank:
+	python .\ragnarok.py preset_tank $(element)
+
+preset_card:
+	python .\ragnarok.py preset_card $(tribe) $(element) $(size)
+
+alfheim:
+	python .\ragnarok.py alfheim $(mode)
+
+time_anomaly:
+	python .\ragnarok.py time_anomaly
+
+hordor:
+	python .\ragnarok.py hordor $(mode)

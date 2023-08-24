@@ -1,3 +1,5 @@
+make preset_daily
+make alfheim
 make dldt
 make dlcp
 make dlat
