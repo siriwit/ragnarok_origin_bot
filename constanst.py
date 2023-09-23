@@ -1,5 +1,8 @@
 import img
 
+att_boss = 'boss'
+att_all = 'all'
+
 # tribe
 angel = 'angel'
 brute = 'brute'
@@ -9,6 +12,7 @@ formless = 'formless'
 insect = 'insect'
 demi_human = 'demi-human'
 human = 'human'
+poison = 'poison'
 
 # element
 holy = 'holy'
@@ -27,12 +31,42 @@ large = 'large'
 
 # event
 time_anomaly = 'time_anomaly'
+ygg = 'ygg'
 
+# preset mode
+farm = 'farm'
+tank = 'tank'
+boss = 'boss'
+
+# day
+workday = 'workday'
+weekend = 'weekend'
+
+# level
+normal = 'normal'
+hard = 'hard'
+
+# keymap
+map = 'm'
+
+batterry_savings = [img.battery_saving1]
+button_closes = [img.button_close, img.button_close_purple, img.button_close_skill, img.button_close_trading, img.button_map_close, img.button_auto_attack_close]
+button_confirms = [img.button_confirm, img.button_confirm_medium]
+button_uses = [img.button_use, img.button_use_small_blue, img.item_button_use]
+button_starts = [img.button_start, img.button_start_blue_medium]
+escape_buttons = [img.button_escape]
 event_menus = [img.event_menu1, img.event_menu2, img.event_menu3]
+life_skill_waters = [img.life_skill_water1, img.life_skill_water2, img.life_skill_water3]
+menu_guides = [img.menu_guide1, img.menu_guide2, img.menu_guide3, img.menu_guide4]
+party_members = [img.party_number_1, img.party_number_2, img.party_number_3, img.party_number_4, img.party_number_5]
+pets = [img.pet_icon_barfo, img.pet_icon_dunell, img.pet_icon_earthlord, img.pet_icon_huanhuan, img.pet_icon_king_piggy, img.pet_icon_sohee]
 preset_settings = [img.preset_settings1, img.preset_settings2]
+preset_tab_skills = [img.preset_tab_skill]
 picky_boss_times = [img.picky_boss_1m, img.picky_boss_3m, img.picky_boss_19m, img.picky_boss_20m]
 picky_boss_menu_icon = [img.picky_boss_menu_icon1, img.picky_boss_menu_icon2]
 preset_pet_expands = [img.preset_pet_expand1, img.preset_pet_expand2, img.preset_pet_expand3]
+tap_anywheres = [img.daily_anthem_tap_anywhere1, img.daily_anthem_tap_anywhere2, img.tap_anywhere2]
 ygg_next_wave = [img.ygg_next_wave1, img.ygg_next_wave2, img.ygg_next_wave3, img.ygg_next_wave4]
+ygg_map_root_trees = [img.ygg_map_tree_root1, img.ygg_map_tree_root2]
 
 

@@ -1,8 +1,11 @@
 is_active ?= True
+ignore_spawn ?= True
 preset ?= tank
 element ?= None
 tribe ?= None
 size ?= None
+min_level ?= 0
+max_level ?= 999
 mode ?= None
 
 farm:
@@ -48,13 +51,16 @@ boss_fight:
 	python .\ragnarok.py boss_fight
 
 oracle:
-	python .\ragnarok.py oracle
+	python .\ragnarok.py oracle $(mode)
 
 dbbb:
 	python .\ragnarok.py dbbb
 
 boss_hunt:
-	python .\ragnarok.py boss_hunt $(is_active)
+	python .\ragnarok.py boss_hunt $(is_active) $(min_level) $(max_level) $(ignore_spawn)
+
+boss_specific:
+	python .\ragnarok.py boss_specific
 
 picky_boss:
 	python .\ragnarok.py picky_boss
@@ -71,8 +77,14 @@ preset_farm:
 preset_boss:
 	python .\ragnarok.py preset_boss
 
+preset_ygg:
+	python .\ragnarok.py preset_ygg
+
 preset_tank:
 	python .\ragnarok.py preset_tank $(element)
+
+preset_pvp:
+	python .\ragnarok.py preset_pvp
 
 preset_card:
 	python .\ragnarok.py preset_card $(tribe) $(element) $(size)
@@ -85,3 +97,26 @@ time_anomaly:
 
 hordor:
 	python .\ragnarok.py hordor $(mode)
+
+guild_exp:
+	python .\ragnarok.py guild_exp
+
+schedule:
+	python .\ro_schedule.py
+
+ju:
+	python .\ragnarok.py ju
+
+hazy:
+	python .\ragnarok.py hazy
+
+woe:
+	python .\ragnarok.py woe
+
+treasure_map:
+	python .\ragnarok.py treasure_map
+
+nt:
+	python .\ragnarok.py nt $(element)
+
+

@@ -3,6 +3,7 @@ import pytesseract
 import time
 import logging
 import datetime
+from pywinauto import mouse
 
 def configure_logging():
     logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
@@ -44,6 +45,19 @@ def find_all_images(image_array):
     return all_image_locations
 
 
+def find_most_left_coordinate(image_array):
+    image_coordinates = find_all_images(image_array)
+    least_x = 9999
+    tobe_return_coordinate = list()
+    for image_coordinate in image_coordinates:
+        center_x, _ = find_image_center(image_coordinate)
+        if center_x < least_x:
+            least_x = center_x
+            tobe_return_coordinate = image_coordinate
+    return tobe_return_coordinate
+
+
+
 def group_coordinate(image_locations):
     image_array = []
     previous_left = 0
@@ -56,12 +70,15 @@ def group_coordinate(image_locations):
     return image_array
         
 
-def count_image_on_screen(image_filename):
-    images = find_all_image_with_similarity(image_filename)
+def count_image_on_screen(image_filename, similarity=0.9):
+    images = find_all_image_with_similarity(image_filename, similarity)
     return len(images)
 
 
 def count_all_image_on_screen(image_array):
+    if not isinstance(image_array, list):
+        raise ValueError('object is not an array')
+
     count = 0
     for image in image_array:
         images = find_all_image_with_similarity(image)
@@ -119,13 +136,23 @@ def tap_image(image_path, screenshot=False, before=False, result_filename=None, 
             if result_filename is not None:
                 wait_for_image(result_filename, 2)
             save_screenshot()
+        return image_location
     else:
         log(image_path + " is not found.")
+        return None
 
 
-def tap_location(coordinate):
+def tap_image_offset(image_path, offset_x=0, offset_y=0, similarity=0.9):
+    image = find_image_with_similarity(image_path, similarity=similarity)
+    if image != None:
+        tap_location(image, offset_x, offset_y)
+    else:
+        print(image_path + ' is not found')
+
+
+def tap_location(coordinate, offset_x=0, offset_y=0):
     center_x, center_y = find_image_center(coordinate)
-    tap(center_x, center_y)
+    tap(center_x + offset_x, center_y + offset_y)
 
 
 def tap_if_found(image_path):
@@ -143,11 +170,28 @@ def tap_any(menu_images, similarity=0.9):
         if is_found(menu, similarity):
             tap_image(menu, similarity)
             return
+        
+
+def tap_any_until_found_offset(to_be_tap_images, expected_found_image, offset_x=0, offset_y=0, timeout=10):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        tap_any_offset(to_be_tap_images, offset_x, offset_y)
+        wait_for_image(expected_found_image, timeout=1)
+        if is_found(expected_found_image):
+            return True
+    return False
+
+
+def tap_any_offset(images, offset_x=0, offset_y=0, similarity=0.9):
+    for image in images:
+        if is_found(image, similarity):
+            tap_image_offset(image, offset_x, offset_y, similarity)
+            return
 
 
 def wait_and_tap(image_path, timeout=10, similarity=0.9):
     wait_for_image(image_path, timeout)
-    tap_image(image_path, similarity=similarity)
+    return tap_image(image_path, similarity=similarity)
 
 
 def wait_and_tap_any(image_paths, timeout=10, similarity=0.9):
@@ -159,16 +203,37 @@ def wait_until_disappear(image_path, timeout=10):
     count = 0
     while count < timeout:
         if not is_found(image_path):
-            break
+            return True
         count += 1
         time.sleep(1)
+    return False
 
 
 
-def tap_util_found(image_path, util_found_image, interval=1):
+def tap_until_found(image_path, util_found_image, interval=1):
     while True:
         tap_image(image_path)
-        wait_for_image(util_found_image, timeout=interval)
+        if wait_for_image(util_found_image, timeout=interval) is not None:
+            break
+
+def tap_any_until_found(image_paths, util_found_image, interval=1):
+    while True:
+        tap_any(image_paths)
+        if wait_for_image(util_found_image, timeout=interval) is not None:
+            break
+
+def tap_until_notfound(image_path, util_notfound_image, interval=1):
+    while True:
+        tap_image(image_path)
+        if wait_until_disappear(util_notfound_image, timeout=interval):
+            break
+
+def tap_offset_until_found(image_path, util_found_image, interval=1, offset_x=0, offset_y=0):
+    while True:
+        if wait_for_image(util_found_image, timeout=interval) is not None:
+            print('tap_offset_util_found break')
+            break
+        tap_image_offset(image_path, offset_x, offset_y)
 
 
 def find_image_center(image_location):
@@ -243,10 +308,11 @@ def drag_and_drop_image(source_image, target_image):
     drag_and_drop(source_x, source_y, target_x, target_y)
 
 
-def drag_and_drop(source_x, source_y, destination_x, destination_y, duration=0.25):
+def drag_and_drop(source_x, source_y, destination_x, destination_y, duration=0.25, hold=0):
     pyautogui.moveTo(source_x, source_y, duration=duration)
     pyautogui.mouseDown()
     pyautogui.moveTo(destination_x, destination_y, duration=duration)
+    time.sleep(hold)
     pyautogui.mouseUp()
 
 
@@ -262,22 +328,27 @@ def drag_down(image_path, offset_y=100):
     drag_and_drop(center_x, center_y, center_x, center_y + offset_y)
 
 
-def scroll_down_util_found(expected_image, drag_image, offset_y=100, similarity=0.9):
+def scroll_down_util_found(expected_image, drag_image, offset_y=100, similarity=0.9, timeout=10):
     print('scroll to find: ' + expected_image + ' with drag image:' + drag_image)
-    scroll_until_found(expected_image, drag_image, offset_y=offset_y, is_drag_up=True, similarity=similarity)
+    return scroll_until_found(expected_image, drag_image, offset_y=offset_y, is_drag_up=True, similarity=similarity, timeout=timeout)
 
 
-def scroll_up_util_found(expected_image, drag_image, offset_y=100, similarity=0.9):
-    scroll_until_found(expected_image, drag_image, offset_y=offset_y, is_drag_up=False, similarity=similarity)
+def scroll_up_util_found(expected_image, drag_image, offset_y=100, similarity=0.9, timeout=10):
+    return scroll_until_found(expected_image, drag_image, offset_y=offset_y, is_drag_up=False, similarity=similarity, timeout=timeout)
 
 
-def scroll_until_found(expected_image, drag_image, offset_y=100, is_drag_up=True, similarity=0.9):
-    while True:
+def scroll_until_found(expected_image, drag_image, offset_y=100, is_drag_up=True, similarity=0.9, timeout=10):
+    end_time = time.time() + timeout
+    while time.time() < end_time:
         if is_found(expected_image, similarity):
-            break
-        wait_for_image(drag_image)
-        if is_drag_up:
-            drag_up(drag_image, offset_y=offset_y)
+            return True
+        if wait_for_image(drag_image, timeout=2) != None:
+            if is_drag_up:
+                drag_up(drag_image, offset_y=offset_y)
+            else:
+                drag_down(drag_image, offset_y=offset_y)
         else:
-            drag_down(drag_image, offset_y=offset_y)
+            print('drag_image:' + drag_image + ' not found')
+            return False
         time.sleep(1)
+    return False

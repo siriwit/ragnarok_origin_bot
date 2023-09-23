@@ -1,3 +1,4 @@
+import constanst as const
 import img
 import func
 import time
@@ -20,10 +21,13 @@ def hordor_dreamland(mode=img.hordor_poring_dream):
 
 def fight():
     utils.wait_for_image(img.profile)
-    utils.key_press('k')
+    func.auto_attack()
 
     while True:
         if utils.is_found(img.hordork_not_enough_ticket):
+            utils.tap_any(const.button_confirms)
+            utils.wait_for_image(img.hordor_page)
+            func.close_any_panel()
             break
 
         if utils.is_found(img.button_challenge_again):

@@ -1,48 +1,39 @@
 import pyautogui
+import anthem
 import boss
+import constanst as const
+import feast
 import func
+import dbbb
+import juperos
 import time
 import sys
 import utils
 import img
+import oracle
 import picky_boss
 import preset
 import time_anomaly
 import ygg
 import alfheim
 import hordor
-
-
-def fishing():
-    utils.wait_for_image(img.profile)
-    ang_pao()
-    utils.tap(1000, 300)
-    utils.wait_for_image('images/fishing_alert.png')
-    utils.tap_image('images/fishing_alert.png')
-
-
-def ang_pao(pet_image=img.pet_icon_earthlord):
-    utils.wait_for_image(img.profile)
-    while True:
-        if utils.is_found(img.ang_pao_red):
-            utils.tap_image(img.ang_pao_red, screenshot=True, result_filename=img.angpao_header)
-            utils.tap_image(pet_image)
-            continue
-        elif utils.is_found(img.ang_pao_yellow):
-            utils.tap_image(img.ang_pao_yellow, screenshot=True, result_filename=img.angpao_header)
-            utils.tap_image(pet_image)
-            continue
-        break
+import guild_expedition
+import treasure_map
+import life_skill
+import demon_treasure
+import catpaw
+import hazy
+import nightmare
         
 
 def farm():
     utils.wait_for_image(img.profile)
-    ang_pao(pet_image=img.pet_icon_earthlord)
+    func.ang_pao()
     utils.tap_image('images/item_alert.png', screenshot=True, before=True)
     utils.tap_image('images/button_receive.png', screenshot=True, before=True)
     utils.tap_image('images/sig_ancient_power.png')
     func.enable_aura()
-    convert_weapon(element='wind')
+    # convert_weapon(element='wind')
 
     fatique = utils.find_image_with_similarity('images/fatique_icon.png')
     if fatique is not None:
@@ -58,104 +49,11 @@ def butterfly_wing_morroc():
     utils.wait_and_tap('images/city_morroc.png')
 
 
-def forging():
-    utils.wait_for_image(img.profile)
-    ang_pao()
-    utils.tap_image('images/forging.png')
-
-
 def farm_mr():
     utils.wait_for_image(img.profile)
-    ang_pao(img.pet_icon_barfo)
+    func.ang_pao()
     utils.tap_image('images/normal_attack.png')
     utils.tap_image('images/item_alert.png', screenshot=True, before=True)
-
-
-def feast():
-    utils.wait_for_image(img.profile)
-    ang_pao(img.pet_icon_earthlord)
-    func.use_items()
-    if utils.is_found(img.food_grab):
-        utils.tap_image(img.food_grab)
-        utils.wait_and_tap(img.food_taste, timeout=2)
-        time.sleep(2)
-
-
-def daily_demon_treasure():
-    utils.wait_for_image(img.profile)
-    utils.tap_image('images/menu_daily.png')
-    utils.wait_and_tap('images/daily_demon_treasure.png', timeout=2)
-    utils.tap_image('images/button_go.png')
-    utils.wait_and_tap('images/daily_demon_treasure_prontera_west.png')
-    demon_treasure()
-
-
-def demon_treasure(firstime=True):
-    while True:
-        utils.tap_image('images/rescue.png')
-        utils.tap_image('images/button_use.png')
-        if utils.is_found('images/button_close_purple.png'):
-            time.sleep(5)
-            utils.tap_image('images/button_close_purple.png')
-
-        if utils.is_found('images/daily_demon_treasure_reach_limit.png'):
-            time.sleep(5)
-            if firstime:
-                demon_treasure(firstime=False)
-            else:
-                sys.exit()
-
-
-def daily_cat_paw():
-    utils.wait_for_image(img.profile)
-
-    if utils.is_found('images/cat_paw_caravan_icon.png'):
-        utils.tap_image('images/cat_paw_caravan_icon.png')
-    else:
-        utils.tap_image('images/menu_daily.png')
-        utils.tap_image('images/daily_catpaw.png')
-        utils.tap_image('images/button_go.png')
-        utils.wait_and_tap('images/icon_message.png', timeout=60)
-
-    utils.wait_for_image('images/cat_paw_caravan_topbar.png', timeout=2)
-    load_cargo()
-
-
-def load_cargo():
-    while True:
-        # utils.tap_image('images/cat_paw_caravan_item_box.png')
-        # utils.tap_image('images/cat_paw_caravan_load_cargo.png')
-
-        # utils.wait_for_image('images/trading_menu_material.png', timeout=2)
-        # if utils.is_found('images/trading_menu_material.png'):
-        #     utils.wait_and_tap('images/cat_paw_caravan_item_requirement.png', timeout=2)
-        #     utils.wait_and_tap('images/button_buy_trading.png', timeout=2)
-        #     utils.wait_and_tap('images/button_buy.png', timeout=2)
-        #     utils.tap_image('images/button_close_trading.png')
-
-        # utils.wait_for_image('images/equipment_shop_topbar.png', timeout=2)
-        # if utils.is_found('images/equipment_shop_topbar.png'):
-        #     utils.wait_and_tap('images/button_buy.png', timeout=2)
-        #     utils.tap_image('images/button_close.png')
-
-        # utils.wait_for_image('images/trading_menu_medicine.png', timeout=2)
-        # if utils.is_found('images/trading_menu_medicine.png'):
-        #     utils.wait_and_tap('images/cat_paw_caravan_item_requirement.png', timeout=2)
-        #     utils.wait_and_tap('images/button_buy_trading.png', timeout=2)
-        #     utils.wait_and_tap('images/button_buy.png', timeout=2)
-        #     utils.tap_image('images/button_close_trading.png')
-        
-        # utils.wait_and_tap('images/cat_paw_caravan_load_cargo.png', timeout=2)
-
-        utils.tap_image(img.button_quick_departure)
-        utils.wait_and_tap(img.button_confirm, timeout=2)
-        utils.tap_image('images/cat_paw_caravan_claim_finished.png')
-
-        if utils.is_found('images/button_claimed.png'):
-            pyautogui.press('esc')
-            sys.exit()
-        
-        time.sleep(1)
 
 
 def convert_weapon(element='fire'):
@@ -167,7 +65,7 @@ def convert_weapon(element='fire'):
 def perform_convert_weapon(element='water'):
     utils.wait_for_image(img.profile)
     pyautogui.typewrite('b')
-    utils.wait_and_tap(img.weapon4)
+    utils.wait_and_tap(img.weapon5)
     utils.wait_and_tap(img.button_more)
     utils.wait_and_tap(img.button_element)
     utils.wait_and_tap(img.button_plus)
@@ -176,8 +74,8 @@ def perform_convert_weapon(element='water'):
         utils.wait_for_image('images/region_fire_slayer_converter.png')
         utils.tap_image_in_region('images/button_select.png', 'images/region_fire_slayer_converter.png')
     elif element == 'wind':
-        utils.wait_for_image(img.region_wind_1hsword_converter)
-        utils.tap_image_in_region(img.button_select, img.region_wind_1hsword_converter)
+        utils.wait_for_image(img.region)
+        utils.tap_image_in_region(img.button_select, img.region_wind_spear_converter)
     elif element == 'water':
         utils.wait_for_image('images/region_water_1hsword_converter.png')
         utils.tap_image_in_region('images/button_select.png', 'images/region_water_1hsword_converter.png')
@@ -205,123 +103,22 @@ def dismantle_cogwheel():
 
 
 def pet_enhance():
-    utils.tap_image('images/button_enhance.png')
-    utils.tap_image('images/button_confirm.png')
-    if utils.find_image_with_similarity('images/max_level_reached.png') is not None:
+    utils.tap_image(img.button_enhance)
+    utils.tap_image(img.button_confirm)
+    utils.tap_image(img.pet_enhance_tap_to_close)
+    if utils.is_found(img.max_level_reached) or utils.is_found(img.pet_enhance_out_of_amber):
+        func.close_any_panel()
         sys.exit(0)
 
 
-def daily_anthem():
+def maintain_woe():
     utils.wait_for_image(img.profile)
-    utils.wait_for_image(img.menu_daily)
-    utils.tap_image(img.menu_daily)
-    utils.wait_and_tap('images/daily_anthem.png', timeout=2)
-    utils.tap_image(img.button_go)
-    utils.wait_and_tap('images/daily_anthem_anthem_trial_option.png', timeout=120)
-    utils.tap_image('images/button_use.png')
-    utils.wait_and_tap('images/button_submit.png', timeout=1)
-    utils.tap_image('images/button_start.png')
-    utils.wait_for_image(img.team_confirm, timeout=1)
-    if utils.is_found(img.team_confirm):
-        utils.wait_until_disappear(img.team_confirm)
-    anthem()
-
-
-def anthem():
-    utils.wait_for_image(img.profile)
-    utils.tap_image('images/anthem_activate.png')
-    utils.wait_for_image('images/anthem_lucky_wheel.png')
-    utils.wait_for_image('images/anthem_activate.png')
-    anthem_fight()
-
-
-def anthem_fight():
-    utils.wait_for_image(img.profile)
-    utils.hold_press('a', timeout=0.5)
-    utils.hold_press('w', timeout=3)
-    utils.key_press('k')
-    utils.tap_image(img.pet_icon_earthlord)
-    utils.wait_for_image(img.victory, timeout=150)
-    func.use_items()
-    utils.wait_and_tap(img.daily_anthem_tap_anywhere1, timeout=20)
-    utils.wait_and_tap(img.daily_selectable_card, timeout=20)
-    utils.wait_and_tap(img.daily_anthem_tap_anywhere2, timeout=20)
-    utils.wait_and_tap(img.button_escape, timeout=20)
-    utils.wait_and_tap(img.button_confirm, timeout=20)
-    utils.wait_for_image(img.profile)
-    sys.exit(0)
-        
-
-def dbbb_party_finder():
-    utils.wait_for_image(img.profile)
-    message = 'dbbb ' + func.find_remaining_party_number()
-    if utils.is_found(img.party_number_5):
-        sys.exit()
-    else:
-        func.send_message(message, 'world')
-    time.sleep(20)
-
-
-def request_oracle():
-    if utils.is_found(img.menu_hidden):
-        utils.tap_image(img.menu_hidden)
-        utils.wait_and_tap(img.menu_guild, timeout=2)
-        utils.wait_and_tap(img.guild_menu_member, timeout=2)
-        request_all_member()
-        oracle()
-
-
-def request_all_member():
-    is_found_teasing = False
-    while True:
-        if not utils.is_found(img.guild_request_oracle_icon):
-            utils.scroll_down_util_found(img.guild_request_oracle_icon, img.guild_online_status, 300)
-
-        utils.tap_image(img.guild_request_oracle_icon)
-        if utils.is_found(img.guild_request_oracle_icon):
-            is_found_teasing = True
-            utils.drag_up(img.guild_request_oracle_icon, offset_y=100)
-
-        if utils.is_found(img.button_agree):
-            oracle(in_main_page=False)
-            return
-
-        if is_found_teasing and not utils.is_found(img.guild_request_oracle_icon):
-            utils.tap_image(img.guild_close_button)
-            return
-        
-        time.sleep(1)
-
-
-def oracle(in_main_page=True):
-    while True:
-        if in_main_page:
-            utils.wait_for_image(img.profile)
-            utils.tap_image(img.pet_icon_earthlord)
-
-        if utils.is_found(img.button_agree):
-            utils.tap_image(img.button_agree)
-            utils.wait_for_image(img.oracle_present, timeout=60)
-            func.send_message('[z1]')
-            utils.wait_and_tap(img.button_escape, timeout=20)
-            utils.wait_and_tap(img.button_confirm, timeout=20)
-            utils.wait_for_image(img.profile)
-
-            if in_main_page:
-                utils.wait_and_tap(img.party_number_2, timeout=2)
-                utils.wait_and_tap(img.party_leave_button, timeout=2)
-
-        time.sleep(1)
-
-
-def leave_party(party_number=img.party_number_2):
-    utils.tap_image(party_number)
-    utils.wait_and_tap(img.party_leave_button)
+    utils.tap_any(const.pets)
 
 
 def dev():
-    utils.wait_for_image(img.profile)
-    hordor.hordor_dreamland()
+    utils.wait_for_image(img.profile, timeout=2)
+    utils.tap_any_until_found_offset(const.menu_guides, img.preset_skill, offset_x=100, offset_y=-50)
     sys.exit(0)
 
 convert_weapon_time = time.time()
@@ -330,24 +127,30 @@ utils.configure_logging()
 while True:
     value = sys.argv[1]
     if value == "fishing":
-        fishing()
+        life_skill.start(mode='fishing')
+        sys.exit(0)
     elif value == "angpao":
-        ang_pao(img.pet_icon_earthlord)
+        func.ang_pao()
     elif value == "farm":
         farm()
     elif value == "farm_mr":
         farm_mr()
     elif value == "forging":
-        forging()
+        life_skill.start()
+        sys.exit(0)
     elif value == "feast":
-        feast()
+        feast.start()
     elif value == "daily_demon_treasure":
-        daily_demon_treasure()
+        demon_treasure.daily_demon_treasure()
+        sys.exit(0)
     elif value == "daily_catcaravan":
-        daily_cat_paw()
+        catpaw.daily_cat_paw()
+        sys.exit(0)
     elif value == "daily_anthem":
-        daily_anthem()
+        anthem.daily_anthem()
+        sys.exit(0)
     elif value == "ygg":
+        ygg.preset()
         ygg.ygg_fight()
     elif value == "pet_enhance":
         pet_enhance()
@@ -358,14 +161,27 @@ while True:
     elif value == "boss_fight":
         boss.boss_fight()
     elif value == "oracle":
-        request_oracle()
+        print('select mode:' + str(sys.argv[2]))
+        mode = sys.argv[2]
+        if mode == 'wait':
+            oracle.oracle()
+        else:
+            oracle.request_oracle()
     elif value == "dbbb":
-        dbbb_party_finder()
+        dbbb.party_finder()
     elif value == "boss_hunt":
         print('argument2:' + sys.argv[2])
         is_active = False if sys.argv[2] == 'False' else bool(sys.argv[2])
+        min_level = int(sys.argv[3])
+        max_level = int(sys.argv[4])
+        ignore_spawn = False if sys.argv[5] == 'False' else bool(sys.argv[5])
         print('boss mode:' + str(is_active))
-        boss.boss_hunt_loop(is_active)
+        print('level more than: ' + str(min_level))
+        print('level less than: ' + str(max_level))
+        boss.boss_hunt_loop(is_active, min_level, max_level, ignore_spawn)
+    elif value == "boss_specific":
+        preset.tank()
+        boss.boss_hunt_specific()
     elif value == "picky_boss":
         picky_boss.picky_boss_hunt()
     elif value == "preset":
@@ -373,12 +189,22 @@ while True:
         preset.change_preset(sys.argv[2])
     elif value == "preset_daily":
         preset.daily()
+        sys.exit(0)
     elif value == "preset_farm":
         preset.farm()
+        sys.exit(0)
     elif value == "preset_boss":
         preset.boss()
+        sys.exit(0)
     elif value == "preset_tank":
         preset.tank()
+        sys.exit(0)
+    elif value == "preset_ygg":
+        preset.ygg()
+        sys.exit(0)
+    elif value == "preset_pvp":
+        preset.pvp()
+        sys.exit(0)
     elif value == "preset_card":
         print('select tribe:' + str(sys.argv[2]))
         print('select element:' + str(sys.argv[3]))
@@ -398,8 +224,8 @@ while True:
             alfheim.alfheim_collect_item()
         sys.exit(0)
     elif value == "time_anomaly":
-        time_anomaly.preset()
-        time_anomaly.time_anomaly()
+        # time_anomaly.preset()
+        time_anomaly.start()
         sys.exit(0)
     elif value == "hordor":
         print('select mode:' + str(sys.argv[2])) 
@@ -408,6 +234,26 @@ while True:
             hordor.hordor_dreamland(mode=img.hordor_poring_dream)
         elif mode == 'ocean':
             hordor.hordor_dreamland(mode=img.hordor_magic_ocean)
+        elif mode == 'waste':
+            hordor.hordor_dreamland(mode=img.hordor_wasteland)
+        sys.exit(0)
+    elif value == 'guild_exp':
+        guild_expedition.start()
+        sys.exit(0)
+    elif value == 'ju':
+        juperos.start()
+        sys.exit(0)
+    elif value == 'woe':
+        maintain_woe()
+    elif value == 'treasure_map':
+        treasure_map.start()
+        sys.exit(0)
+    elif value == 'hazy':
+        hazy.start()
+        sys.exit(0)
+    elif value == 'nt':
+        element = const.earth if sys.argv[2] == 'None' else sys.argv[2]
+        nightmare.start(element)
         sys.exit(0)
     else:
         break
