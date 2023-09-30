@@ -5,7 +5,7 @@ import time
 import utils
 
 def hordor_dreamland(mode=img.hordor_poring_dream):
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if func.go_to_event():
         utils.scroll_down_util_found(img.event_hordor, img.event_drag_icon, offset_y=300)
         utils.wait_and_tap(img.event_hordor)
@@ -20,7 +20,7 @@ def hordor_dreamland(mode=img.hordor_poring_dream):
 
 
 def fight():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     func.auto_attack()
 
     while True:

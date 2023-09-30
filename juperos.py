@@ -1,10 +1,11 @@
 import boss
+import constanst as const
 import func
 import img
 import utils
 
 def start():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if func.go_to_event(img.event_juperos):
         utils.wait_for_image(img.juperos_page)
         utils.wait_and_tap(img.button_start_blue_medium)
@@ -12,7 +13,7 @@ def start():
 
 
 def fight():
-    utils.wait_for_image(img.profile, timeout=150)
+    utils.wait_any_image(const.profiles, timeout=150)
     utils.key_press('k')
     boss.boss_fight(butterflywing=False)
 

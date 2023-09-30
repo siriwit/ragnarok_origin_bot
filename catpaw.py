@@ -6,7 +6,7 @@ import utils
 
 
 def daily_cat_paw():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
 
     if utils.is_found(img.cat_paw_caravan_icon):
         utils.tap_image(img.cat_paw_caravan_icon)

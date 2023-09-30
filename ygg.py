@@ -7,7 +7,7 @@ import sys
 import time
 
 def ygg_fight():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if func.go_to_event(img.event_ygg):
         utils.wait_and_tap(img.button_start_blue_medium)
         utils.wait_and_tap(img.ygg_skip)
@@ -15,7 +15,7 @@ def ygg_fight():
 
 
 def yggdasill():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     func.auto_attack()
     while True:
         if utils.is_found_any(const.ygg_next_wave):
@@ -25,7 +25,7 @@ def yggdasill():
             utils.tap_any(const.ygg_next_wave)
 
         if utils.is_found(img.victory):
-            utils.tap_any(const.tap_anywheres)
+            utils.wait_and_tap_any(const.tap_anywheres)
             sys.exit()
         time.sleep(1)
 

@@ -119,4 +119,8 @@ treasure_map:
 nt:
 	python .\ragnarok.py nt $(element)
 
+create_party:
+	python .\ragnarok.py create_party
 
+helheim:
+	python .\ragnarok.py helheim

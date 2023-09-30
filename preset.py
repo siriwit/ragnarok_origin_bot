@@ -1,5 +1,6 @@
 import constanst as const
 import img
+import func
 import sys
 import time
 import utils
@@ -53,7 +54,7 @@ def change_preset(preset):
 
 
 def change_skill_preset(preset='farm'):
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.tap_image(img.menu_skill)
     utils.wait_for_image(img.preset_skill, timeout=1)
     if utils.is_found(img.preset_skill):
@@ -72,12 +73,12 @@ def change_skill_preset(preset='farm'):
             utils.tap_image(img.preset_farm)
             utils.wait_and_tap(img.preset_tank)
         utils.tap_image(img.button_close_skill)
-        utils.wait_for_image(img.profile)
+        func.wait_profile()
         utils.tap_image(img.preset_peco)
 
 
 def change_item_preset(preset='farm'):
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.key_press('b')
     utils.wait_for_image(img.preset_backpack, timeout=1)
     if utils.is_found(img.preset_backpack):
@@ -90,7 +91,7 @@ def change_item_preset(preset='farm'):
 
 
 def pet_selector(pet=img.pet_icon_earthlord):
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if not utils.is_found(pet):
         utils.tap_any_offset(const.pets, offset_x=-75)
         most_left_coordinate = utils.find_most_left_coordinate(const.pets)
@@ -100,7 +101,7 @@ def pet_selector(pet=img.pet_icon_earthlord):
 
 
 def change_skill_auto(preset=None):
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.tap_any_until_found_offset(const.menu_guides, img.preset_skill, offset_x=100, offset_y=-50)
     utils.wait_and_tap(img.preset_skill)
     utils.tap_image_offset(img.preset_tab_skill, offset_y=120)
@@ -137,7 +138,7 @@ def change_skill_auto(preset=None):
         ensure_use_support_skill(img.preset_skill_martyr, img.preset_skill_touse_martyr)
         
     utils.tap_image(img.button_close_skill)
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
 
 
 def ensure_replace_skill(ensure_skill, ensure_touse_skill, possible_used_skill):
@@ -159,14 +160,14 @@ def dismiss_skill(tobe_dismiss):
 
 
 def attack_preset():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.tap_image(img.icon_auto_attack)
     utils.tap_if_found(img.auto_attack_all)
     utils.tap_image(img.button_auto_attack_close)
 
 
 def open_change_card_page():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.tap_until_found(img.menu_bag, img.backpack_title)
     utils.wait_and_tap(img.weapon5)
     utils.wait_and_tap(img.button_more)

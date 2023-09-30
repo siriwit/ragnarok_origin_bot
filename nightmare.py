@@ -7,7 +7,7 @@ import utils
 
 
 def start(element=const.earth, level=const.normal):
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if not utils.is_found_any(const.party_members):
         func.create_and_invite()
         utils.wait_for_image(img.party_number_2, timeout=60)
@@ -34,7 +34,7 @@ def start(element=const.earth, level=const.normal):
 
 
 def fight(element=None):
-    utils.wait_for_image(img.profile, timeout=60)
+    utils.wait_for_image(img.profile, timeout=150)
     func.auto_attack(mode=const.att_all)
 
     if element == const.fire:
@@ -47,7 +47,7 @@ def fight(element=None):
             func.close_any_panel()
             func.leave_event()
             break
-    utils.wait_for_image(img.profile, timeout=60)
+    utils.wait_any_image(const.profiles, timeout=60)
     func.send_message('[z1][z1]')
     func.leave_party()
 

@@ -1,5 +1,6 @@
 import constanst as const
 import img
+import func
 import time
 import utils
 
@@ -17,7 +18,8 @@ def disable_aura():
 def butterfly_wing_morroc():
     utils.tap_until_found(img.butterfly_wing, img.city_morroc)
     utils.wait_and_tap(img.city_morroc)
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
+    time.sleep(3)
 
 
 def send_message(message, send_to='party'):
@@ -65,7 +67,7 @@ def send_location(send_to='party'):
 def party_finder(message, expected_number=img.party_number_5):
     last_sent_time = time.time() - 20
     while True:
-        utils.wait_for_image(img.profile)
+        func.wait_profile()
         chat_message = message + ' ' + find_remaining_party_number()
         if utils.is_found(expected_number):
             break
@@ -152,10 +154,10 @@ def use_items():
         break
 
 def go_to_event(event_image=None):
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.tap_any(const.batterry_savings)
         
-    if utils.tap_any_until_found_offset(const.menu_guides, img.event_side_menu, offset_x=-100):
+    if utils.tap_any_until_found_offset(const.menu_guides, img.event_page, offset_x=-100):
         if event_image != None:
             if not utils.scroll_down_util_found(event_image, img.event_drag_icon, offset_y=200, timeout=10):
                 utils.scroll_down_util_found(event_image, img.event_drag_icon_inactive, offset_y=200)
@@ -182,14 +184,16 @@ def ang_pao():
 
 
 def leave_party():
-    utils.wait_for_image(img.profile)
-    utils.tap_any_until_found(const.party_members, img.party_leave_button)
-    utils.wait_and_tap(img.party_leave_button)
+    func.wait_profile()
+    time.sleep(3)
+    if utils.is_found_any(const.party_members):
+        utils.tap_any_until_found(const.party_members, img.party_leave_button)
+        utils.wait_and_tap(img.party_leave_button)
 
 
 def close_any_panel():
     while True:
-        if utils.is_found(img.profile):
+        if utils.is_found_any(const.profiles):
             break
         
         utils.tap_if_found(img.button_back)
@@ -222,7 +226,8 @@ def get_move_area():
 
 
 def create_and_invite(friend=img.party_ppinwza, auto_accept=True):
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
+    utils.tap_if_found(img.party_inactive)
     utils.wait_and_tap(img.create_party)
     if auto_accept:
         utils.wait_for_image(img.party_member)
@@ -238,5 +243,11 @@ def create_and_invite(friend=img.party_ppinwza, auto_accept=True):
 
 
 def leave_event():
-    utils.wait_and_tap(img.button_escape, timeout=5)
+    utils.wait_and_tap(img.button_escape, timeout=30)
     utils.wait_and_tap(img.button_confirm, timeout=5)
+    utils.wait_for_image(img.loading, timeout=5)
+    utils.wait_until_disappear(img.loading, timeout=5)
+
+
+def wait_profile():
+    utils.wait_any_image(const.profiles)

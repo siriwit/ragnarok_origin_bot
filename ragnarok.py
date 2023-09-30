@@ -24,10 +24,11 @@ import demon_treasure
 import catpaw
 import hazy
 import nightmare
+import hellheim
         
 
 def farm():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     func.ang_pao()
     utils.tap_image('images/item_alert.png', screenshot=True, before=True)
     utils.tap_image('images/button_receive.png', screenshot=True, before=True)
@@ -39,7 +40,7 @@ def farm():
     if fatique is not None:
         utils.wait_and_tap('images/fatique_close.png')
         butterfly_wing_morroc()
-        utils.wait_for_image(img.profile)
+        func.wait_profile()
         func.disable_aura()
         sys.exit()
 
@@ -50,7 +51,7 @@ def butterfly_wing_morroc():
 
 
 def farm_mr():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     func.ang_pao()
     utils.tap_image('images/normal_attack.png')
     utils.tap_image('images/item_alert.png', screenshot=True, before=True)
@@ -63,7 +64,7 @@ def convert_weapon(element='fire'):
         perform_convert_weapon(element)
 
 def perform_convert_weapon(element='water'):
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     pyautogui.typewrite('b')
     utils.wait_and_tap(img.weapon5)
     utils.wait_and_tap(img.button_more)
@@ -112,13 +113,13 @@ def pet_enhance():
 
 
 def maintain_woe():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.tap_any(const.pets)
 
 
 def dev():
-    utils.wait_for_image(img.profile, timeout=2)
-    utils.tap_any_until_found_offset(const.menu_guides, img.preset_skill, offset_x=100, offset_y=-50)
+    utils.wait_any_image(const.profiles, timeout=2)
+    preset.attack_preset()
     sys.exit(0)
 
 convert_weapon_time = time.time()
@@ -140,6 +141,7 @@ while True:
         sys.exit(0)
     elif value == "feast":
         feast.start()
+        sys.exit(0)
     elif value == "daily_demon_treasure":
         demon_treasure.daily_demon_treasure()
         sys.exit(0)
@@ -254,6 +256,12 @@ while True:
     elif value == 'nt':
         element = const.earth if sys.argv[2] == 'None' else sys.argv[2]
         nightmare.start(element)
+        sys.exit(0)
+    elif value == 'create_party':
+        func.create_and_invite()
+        sys.exit(0)
+    elif value == 'helheim':
+        hellheim.start()
         sys.exit(0)
     else:
         break

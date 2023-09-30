@@ -10,7 +10,6 @@ import utils
 boss_remaining_time_dict = {}
 
 def boss_hunt_loop(is_active=True, min_level=0, max_level=999, ignore_spawn=True):
-    utils.wait_for_image(img.profile)
     if func.go_to_event(img.event_boss):
         utils.wait_and_tap(img.boss_title_mvp)
         if is_active:
@@ -18,7 +17,7 @@ def boss_hunt_loop(is_active=True, min_level=0, max_level=999, ignore_spawn=True
             print('found 5x5: ' + str(count5x5))
             if min_level == 0 and count5x5 >= 2:
                 close_boss_page()
-                # utils.wait_for_image(img.profile)
+                # func.wait_profile()
                 # func.send_message('Finished 5/5 TR [z1][z1]')
                 sys.exit(0)
             elif min_level > 0 and count5x5 >= 1:
@@ -49,7 +48,7 @@ def boss_hunt_specific():
     threshold = 3*60 
     send_message_to = 'party'
 
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if func.go_to_event():
         utils.scroll_down_util_found(img.event_boss, img.event_drag_icon, offset_y=300)
         utils.tap_image(img.event_boss)
@@ -113,7 +112,7 @@ def get_boss_config_list(min_level=0, max_level=999):
             img.boss_region_orc_hero, img.boss_orc_hero, 
             img.boss_map_orc_village, img.boss_coming_orc_hero, 
             'Orc Hero', 120, const.demi_human, const.earth, const.large,
-            55),
+            55, img.boss_orc_hero_fight),
         boss_config_obj(
             img.boss_region_maya, img.boss_maya, 
             img.boss_map_ant_hell, img.boss_coming_maya, 
@@ -133,7 +132,7 @@ def get_boss_config_list(min_level=0, max_level=999):
             img.boss_region_drake, img.boss_drake, 
             img.boss_map_shipwreck_labyrinth, img.boss_coming_drake, 
             'Drake', 150, const.undead, const.undead, const.medium,
-            65),
+            65, img.boss_drake_fight),
         boss_config_obj(
             img.boss_region_eddga, img.boss_eddga, 
             img.boss_map_deep_payon_forest, img.boss_coming_eddga, 
@@ -148,7 +147,7 @@ def get_boss_config_list(min_level=0, max_level=999):
             img.boss_region_osiris, img.boss_osiris, 
             img.boss_map_pyramid_3f, img.boss_coming_osiris, 
             'Osiris', 150, const.undead, const.undead, const.medium,
-            72),
+            72, img.boss_osiris_fight),
         boss_config_obj(
             img.boss_region_phreeoni, img.boss_phreeoni, 
             img.boss_map_southern_sograt, img.boss_coming_phreeoni, 
@@ -158,7 +157,7 @@ def get_boss_config_list(min_level=0, max_level=999):
             img.boss_region_moonlight, img.boss_moonlight, 
             img.boss_map_payon_cave_3f, img.boss_coming_moonlight, 
             'Moonlight', 180, const.demon, const.fire, const.medium,
-            79),
+            79, img.boss_moonlight_fight),
         boss_config_obj(
             img.boss_region_dracula, img.boss_dracula, 
             img.boss_map_geffen_underground_2f, img.boss_coming_dracula, 
@@ -206,7 +205,7 @@ def boss_monitoring(min_level=0, max_level=999, ignore_spawn=True):
     boss_configs = get_boss_config_list(min_level, max_level)
     print('boss count: ' + str(len(boss_configs)))
     for boss_config in boss_configs:
-        if boss_monitoring_with_config(boss_config, threshold, ignore_spawn) == 0:
+        if boss_monitoring_with_config(boss_config, threshold, ignore_spawn, send_message_to='world') == 0:
             return True
     
     utils.scroll_up_util_found(boss_configs[0]['boss_region_icon'], img.boss_drag_icon, offset_y=300, timeout=120)
@@ -232,7 +231,7 @@ def boss_monitoring_with_config(boss_config, threshold, ignore_spawn, send_messa
 def wait_boss_coming_icon_disapear(boss_coming_icon, boss_name, time_left, boss_tribe, boss_element, boss_size, send_message_to='world'):
 
     start_time = time.time()
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     time.sleep(2)
     func.send_message(boss_name)
 
@@ -322,7 +321,7 @@ def boss_remaining_time(image_filename):
 
 def find_remaining_time_util_realistic(previous_boss_time, current_boss_time, boss_image, ignore_spawn):
     while previous_boss_time > 0 and (previous_boss_time - current_boss_time > 120):
-        current_boss_time = utils.boss_remaining_time(boss_image, ignore_spawn)
+        current_boss_time = boss_remaining_time(boss_image, ignore_spawn)
         print("re-evaluate boss remaining time:" + str(current_boss_time))
         time.sleep(1)
 
@@ -346,7 +345,7 @@ def boss_wing(timeout=120):
         diff_time = time.time() - marked_time
 
 def boss(timeout=120, boss_fight_icon=None):
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if boss_wing(timeout):
         boss_fight(boss_fight_icon=boss_fight_icon)
     else:
@@ -376,7 +375,7 @@ def boss_fight(butterflywing=True, boss_fight_icon=None, timeout=60):
         if utils.is_found(img.die_upgrade_title):
             handle_die_loop()
 
-        # func.enable_aura()
+        utils.tap_if_found(img.sig_ancient_power)
 
         utils.tap_if_found(img.boss_fightend_battery_saving)
         func.ang_pao()

@@ -53,11 +53,11 @@ schedule.every().tuesday.at("20:00").do(feast)
 schedule.every().tuesday.at("20:30").do(time_anomaly)
 
 # wednesday
-
+schedule.every().tuesday.at("20:00").do(feast)
 
 # thursday
-schedule.every().thursday.at("20:04").do(feast)
-schedule.every().thursday.at("20:41").do(guild_expedition)
+schedule.every().thursday.at("20:00").do(feast)
+schedule.every().thursday.at("20:30").do(guild_expedition)
 
 # friday
 schedule.every().friday.at("20:00").do(feast)

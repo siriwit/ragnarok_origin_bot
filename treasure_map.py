@@ -6,7 +6,7 @@ import utils
 
 
 def start():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.wait_and_tap(img.menu_bag)
     utils.scroll_down_util_found(img.treasure_map_icon, img.item_drag, 300, timeout=30)
     utils.tap_image(img.treasure_map_icon)
@@ -15,7 +15,7 @@ def start():
 
 
 def wait_until_lucky_wheel():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.wait_and_tap(img.treasure_map_lucky_wheel_start, timeout=120)
     while True:
         func.ang_pao()

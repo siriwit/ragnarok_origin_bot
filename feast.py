@@ -7,7 +7,7 @@ import utils
 
 
 def start():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.tap_any(const.batterry_savings)
 
     today = datetime.date.today()
@@ -22,7 +22,7 @@ def start():
 
 def go_to_guild_hall():
     utils.wait_and_tap(img.feast_skip_button, timeout=20)
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.hold_press('s', timeout=0.5)
     utils.hold_press('d', timeout=0.3)
 
@@ -34,7 +34,7 @@ def go_to_guild_hall():
 
 
 def feast():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     func.ang_pao()
     func.use_items()
     if utils.is_found(img.food_grab):

@@ -5,7 +5,7 @@ import sys
 import utils
 
 def alfheim_collect_item():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if func.go_to_event(img.event_alfheim):
         utils.wait_for_image(img.alfheim_page)
         if not utils.is_found(img.alfheim_claimed):
@@ -15,7 +15,7 @@ def alfheim_collect_item():
 
 
 def alfheim_fight():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if func.go_to_event(img.event_alfheim):
         while True:
             utils.wait_and_tap(img.button_start_blue_medium)
@@ -32,6 +32,6 @@ def alfheim_fight():
             
 
 def attack():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.key_press('k')
     utils.hold_press('w', timeout=4)

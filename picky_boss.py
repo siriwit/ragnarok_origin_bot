@@ -8,7 +8,7 @@ import time
 
 
 def picky_boss_hunt():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.tap_all(const.picky_boss_menu_icon)
     utils.wait_and_tap(img.picky_boss_ultimate_clash)
     utils.wait_for_image(img.picky_boss_ultimate_clash_page, timeout=2)

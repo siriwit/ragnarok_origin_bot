@@ -3,7 +3,6 @@ import pytesseract
 import time
 import logging
 import datetime
-from pywinauto import mouse
 
 def configure_logging():
     logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
@@ -96,6 +95,7 @@ def wait_until_found_all_images(image_array, expected_number, timeout=10):
 
 
 def wait_for_image(image_filename, timeout=10, enable_log=True):
+    log('wait_for_image: ' + image_filename, enable=enable_log)
     start_time = time.time()
 
     while time.time() - start_time < timeout:
@@ -129,13 +129,13 @@ def tap_image(image_path, screenshot=False, before=False, result_filename=None, 
     image_location = find_image_with_similarity(image_path, similarity=similarity)
     if image_location is not None:
         center_x, center_y = find_image_center(image_location)
-        if before and screenshot:
-            save_screenshot()
+        # if before and screenshot:
+            # save_screenshot()
         tap(center_x, center_y)
         if not before and screenshot:
             if result_filename is not None:
                 wait_for_image(result_filename, 2)
-            save_screenshot()
+            # save_screenshot()
         return image_location
     else:
         log(image_path + " is not found.")
@@ -210,26 +210,30 @@ def wait_until_disappear(image_path, timeout=10):
 
 
 
-def tap_until_found(image_path, util_found_image, interval=1):
-    while True:
+def tap_until_found(image_path, util_found_image, interval=1, timeout=10):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
         tap_image(image_path)
         if wait_for_image(util_found_image, timeout=interval) is not None:
             break
 
-def tap_any_until_found(image_paths, util_found_image, interval=1):
-    while True:
+def tap_any_until_found(image_paths, util_found_image, interval=1, timeout=10):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
         tap_any(image_paths)
         if wait_for_image(util_found_image, timeout=interval) is not None:
             break
 
-def tap_until_notfound(image_path, util_notfound_image, interval=1):
-    while True:
+def tap_until_notfound(image_path, util_notfound_image, interval=1, timeout=10):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
         tap_image(image_path)
         if wait_until_disappear(util_notfound_image, timeout=interval):
             break
 
-def tap_offset_until_found(image_path, util_found_image, interval=1, offset_x=0, offset_y=0):
-    while True:
+def tap_offset_until_found(image_path, util_found_image, interval=1, offset_x=0, offset_y=0, timeout=10):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
         if wait_for_image(util_found_image, timeout=interval) is not None:
             print('tap_offset_util_found break')
             break
@@ -272,7 +276,7 @@ def is_found_any(images, threshold=0.90):
     for image in images:
         if is_found(image, threshold):
             return image
-    return ''
+    return None
 
 
 def hold_press(key, timeout=1):

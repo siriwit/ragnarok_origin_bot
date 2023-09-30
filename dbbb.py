@@ -7,7 +7,7 @@ import utils
 
 def party_finder():
     while True:
-        utils.wait_for_image(img.profile)
+        func.wait_profile()
         message = 'dbbb ' + func.find_remaining_party_number()
         if utils.is_found(img.party_number_5):
             break
@@ -24,7 +24,7 @@ def use_branch():
     tap_until_used(img.dbbb_dead_branch)
     tap_until_used(img.dbbb_bloody_branch)
     func.close_any_panel()
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.key_press('k')
     sys.exit(0)
 

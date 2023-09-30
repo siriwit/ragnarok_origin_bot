@@ -5,7 +5,7 @@ import time
 import utils
 
 def daily_demon_treasure():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     utils.tap_any_until_found_offset(const.menu_guides, img.daily_quest_page, offset_x=-200)
     utils.wait_and_tap(img.daily_demon_treasure, timeout=2)
     utils.tap_image(img.button_go)

@@ -23,6 +23,8 @@ dist/
 target/
 dist/
 
+jj/
+
 # JetBrains IDE
 .idea/
 
@@ -48,3 +50,4 @@ Thumbs.db
 *.mov
 *.wmv
 
+jj/Lib/site-packages/cv2/aruco/__init__.pyi

@@ -8,7 +8,7 @@ import constanst as const
 import time
 
 def start():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if func.go_to_event(img.event_time_anomaly):
         utils.wait_for_image(img.time_anomaly_page)
 
@@ -19,7 +19,7 @@ def start():
         while True:
             if fight_3x == 2 or utils.is_found(img.time_anomaly_event_settling):
                 utils.tap_image(img.button_back)
-                utils.wait_for_image(img.profile)
+                func.wait_profile()
                 break
 
             if fight_1x == 0 and utils.is_found(img.time_anomaly_1x):
@@ -39,9 +39,8 @@ def fight():
         utils.wait_and_tap(img.button_go_challenge)
         utils.wait_and_tap(img.button_start_blue_medium)
         
-        utils.wait_for_image(img.profile)
-        utils.key_press('k')
-        func.enable_aura()
+        func.wait_profile()
+        func.auto_attack()
 
         utils.wait_for_image(img.time_anomaly_page, timeout=60)
         return True
@@ -52,5 +51,5 @@ def fight():
 def preset():
     ps.change_skill_preset()
     ps.change_skill_auto(preset=const.time_anomaly)
-    ps.againt_monster_card(tribe=const.dragon, element=const.earth, size=const.large)
+    ps.againt_monster_card(tribe=const.dragon, element=const.water, size=const.large)
     ps.attack_preset()

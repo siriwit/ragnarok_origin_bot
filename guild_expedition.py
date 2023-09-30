@@ -5,7 +5,7 @@ import time
 import utils
 
 def start():
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     if func.go_to_event(img.event_guild_expedition):
         go_to_expedition()
 
@@ -27,7 +27,7 @@ def go_to_expedition():
     # utils.wait_for_image(img.guild_expedition_page)
     utils.wait_and_tap(img.guild_expedition_boss_drake)
     utils.wait_and_tap(img.button_go_blue_medium)
-    utils.wait_for_image(img.profile)
+    func.wait_profile()
     func.auto_attack()
 
 
