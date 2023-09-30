@@ -240,6 +240,14 @@ def tap_offset_until_found(image_path, util_found_image, interval=1, offset_x=0,
         tap_image_offset(image_path, offset_x, offset_y)
 
 
+def tap_offset_until_notfound(image_path, util_notfound_image, interval=1, offset_x=0, offset_y=0, timeout=10):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        tap_image_offset(image_path, offset_x, offset_y)
+        if wait_until_disappear(util_notfound_image, timeout=interval):
+            break
+
+
 def find_image_center(image_location):
     x, y, width, height = image_location
     center_x = x + (width/2)

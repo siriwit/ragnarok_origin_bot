@@ -29,18 +29,23 @@ def start():
                 if fight():
                     fight_2x += 1
             elif fight_3x < 1 and utils.is_found(img.time_anomaly_3x):
-                if fight():
+                horn_mode = fight_3x == 0
+                if fight(horn_mode):
                     fight_1x += 1
             time.sleep(1)
 
 
-def fight():
+def fight(horn_mode=False):
     if utils.is_found(img.button_go_challenge):
         utils.wait_and_tap(img.button_go_challenge)
+        if horn_mode:
+            utils.wait_for_image(img.time_anomaly_horn)
+            utils.tap_offset_until_notfound(img.button_go_challenge, img.time_anomaly_page, offset_y=20)
+        else:
+            utils.tap_until_notfound(img.button_go_challenge, img.time_anomaly_page)
         utils.wait_and_tap(img.button_start_blue_medium)
-        
         func.wait_profile()
-        func.auto_attack()
+        func.auto_attack(mode=const.boss)
 
         utils.wait_for_image(img.time_anomaly_page, timeout=60)
         return True

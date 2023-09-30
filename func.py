@@ -121,7 +121,7 @@ def find_remaining_party_number():
     return ''
 
         
-def auto_attack(mode=const.boss):
+def auto_attack(mode=const.boss, all_radius=True):
     while True:
         if not utils.is_found(img.auto_attack_title):
             utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, offset_x=85)
@@ -134,6 +134,8 @@ def auto_attack(mode=const.boss):
                 utils.wait_and_tap(img.auto_attack_allmonster)
         else:
             utils.wait_and_tap(img.auto_attack_allmonster)
+        if all_radius:
+            utils.tap_if_found(img.auto_attack_all)
         utils.tap_image(img.button_auto_attack_close)
         break
 

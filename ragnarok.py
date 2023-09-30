@@ -119,7 +119,7 @@ def maintain_woe():
 
 def dev():
     utils.wait_any_image(const.profiles, timeout=2)
-    preset.attack_preset()
+    func.auto_attack(mode=const.att_all)
     sys.exit(0)
 
 convert_weapon_time = time.time()

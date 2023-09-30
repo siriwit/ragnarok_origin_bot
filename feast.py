@@ -21,9 +21,10 @@ def start():
 
 
 def go_to_guild_hall():
-    utils.wait_and_tap(img.feast_skip_button, timeout=20)
+    utils.wait_for_image(img.feast_option_weekend, timeout=20)
+    utils.tap_image_offset(img.feast_option_weekend, offset_x=350, offset_y=-200)
     func.wait_profile()
-    utils.hold_press('s', timeout=0.5)
+    utils.hold_press('s', timeout=1)
     utils.hold_press('d', timeout=0.3)
 
     duration_minutes = 20
