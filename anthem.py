@@ -30,7 +30,7 @@ def anthem_fight():
     func.wait_profile()
     func.move_left(hold=0.5)
     func.move_up(hold=3)
-    func.auto_attack()
+    func.auto_attack(const.att_all)
     utils.wait_for_image(img.victory, timeout=150)
     func.use_items()
     utils.wait_and_tap_any(const.tap_anywheres, timeout=5)

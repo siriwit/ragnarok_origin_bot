@@ -8,7 +8,7 @@ def daily_demon_treasure():
     func.wait_profile()
     utils.tap_any_until_found_offset(const.menu_guides, img.daily_quest_page, offset_x=-200)
     utils.wait_and_tap(img.daily_demon_treasure, timeout=2)
-    utils.tap_image(img.button_go)
+    utils.tap_until_found(img.button_go, img.daily_demon_treasure_prontera_west)
     utils.wait_and_tap(img.daily_demon_treasure_prontera_west)
     demon_treasure()
 

@@ -25,36 +25,26 @@ import catpaw
 import hazy
 import nightmare
 import hellheim
+import halfyear
+import cv2 as cv
         
 
 def farm():
     func.wait_profile()
     func.ang_pao()
-    utils.tap_image('images/item_alert.png', screenshot=True, before=True)
-    utils.tap_image('images/button_receive.png', screenshot=True, before=True)
-    utils.tap_image('images/sig_ancient_power.png')
-    func.enable_aura()
+    func.use_items()
     # convert_weapon(element='wind')
 
-    fatique = utils.find_image_with_similarity('images/fatique_icon.png')
-    if fatique is not None:
-        utils.wait_and_tap('images/fatique_close.png')
-        butterfly_wing_morroc()
-        func.wait_profile()
-        func.disable_aura()
-        sys.exit()
-
-
-def butterfly_wing_morroc():
-    utils.wait_and_tap('images/butterfly_wing.png')
-    utils.wait_and_tap('images/city_morroc.png')
+    # if utils.is_found(img.fatique_icon, similarity=0.95):
+    #     utils.wait_and_tap(img.fatique_close)
+    #     func.butterfly_wing_morroc()
+    #     sys.exit()
 
 
 def farm_mr():
     func.wait_profile()
     func.ang_pao()
-    utils.tap_image('images/normal_attack.png')
-    utils.tap_image('images/item_alert.png', screenshot=True, before=True)
+    func.use_items()
 
 
 def convert_weapon(element='fire'):
@@ -85,8 +75,7 @@ def perform_convert_weapon(element='water'):
         utils.tap_image_in_region('images/button_select.png', 'images/region_earth_1hsword_converter.png')
     utils.wait_for_image('images/button_use.png')
     utils.tap_image('images/button_use.png')
-    pyautogui.press('esc')
-    pyautogui.press('esc')
+    func.close_any_panel()
     reset_convert_weapon_time()
         
 
@@ -115,11 +104,12 @@ def pet_enhance():
 def maintain_woe():
     func.wait_profile()
     utils.tap_any(const.pets)
+    utils.tap_if_found(img.button_respawn)
 
 
 def dev():
     utils.wait_any_image(const.profiles, timeout=2)
-    func.auto_attack(mode=const.att_all)
+    func.auto_attack()
     sys.exit(0)
 
 convert_weapon_time = time.time()
@@ -141,6 +131,9 @@ while True:
         sys.exit(0)
     elif value == "feast":
         feast.start()
+        sys.exit(0)
+    elif value == "cooking":
+        life_skill.start(mode='cooking')
         sys.exit(0)
     elif value == "daily_demon_treasure":
         demon_treasure.daily_demon_treasure()
@@ -220,7 +213,7 @@ while True:
         print('select mode:' + str(sys.argv[2]))
         mode = sys.argv[2]
         if mode == 'fight':
-            preset.farm()
+            alfheim.preset()
             alfheim.alfheim_fight()
         else:
             alfheim.alfheim_collect_item()

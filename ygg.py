@@ -10,6 +10,8 @@ def ygg_fight():
     func.wait_profile()
     if func.go_to_event(img.event_ygg):
         utils.wait_and_tap(img.button_start_blue_medium)
+        utils.wait_for_image(img.loading)
+        utils.wait_until_disappear(img.loading)
         utils.wait_and_tap(img.ygg_skip)
         yggdasill()
 

@@ -28,8 +28,8 @@ def send_message(message, send_to='party'):
         utils.tap_image(img.chat_tap_to_type)
     time.sleep(0.3)
     utils.type(message)
-    utils.tap_image(img.send_message_ok)
-    utils.tap_image(img.button_send)
+    utils.key_press("enter")
+    utils.wait_and_tap(img.button_send)
     close_chat()
 
 def open_chat(send_to='party'):
@@ -49,7 +49,7 @@ def open_chat(send_to='party'):
 def close_chat():
     while True:
         if utils.is_found(img.chat_button_plus):
-            utils.key_press("esc")
+            utils.tap_until_notfound(img.chat_collapse, img.chat_collapse)
         else:
             break
         time.sleep(1)
@@ -124,7 +124,7 @@ def find_remaining_party_number():
 def auto_attack(mode=const.boss, all_radius=True):
     while True:
         if not utils.is_found(img.auto_attack_title):
-            utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, offset_x=85)
+            utils.tap_any_until_found_offset([img.menu_bag, img.menu_bag2], img.auto_attack_title, offset_x=85)
             continue
         if mode == const.boss:
             utils.wait_for_image(img.icon_auto_attack_boss, timeout=1)
@@ -143,6 +143,7 @@ def use_items():
     while True:
         if utils.is_found(img.button_confirm):
             utils.tap_image(img.button_confirm)
+            time.sleep(0.5)
             continue
         elif utils.is_found(img.button_receive):
             utils.tap_image(img.button_receive)
@@ -161,9 +162,9 @@ def go_to_event(event_image=None):
         
     if utils.tap_any_until_found_offset(const.menu_guides, img.event_page, offset_x=-100):
         if event_image != None:
-            if not utils.scroll_down_util_found(event_image, img.event_drag_icon, offset_y=200, timeout=10):
-                utils.scroll_down_util_found(event_image, img.event_drag_icon_inactive, offset_y=200)
-            utils.tap_image(event_image)
+            if not utils.scroll_down_util_found(event_image, img.event_drag_icon, offset_y=200, timeout=10, similarity=0.85):
+                utils.scroll_down_util_found(event_image, img.event_drag_icon_inactive, offset_y=200, similarity=0.85)
+            utils.wait_and_tap(event_image, similarity=0.85)
             # if event_image != img.event_boss and event_image != img.event_guild_expedition:
             if event_image not in [img.event_boss, img.event_guild_expedition]:
                 utils.wait_and_tap(img.button_go_orange_small)
@@ -193,55 +194,75 @@ def leave_party():
         utils.wait_and_tap(img.party_leave_button)
 
 
-def close_any_panel():
+def close_any_panel(depth=99):
+    depth_count = 1
     while True:
-        if utils.is_found_any(const.profiles):
+        if utils.is_found_any(const.profiles) or depth_count >= depth:
             break
         
         utils.tap_if_found(img.button_back)
         utils.tap_any(const.button_closes)
+        depth_count += 1
         time.sleep(1)
 
 
 def move_left(hold=0.5):
-    utils.hold_press('a', timeout=hold)
+    offset = -100
+    start_x, start_y = get_move_area()
+    utils.drag_and_drop(start_x, start_y, start_x + offset, start_y, duration=hold)
 
 
 def move_right(hold=0.5):
-    utils.hold_press('d', timeout=hold)
+    offset = 100
+    start_x, start_y = get_move_area()
+    utils.drag_and_drop(start_x, start_y, start_x + offset, start_y, duration=hold)
 
 
 def move_down(hold=0.5):
-    utils.hold_press('s', timeout=hold)
+    offset = 100
+    start_x, start_y = get_move_area()
+    utils.drag_and_drop(start_x, start_y, start_x , start_y + offset, hold=hold)
 
 
 def move_up(hold=0.5):
-    utils.hold_press('w', timeout=hold)
+    offset = -100
+    start_x, start_y = get_move_area()
+    utils.drag_and_drop(start_x, start_y, start_x , start_y + offset, hold=hold)
 
 
 def get_move_area():
-    offset_x = -220
-    offset_y = -120
-    image_obj = utils.find_image_with_similarity(img.guild)
-    center_x, center_y = utils.find_image_center(image_obj)
-    return (center_x + offset_x), (center_y + offset_y)
+    if utils.is_found_any(const.guilds):
+        offset_x = -268
+        offset_y = -150
+        return get_move_area_location(const.guilds, offset_x, offset_y)
+    elif utils.is_found(img.ride_peco):
+        offset_x = 238
+        offset_y = 22
+        return get_move_area_location(img.ride_peco, offset_x, offset_y)
 
+def get_move_area_location(image_paths, offset_x, offset_y):
+    image_objs = utils.find_all_images(image_paths, similarity=0.8)
+    if len(image_objs):
+        center_x, center_y = utils.find_image_center(image_objs[0])
+        return (center_x + offset_x), (center_y + offset_y)
+    return None
 
 def create_and_invite(friend=img.party_ppinwza, auto_accept=True):
     func.wait_profile()
     utils.tap_if_found(img.party_inactive)
-    utils.wait_and_tap(img.create_party)
-    if auto_accept:
-        utils.wait_for_image(img.party_member)
-        utils.tap_image_offset(img.party_member, offset_y=120)
-        utils.wait_and_tap(img.party_auto_accept)
-        utils.tap_image_offset(img.party_request, offset_y=-120)
-    utils.wait_and_tap(img.party_tap_to_invite)
-    utils.wait_for_image(img.party_friend_tap)
-    utils.tap_until_found(img.party_friend_tap, img.party_friend_tap_active)
-    utils.wait_for_image(img.party_ppinwza)
-    utils.tap_image_offset(friend, offset_x=380, offset_y=50)
-    close_any_panel()
+    if utils.is_found(img.create_party):
+        utils.wait_and_tap(img.create_party)
+        if auto_accept:
+            utils.wait_for_image(img.party_member)
+            utils.tap_image_offset(img.party_member, offset_y=120)
+            utils.wait_and_tap(img.party_auto_accept)
+            utils.tap_image_offset(img.party_request, offset_y=-120)
+        utils.wait_and_tap(img.party_tap_to_invite)
+        utils.wait_for_image(img.party_friend_tap)
+        utils.tap_until_found(img.party_friend_tap, img.party_friend_tap_active)
+        utils.wait_for_image(img.party_ppinwza)
+        utils.tap_image_offset(friend, offset_x=380, offset_y=50)
+        close_any_panel()
 
 
 def leave_event():
@@ -251,5 +272,5 @@ def leave_event():
     utils.wait_until_disappear(img.loading, timeout=5)
 
 
-def wait_profile():
-    utils.wait_any_image(const.profiles)
+def wait_profile(timeout=10):
+    utils.wait_any_image(const.profiles, timeout)

@@ -2,10 +2,10 @@
 @REM make alfheim
 @REM make dldt
 @REM make dlcp
-@REM make dlat
-@REM make dlat
-@REM make hazy
-@REM make forging
-@REM make fishing
-@REM make helheim
+make dlat
+make dlat
+make hazy
+make forging
+make fishing
+make helheim
 make oracle

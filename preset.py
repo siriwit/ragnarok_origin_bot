@@ -121,7 +121,7 @@ def change_skill_auto(preset=None):
     #     ensure_use_support_skill(img.preset_skill_shield_reflect, img.preset_skill_touse_shield_reflect)
     #     ensure_use_support_skill(img.preset_skill_provoke, img.preset_skill_touse_provoke)
     if preset == const.boss or preset == const.ygg:
-        ensure_use_support_skill(img.preset_skill_normal_attack, img.preset_skill_touse_normal_attack)
+        # ensure_use_support_skill(img.preset_skill_normal_attack, img.preset_skill_touse_normal_attack)
         utils.scroll_down_util_found(img.preset_skill_touse_provoke, img.preset_skill_drag_icon, offset_y=200)
         ensure_replace_skill(img.preset_skill_provoke, img.preset_skill_touse_provoke, img.preset_skill_providence)
         ensure_use_support_skill(img.preset_skill_shield_reflect, img.preset_skill_touse_shield_reflect)
@@ -129,7 +129,7 @@ def change_skill_auto(preset=None):
         ensure_use_support_skill(img.preset_skill_auto_guard, img.preset_skill_touse_auto_guard)
         ensure_use_support_skill(img.preset_skill_martyr, img.preset_skill_touse_martyr)
     else:
-        ensure_use_support_skill(img.preset_skill_normal_attack, img.preset_skill_touse_normal_attack)
+        # ensure_use_support_skill(img.preset_skill_normal_attack, img.preset_skill_touse_normal_attack)
         utils.scroll_down_util_found(img.preset_skill_touse_provoke, img.preset_skill_drag_icon, offset_y=200)
         ensure_replace_skill(img.preset_skill_providence, img.preset_skill_touse_providence, img.preset_skill_provoke)
         ensure_use_support_skill(img.preset_skill_shield_reflect, img.preset_skill_touse_shield_reflect)
@@ -161,7 +161,7 @@ def dismiss_skill(tobe_dismiss):
 
 def attack_preset():
     func.wait_profile()
-    utils.tap_image(img.icon_auto_attack)
+    utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, offset_x=85)
     utils.tap_if_found(img.auto_attack_all)
     utils.tap_image(img.button_auto_attack_close)
 
@@ -174,23 +174,13 @@ def open_change_card_page():
     utils.wait_and_tap(img.button_card)
 
 
-def close_card_page(expected_depth=2):
-    current_depth = 0
-    while current_depth < expected_depth:
-        if utils.is_found(img.card_page) or utils.is_found(img.card_select_a_card_title):
-            utils.key_press('esc')
-            current_depth += 1
-            time.sleep(1)
-            continue
-        break
-
 def change_card(preset=None):
     open_change_card_page()
     # card_weapon_preset(preset)
     card_shield_preset(preset)
     card_armor(preset)
     card_cloak_preset(preset)
-    close_card_page()
+    func.close_any_panel(2)
 
 
 def againt_monster_card(tribe='', element='', size=''):
@@ -199,11 +189,11 @@ def againt_monster_card(tribe='', element='', size=''):
     card_shield_preset(tribe)
     card_armor(tribe, element)
     card_cloak_preset(element)
-    close_card_page()
+    func.close_any_panel(2)
 
 
 def card_cloak_preset(element=None):
-    utils.wait_and_tap(img.card_cloak)
+    utils.wait_and_tap_any([img.card_cloak, img.card_cloak2, img.card_cloak3])
 
     if element == const.earth:
         card_objects = [card_change_object(img.card_hode, img.card_hode_current, img.card_hode_touse),
@@ -234,7 +224,7 @@ def card_cloak_preset(element=None):
                         card_change_object(img.card_orc_zombie, img.card_orc_zombie_current, img.card_orc_zombie_touse)]
     
     if len(card_objects) > 0:
-        card_edges = [img.card_edge_cloak1, img.card_edge_cloak2]
+        card_edges = [img.card_edge_cloak1]
         card_change(card_edges, card_objects)
 
 
@@ -318,15 +308,15 @@ def card_change_object(used_card, selected_current_card, to_be_selected_card):
 def card_change(card_edges, card_objects):
     print(card_objects)
 
-    similarity = 0.98
+    similarity = 0.97
     index = 0
 
-    utils.wait_until_found_all_images(card_edges, len(card_objects), timeout=30)
+    utils.wait_until_found_all_images(card_edges, len(card_objects), similarity=similarity, timeout=30)
     if should_skip_change_card(card_objects):
         return
 
-    card_edges = utils.find_all_images(card_edges)
-    
+    card_edges = utils.find_all_images(card_edges, similarity)
+    print(f"found card_edges: {len(card_edges)} {card_edges}")
     for card_edge in card_edges:
         card_object = card_objects[index]
         utils.tap_location(card_edge)
@@ -338,9 +328,9 @@ def card_change(card_edges, card_objects):
                 utils.wait_and_tap(img.button_receive)
                 utils.wait_for_image(img.card_select_a_card_title, timeout=1)
             else:
-                close_card_page(expected_depth=1)
+                func.close_any_panel(1)
         else:
-            close_card_page(expected_depth=1)
+            func.close_any_panel(1)
         time.sleep(0.5)
         index += 1
 

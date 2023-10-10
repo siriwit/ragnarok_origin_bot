@@ -17,12 +17,15 @@ def start():
             go_to_guild_hall()
     else:
         if func.go_to_event(img.event_feast_weekend):
-            go_to_guild_hall()
+            go_to_guild_hall(is_weekend=True)
 
 
-def go_to_guild_hall():
-    utils.wait_for_image(img.feast_option_weekend, timeout=20)
-    utils.tap_image_offset(img.feast_option_weekend, offset_x=350, offset_y=-200)
+def go_to_guild_hall(is_weekend=False):
+    if is_weekend:
+        utils.wait_for_image(img.feast_option_weekend, timeout=20)
+        utils.tap_image_offset(img.feast_option_weekend, offset_x=350, offset_y=-200)
+    else:
+        utils.wait_and_tap(img.feast_skip_button, timeout=20)
     func.wait_profile()
     utils.hold_press('s', timeout=1)
     utils.hold_press('d', timeout=0.3)

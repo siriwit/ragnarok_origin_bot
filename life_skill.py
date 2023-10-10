@@ -10,24 +10,38 @@ def start(mode='forging'):
     utils.tap_offset_until_found(img.menu_bag, img.menu_life_skill, offset_x=180)
     utils.tap_image(img.menu_life_skill)
     utils.wait_for_image(img.life_skill_path_of_arts, timeout=2)
-    if not utils.is_found(img.life_skill_path_of_arts):
-        utils.tap_image(img.life_skill_path_of_nature)
+    if mode == 'forging' or mode == 'fishing':
+        if not utils.is_found(img.life_skill_path_of_arts):
+            utils.tap_until_found(img.life_skill_path_of_nature, img.life_skill_path_of_arts)
+    elif mode == 'cooking':
+        if not utils.is_found(img.life_skill_path_of_nature):
+            utils.tap_until_found(img.life_skill_path_of_arts, img.life_skill_path_of_nature)
 
     if mode == 'forging':
         utils.wait_and_tap(img.life_skill_forging)
-    else:
+    elif mode == 'fishing':
         utils.wait_and_tap(img.life_skill_fishing)
+    elif mode == 'cooking':
+        utils.wait_and_tap(img.life_skill_cooking)
 
-    utils.wait_and_tap(img.life_skill_magnifying_glass)
-    utils.wait_and_tap(img.life_skill_go)
-    utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)
+    if mode == 'forging' or mode == 'fishing':
+        utils.wait_for_image(img.life_skill_magnifying_glass)
+        utils.tap_until_found(img.life_skill_magnifying_glass, img.life_skill_nature_go)
+        utils.wait_and_tap(img.life_skill_nature_go)
+        utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)
+    elif mode == 'cooking':
+        utils.wait_and_tap(img.life_skill_arts_go)
+        utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)
 
     if mode == 'forging':
         utils.wait_for_image(img.forging, timeout=120)
         forging()
-    else:
+    elif mode == 'fishing':
         utils.wait_for_image(img.life_skill_fishing_bait, timeout=120)
         fishing()
+    elif mode == 'cooking':
+        utils.wait_for_image(img.life_skill_cooking_page, timeout=120)
+        cooking()
 
 
 def forging():
@@ -53,7 +67,7 @@ def fishing():
         func.ang_pao()
         utils.tap_any_offset(const.guilds, offset_x=-100, offset_y=-200)
         found_image = utils.wait_and_tap(img.fishing_alert, timeout=5)
-        if found_image != None:
+        if found_image is not None:
             utils.wait_and_tap(img.life_skill_tap_anywhere, timeout=1)
         
 
@@ -64,9 +78,17 @@ def baiting():
         time.sleep(1)
     utils.wait_and_tap(img.life_skill_fishing_bait)
 
-# def fishing():
-#     func.wait_profile()
-#     func.ang_pao()
-#     utils.tap(1000, 300)
-#     utils.wait_for_image('images/fishing_alert.png')
-#     utils.tap_image('images/fishing_alert.png')
+def cooking():
+    utils.wait_for_image(img.life_skill_cooking_page)
+    cook(img.life_skill_cooking_chewy_noodles, 4)
+    time.sleep(10)
+    utils.wait_and_tap(img.life_skill_cooking_pot)
+    cook(img.life_skill_cooking_tuna_kebab, 4)
+
+
+def cook(food_image, number):
+    utils.scroll_down_util_found(food_image, img.life_skill_cooking_drag_icon)
+    utils.wait_and_tap(food_image)
+    for _ in range(number):
+        utils.tap_image(img.life_skill_cooking_plus_button)
+    utils.wait_and_tap(img.life_skill_cooking_produce_button)

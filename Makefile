@@ -23,6 +23,9 @@ forging:
 fishing:
 	python .\ragnarok.py fishing
 
+cooking:
+	python .\ragnarok.py cooking
+
 feast:
 	python .\ragnarok.py feast
 

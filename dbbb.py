@@ -1,3 +1,4 @@
+import constanst as const
 import img
 import func
 import sys
@@ -19,13 +20,13 @@ def party_finder():
 
 
 def use_branch():
-    utils.key_press('b')
+    utils.tap_until_found(img.menu_bag, img.backpack_title)
     utils.scroll_down_util_found(img.dbbb_dead_branch, img.item_drag, 300)
     tap_until_used(img.dbbb_dead_branch)
     tap_until_used(img.dbbb_bloody_branch)
     func.close_any_panel()
     func.wait_profile()
-    utils.key_press('k')
+    func.auto_attack(const.att_all)
     sys.exit(0)
 
 

@@ -3,6 +3,29 @@ import pytesseract
 import time
 import logging
 import datetime
+import search_screen
+import windows_capture
+import click
+import cv2 as cv
+import sys
+from PIL import Image
+
+
+new_capture = True
+new_click = True
+new_sendkey = True
+new_drag_drop = True
+debug=True
+window_name = 'LDPlayer'
+window = windows_capture.WindowCapture(window_name)
+ ## check click hwid
+myclick = click.Click(window_name)
+# nox_hwids = myclick.get_nox_player_windows()
+ld_hwid = myclick.gethwid()
+ld_hwids = myclick.get_hwids("sub", level=2)
+
+ld_offset_x = 47
+ld_offset_y = 33
 
 def configure_logging():
     logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
@@ -26,20 +49,41 @@ def log(message, level='debug', enable=True):
 
 
 def find_image_with_similarity(image_filename, similarity=0.9, region=None):
-    image_location = pyautogui.locateOnScreen(image_filename, confidence=similarity, region=region)
+    image_location = None
+    if new_capture:
+        regtangles = search_image(image_filename, similarity)
+        if len(regtangles):
+            image_location = regtangles[0]
+    else:
+        image_location = pyautogui.locateOnScreen(image_filename, confidence=similarity, region=region)
+    
     return image_location
 
 
+def search_image(image_filename, similarity, screen=None):
+    if screen is None:
+        screen = window.screenshot()
+    search = search_screen.Classbot(screen,image_filename)
+    regtangles = search.search(debug=debug,mytxt=image_filename.split('/')[-1],threshold=similarity)
+    if cv.waitKey(1) == ord('q'):
+        cv.destroyAllWindows()
+        sys.exit(0)
+    return regtangles
+
+
 def find_all_image_with_similarity(image_filename, similarity=0.9, region=None):
-    image_locations = pyautogui.locateAllOnScreen(image_filename, confidence=similarity, region=region)
-    grouped = group_coordinate(image_locations)
-    return grouped
+    if new_capture:
+        return search_image(image_filename, similarity)
+    else:
+        image_locations = pyautogui.locateAllOnScreen(image_filename, confidence=similarity, region=region)
+        grouped = group_coordinate(image_locations)
+        return grouped
 
 
-def find_all_images(image_array):
+def find_all_images(image_array, similarity=0.9):
     all_image_locations = []
     for image in image_array:
-        image_locations = find_all_image_with_similarity(image)
+        image_locations = find_all_image_with_similarity(image, similarity)
         all_image_locations.extend(image_locations)
     return all_image_locations
 
@@ -74,32 +118,34 @@ def count_image_on_screen(image_filename, similarity=0.9):
     return len(images)
 
 
-def count_all_image_on_screen(image_array):
+def count_all_image_on_screen(image_array, similarity=0.9):
     if not isinstance(image_array, list):
         raise ValueError('object is not an array')
 
     count = 0
     for image in image_array:
-        images = find_all_image_with_similarity(image)
+        images = find_all_image_with_similarity(image, similarity)
+        # print(f'Find image: {image} found: {len(images)}')
         count += len(images)
     return count
 
 
-def wait_until_found_all_images(image_array, expected_number, timeout=10):
+def wait_until_found_all_images(image_array, expected_number, similarity=0.9, timeout=10):
     start_time = time.time()
     while time.time() - start_time < timeout:
-        count = count_all_image_on_screen(image_array)
+        count = count_all_image_on_screen(image_array, similarity)
+        print(f'Found image: {count} with expected: {expected_number}')
         if count == expected_number:
             break
         time.sleep(1)
 
 
-def wait_for_image(image_filename, timeout=10, enable_log=True):
+def wait_for_image(image_filename, timeout=10, enable_log=True, similarity=0.9):
     log('wait_for_image: ' + image_filename, enable=enable_log)
     start_time = time.time()
 
     while time.time() - start_time < timeout:
-        image_location = find_image_with_similarity(image_filename)
+        image_location = find_image_with_similarity(image_filename, similarity)
         if image_location is not None:
             log(image_filename + " found.", enable=enable_log)
             return image_location
@@ -121,8 +167,23 @@ def wait_any_image(image_filenames, timeout=10):
 
 
 def tap(x, y):
-    pyautogui.mouseDown(x, y)
-    pyautogui.mouseUp(x, y)
+
+    if debug:
+        screen = window.screenshot()
+        search = search_screen.Classbot(screen)
+        search.draw_debug_rect("tap", int(x-5), int(y-5), 10, 10)
+        if cv.waitKey(1) == ord('q'):
+            cv.destroyAllWindows()
+            sys.exit(0)
+    if new_click:
+        
+        x2 = int(x - ld_offset_x)
+        y2 = int(y - ld_offset_y)
+
+        myclick.click(ld_hwid, x2, y2)
+    else:
+        pyautogui.mouseDown(x, y)
+        pyautogui.mouseUp(x, y)
 
 
 def tap_image(image_path, screenshot=False, before=False, result_filename=None, similarity=0.9):
@@ -144,10 +205,16 @@ def tap_image(image_path, screenshot=False, before=False, result_filename=None, 
 
 def tap_image_offset(image_path, offset_x=0, offset_y=0, similarity=0.9):
     image = find_image_with_similarity(image_path, similarity=similarity)
-    if image != None:
+    if not is_empty(image):
         tap_location(image, offset_x, offset_y)
     else:
         print(image_path + ' is not found')
+
+
+def is_empty(obj):
+    if obj is None:
+        return True
+    return False
 
 
 def tap_location(coordinate, offset_x=0, offset_y=0):
@@ -288,24 +355,47 @@ def is_found_any(images, threshold=0.90):
 
 
 def hold_press(key, timeout=1):
-    pyautogui.keyDown(key)
-    time.sleep(timeout)
-    pyautogui.keyUp(key)
+    if new_sendkey:
+        for ld in ld_hwids:
+            myclick.send_key(ld, key)
+        myclick.send_key(ld_hwid, key)
+    else:
+        pyautogui.keyDown(key)
+        time.sleep(timeout)
+        pyautogui.keyUp(key)
 
 
 def key_press(key):
-    pyautogui.press(key)
+    if new_sendkey:
+        for ld in ld_hwids:
+            myclick.send_key(ld, key)
+        # myclick.send_key(ld_hwid, key)
+    else:
+        pyautogui.press(key)
 
 
 def type(text):
-    pyautogui.typewrite(text)
+    if new_sendkey:
+        myclick.send_input(ld_hwid, text)
+    else:
+        pyautogui.typewrite(text)
 
 
 def get_text_from_image(image_filename, offset_x=100, offset_y=45):
     image_obj = find_image_with_similarity(image_filename)
     if image_obj is not None:
         x, y, width, height = image_obj
-        screenshot = pyautogui.screenshot(region=((x + offset_x), (y + offset_y), (width - offset_x), height))
+        screenshot = None
+        if new_capture:
+            screenshot = window.screenshot()
+            x1 = (x + offset_x)
+            y1 = (y + offset_y)
+            x2 = (x1 + width - offset_x)
+            y2 = (y1 + height)
+            roi = screenshot[y1:y2, x1:x2]
+            screenshot = Image.fromarray(roi)
+        else:
+            screenshot = pyautogui.screenshot(region=((x + offset_x), (y + offset_y), (width - offset_x), height))
         gray_image = screenshot.convert('L')
         extracted_text = pytesseract.image_to_string(gray_image)
         
@@ -321,11 +411,21 @@ def drag_and_drop_image(source_image, target_image):
 
 
 def drag_and_drop(source_x, source_y, destination_x, destination_y, duration=0.25, hold=0):
-    pyautogui.moveTo(source_x, source_y, duration=duration)
-    pyautogui.mouseDown()
-    pyautogui.moveTo(destination_x, destination_y, duration=duration)
-    time.sleep(hold)
-    pyautogui.mouseUp()
+    if new_drag_drop:
+
+        source_x = int(source_x - ld_offset_x)
+        source_y = int(source_y - ld_offset_y)
+        
+        destination_x = int(destination_x - ld_offset_x)
+        destination_y = int(destination_y - ld_offset_y)
+
+        myclick.click_hold_and_move(ld_hwid, source_x, source_y, destination_x, destination_y, duration, hold)
+    else:
+        pyautogui.moveTo(source_x, source_y, duration=duration)
+        pyautogui.mouseDown()
+        pyautogui.moveTo(destination_x, destination_y, duration=duration)
+        time.sleep(hold)
+        pyautogui.mouseUp()
 
 
 def drag_up(image_path, offset_y=100):
@@ -354,7 +454,7 @@ def scroll_until_found(expected_image, drag_image, offset_y=100, is_drag_up=True
     while time.time() < end_time:
         if is_found(expected_image, similarity):
             return True
-        if wait_for_image(drag_image, timeout=2) != None:
+        if not is_empty(wait_for_image(drag_image, timeout=2)):
             if is_drag_up:
                 drag_up(drag_image, offset_y=offset_y)
             else:

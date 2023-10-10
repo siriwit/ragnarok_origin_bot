@@ -1,3 +1,4 @@
+import constanst as const
 import img
 import func
 import preset as pre
@@ -15,8 +16,8 @@ def start():
             if utils.is_found(img.button_quick_respawn):
                 utils.tap_image(img.button_quick_respawn)
                 time.sleep(2)
-                if utils.wait_for_image(img.guild_expedition_map_fun_arena, timeout=2) != None:
-                    func.auto_attack()
+                if utils.wait_any_image(const.guild_exp_maps, timeout=2) is not None:
+                    func.auto_attack(const.att_all)
                 else:
                     utils.wait_and_tap(img.menu_hourglass)
                     utils.wait_and_tap(img.guild_expedition_icon)

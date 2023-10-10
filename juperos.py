@@ -14,6 +14,6 @@ def start():
 
 def fight():
     utils.wait_any_image(const.profiles, timeout=150)
-    utils.key_press('k')
+    func.auto_attack()
     boss.boss_fight(butterflywing=False)
 

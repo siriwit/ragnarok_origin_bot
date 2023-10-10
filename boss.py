@@ -39,8 +39,7 @@ def boss_hunt_loop(is_active=True, min_level=0, max_level=999, ignore_spawn=True
 
 
 def close_boss_page():
-    utils.key_press('esc')
-    utils.wait_and_tap(img.button_back)
+    func.close_any_panel()
 
 
 def boss_hunt_specific():
@@ -137,7 +136,7 @@ def get_boss_config_list(min_level=0, max_level=999):
             img.boss_region_eddga, img.boss_eddga, 
             img.boss_map_deep_payon_forest, img.boss_coming_eddga, 
             'Eddga', 150, const.brute, const.fire, const.large,
-            68),
+            68, img.boss_eddga_fight),
         boss_config_obj(
             img.boss_region_mistress, img.boss_mistress, 
             img.boss_map_garden, img.boss_coming_mistress, 
@@ -265,9 +264,13 @@ def find_boss_time(boss_image, boss_map, threshold, ignore_spawn=False):
     if (not ignore_spawn and result == 0) or (result > 0 and result < threshold):
     # if True:
         utils.tap_image(boss_image)
-        utils.tap_image(img.boss_button_go)
+        utils.tap_until_notfound(img.boss_button_go, img.boss_button_go)
         marked_time = time.time()
-        utils.wait_for_image(boss_map, timeout=150)
+        while True:
+            utils.wait_for_image(img.loading, timeout=120)
+            utils.wait_until_disappear(img.loading)
+            if utils.is_found(boss_map):
+                break
         diff_time = time.time() - marked_time
         boss_remaining_time_dict.clear()
         return result - diff_time
@@ -342,6 +345,7 @@ def boss_wing(timeout=120):
         else:
             utils.tap_image(img.button_auto_attack_close)
         utils.tap_image_offset(img.menu_bag, offset_y=100)
+        utils.tap_image_offset(img.menu_bag, offset_y=100)
         diff_time = time.time() - marked_time
 
 def boss(timeout=120, boss_fight_icon=None):
@@ -383,6 +387,7 @@ def boss_fight(butterflywing=True, boss_fight_icon=None, timeout=60):
 
         if utils.is_found(img.button_battle_log):
             utils.tap_image_offset(img.button_battle_log, offset_y=100)
+            utils.tap_offset_until_notfound(img.button_battle_log, img.button_battle_log, offset_y=100)
             func.use_items()
             if butterflywing:
                 func.butterfly_wing_morroc()
@@ -404,14 +409,7 @@ def handle_die_loop():
         if utils.is_found(img.button_battle_log):
             break
         if not utils.is_found(img.die_upgrade_title):
-            attack_boss()
+            func.auto_attack(mode=const.boss)
             break
         time.sleep(1)
 
-
-def attack_boss():
-    utils.tap_until_found(img.icon_auto_attack, img.button_auto_attack_close)
-    if utils.is_found(img.icon_auto_attack_boss):
-        utils.wait_and_tap(img.icon_auto_attack_boss)
-        utils.tap_image(img.button_auto_attack_close)
-        return True

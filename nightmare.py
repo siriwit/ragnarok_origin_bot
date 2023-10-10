@@ -12,7 +12,7 @@ def start(element=const.earth, level=const.normal):
         func.create_and_invite()
         utils.wait_for_image(img.party_number_2, timeout=60)
     preset.againt_monster_card(element=element)
-    func.party_finder('NT ' + element + ' normal')
+    func.party_finder('NT ' + element + ' ' + level)
     if func.go_to_event(img.event_nightmare_temple):
         utils.wait_for_image(img.nightmare_temple_page)
 
@@ -25,6 +25,8 @@ def start(element=const.earth, level=const.normal):
             
         if level == const.normal:
             utils.tap_until_found(img.nightmare_temple_level_normal, img.nightmare_temple_level_normal_active)
+        elif level == const.hard:
+            utils.tap_until_found(img.nightmare_temple_level_hard, img.nightmare_temple_level_hard_active)
 
         utils.wait_and_tap(img.nightmare_temple_enter_fairyland)
         utils.wait_and_tap_any(const.button_starts)
@@ -34,7 +36,7 @@ def start(element=const.earth, level=const.normal):
 
 
 def fight(element=None):
-    utils.wait_for_image(img.profile, timeout=150)
+    func.wait_profile(150)
     func.auto_attack(mode=const.att_all)
 
     if element == const.fire:

@@ -13,7 +13,7 @@ def daily_cat_paw():
     else:
         utils.tap_any_until_found_offset(const.menu_guides, img.daily_quest_page, offset_x=-200)
         utils.tap_image(img.daily_catpaw)
-        utils.tap_image(img.button_go)
+        utils.tap_until_notfound(img.button_go, img.button_go)
         utils.wait_and_tap(img.icon_message, timeout=60)
 
     utils.wait_for_image(img.cat_paw_caravan_topbar, timeout=2)
