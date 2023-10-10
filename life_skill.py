@@ -84,6 +84,7 @@ def cooking():
     time.sleep(10)
     utils.wait_and_tap(img.life_skill_cooking_pot)
     cook(img.life_skill_cooking_tuna_kebab, 4)
+    func.close_any_panel()
 
 
 def cook(food_image, number):
