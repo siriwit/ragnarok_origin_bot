@@ -27,6 +27,7 @@ import nightmare
 import hellheim
 import halfyear
 import cv2 as cv
+import guild_collect
         
 
 def farm():
@@ -109,7 +110,10 @@ def maintain_woe():
 
 def dev():
     utils.wait_any_image(const.profiles, timeout=2)
-    func.auto_attack()
+    # utils.wait_and_tap_any(const.city_lord_room_treasures, similarity=0.25)
+    # preset.ensure_replace_skill(img.preset_skill_provoke, img.preset_skill_touse_provoke, img.preset_skill_providence)
+    # utils.wait_and_tap(img.button_combine,timeout=1)
+    life_skill.cooking_3star()
     sys.exit(0)
 
 convert_weapon_time = time.time()
@@ -231,6 +235,8 @@ while True:
             hordor.hordor_dreamland(mode=img.hordor_magic_ocean)
         elif mode == 'waste':
             hordor.hordor_dreamland(mode=img.hordor_wasteland)
+        elif mode == 'paradise':
+            hordor.hordor_dreamland(mode=img.hordor_paradise_courage)
         sys.exit(0)
     elif value == 'guild_exp':
         guild_expedition.start()
@@ -255,6 +261,9 @@ while True:
         sys.exit(0)
     elif value == 'helheim':
         hellheim.start()
+        sys.exit(0)
+    elif value == 'collect':
+        guild_collect.start()
         sys.exit(0)
     else:
         break

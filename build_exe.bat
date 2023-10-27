@@ -1,0 +1,1 @@
+pyinstaller --name roobot entry_bot.py --onefile

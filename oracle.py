@@ -7,9 +7,7 @@ import sys
 
 def request_oracle():
     while True:
-        if not utils.is_found_any(const.menu_guilds):
-            utils.tap_offset_until_found(img.menu_bag, img.menu_album, offset_x=180)
-
+        func.open_hidden_menu()
         utils.wait_and_tap_any(const.menu_guilds, timeout=2)
         utils.wait_for_image(img.guild_menu_info, timeout=2)
         utils.tap_image_offset(img.guild_menu_info, offset_y=100)
@@ -34,11 +32,11 @@ def request_all_member():
             return True
 
         if is_found_teasing and not utils.is_found(img.guild_request_oracle_icon):
-            close_hidden_menu()
+            func.close_hidden_menu()
             return False
         
         if not is_found_teasing:
-            close_hidden_menu()
+            func.close_hidden_menu()
             sys.exit(0)
         
         time.sleep(1)
@@ -62,10 +60,3 @@ def oracle(in_main_page=True):
             break
 
         time.sleep(1)
-
-
-def close_hidden_menu():
-    func.close_any_panel()
-    func.wait_profile()
-    if utils.is_found(img.menu_guild):
-        utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)

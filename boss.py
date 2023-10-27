@@ -386,9 +386,8 @@ def boss_fight(butterflywing=True, boss_fight_icon=None, timeout=60):
         func.use_items()
 
         if utils.is_found(img.button_battle_log):
-            utils.tap_image_offset(img.button_battle_log, offset_y=100)
-            utils.tap_offset_until_notfound(img.button_battle_log, img.button_battle_log, offset_y=100)
             func.use_items()
+            utils.tap_offset_until_notfound(img.button_battle_log, img.button_battle_log, offset_y=100)
             if butterflywing:
                 func.butterfly_wing_morroc()
             return
@@ -396,10 +395,11 @@ def boss_fight(butterflywing=True, boss_fight_icon=None, timeout=60):
         if boss_fight_icon != None:
             if utils.is_found(boss_fight_icon):
                 boss_fight_icon_count += 1
-            if boss_fight_icon_count < 3 and time.time() - marked_time > timeout:
+            if boss_fight_icon_count < 10 and time.time() - marked_time > timeout:
                 if butterflywing:
                     func.butterfly_wing_morroc()
                 return
+            print(f"boss icon count: {boss_fight_icon_count}")
         time.sleep(1)
 
 

@@ -11,6 +11,7 @@ def daily():
 
 
 def farm():
+    func.close_hidden_menu()
     # change_skill_preset(const.farm)
     change_skill_auto(const.farm)
     # change_item_preset(const.farm)
@@ -19,6 +20,7 @@ def farm():
 
 
 def boss():
+    func.close_hidden_menu()
     # change_skill_preset(const.farm)
     change_skill_auto(const.boss)
     # change_item_preset(const.farm)
@@ -27,6 +29,7 @@ def boss():
 
 
 def tank():
+    func.close_hidden_menu()
     # change_skill_preset(const.tank)
     # change_skill_auto(const.tank)
     # change_item_preset(const.tank)
@@ -92,6 +95,7 @@ def change_item_preset(preset='farm'):
 
 def pet_selector(pet=img.pet_icon_earthlord):
     func.wait_profile()
+    func.close_hidden_menu()
     if not utils.is_found(pet):
         utils.tap_any_offset(const.pets, offset_x=-75)
         most_left_coordinate = utils.find_most_left_coordinate(const.pets)
@@ -143,7 +147,7 @@ def change_skill_auto(preset=None):
 
 def ensure_replace_skill(ensure_skill, ensure_touse_skill, possible_used_skill):
     if not utils.is_found(ensure_skill):
-        if utils.is_found(possible_used_skill):
+        if utils.is_found(possible_used_skill, similarity=0.95):
             utils.drag_and_drop_image(ensure_touse_skill, possible_used_skill)
         else:
             utils.drag_and_drop_image(ensure_touse_skill, img.preset_skill_empty_slot)
@@ -168,7 +172,7 @@ def attack_preset():
 
 def open_change_card_page():
     func.wait_profile()
-    utils.tap_until_found(img.menu_bag, img.backpack_title)
+    func.open_bag()
     utils.wait_and_tap(img.weapon5)
     utils.wait_and_tap(img.button_more)
     utils.wait_and_tap(img.button_card)
@@ -180,7 +184,7 @@ def change_card(preset=None):
     card_shield_preset(preset)
     card_armor(preset)
     card_cloak_preset(preset)
-    func.close_any_panel(2)
+    func.close_any_panel()
 
 
 def againt_monster_card(tribe='', element='', size=''):
@@ -189,7 +193,7 @@ def againt_monster_card(tribe='', element='', size=''):
     card_shield_preset(tribe)
     card_armor(tribe, element)
     card_cloak_preset(element)
-    func.close_any_panel(2)
+    func.close_any_panel()
 
 
 def card_cloak_preset(element=None):
@@ -224,7 +228,7 @@ def card_cloak_preset(element=None):
                         card_change_object(img.card_orc_zombie, img.card_orc_zombie_current, img.card_orc_zombie_touse)]
     
     if len(card_objects) > 0:
-        card_edges = [img.card_edge_cloak1]
+        card_edges = [img.card_edge_cloak1, img.card_edge_cloak2]
         card_change(card_edges, card_objects)
 
 
@@ -328,9 +332,9 @@ def card_change(card_edges, card_objects):
                 utils.wait_and_tap(img.button_receive)
                 utils.wait_for_image(img.card_select_a_card_title, timeout=1)
             else:
-                func.close_any_panel(1)
+                utils.tap_any_until_found(const.button_closes, img.card_select_a_card_title)
         else:
-            func.close_any_panel(1)
+            utils.tap_any_until_found(const.button_closes, img.card_select_a_card_title)
         time.sleep(0.5)
         index += 1
 

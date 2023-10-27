@@ -14,13 +14,13 @@ def party_finder():
             break
         else:
             func.send_message(message, 'world')
-        time.sleep(20)
+        func.wait(20)
 
     use_branch()
 
 
 def use_branch():
-    utils.tap_until_found(img.menu_bag, img.backpack_title)
+    func.open_bag()
     utils.scroll_down_util_found(img.dbbb_dead_branch, img.item_drag, 300)
     tap_until_used(img.dbbb_dead_branch)
     tap_until_used(img.dbbb_bloody_branch)
@@ -36,9 +36,12 @@ def tap_until_used(branch):
 
     while True:
         utils.tap_image(img.button_use_small_blue)
-        time.sleep(0.5)
+        func.wait(1)
         if utils.is_found(img.dbbb_party_too_far):
-            time.sleep(3)
+            func.wait(3)
+            continue
+        elif utils.is_found_any(const.tap_anywheres):
+            utils.tap_any(const.tap_anywheres)
             continue
         break
 

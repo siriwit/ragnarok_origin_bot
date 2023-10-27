@@ -16,7 +16,7 @@ def start():
             if utils.is_found(img.button_quick_respawn):
                 utils.tap_image(img.button_quick_respawn)
                 time.sleep(2)
-                if utils.wait_any_image(const.guild_exp_maps, timeout=2) is not None:
+                if utils.is_found(img.button_escape):
                     func.auto_attack(const.att_all)
                 else:
                     utils.wait_and_tap(img.menu_hourglass)
@@ -24,9 +24,23 @@ def start():
                     go_to_expedition()
 
 
+def fight():
+    duration_minutes = 20
+    end_time = time.time() + duration_minutes * 60
+    while time.time() < end_time:
+        if utils.is_found(img.button_quick_respawn):
+            utils.tap_image(img.button_quick_respawn)
+            time.sleep(2)
+            func.auto_attack(const.att_all)
+            
+        if utils.is_found(img.loading):
+            func.wait_loading_screen()
+            utils.wait_and_tap(img.menu_hourglass)
+            go_to_expedition()
+
 def go_to_expedition():
     # utils.wait_for_image(img.guild_expedition_page)
-    utils.wait_and_tap(img.guild_expedition_boss_drake)
+    utils.wait_and_tap(img.guild_expedition_boss_angeling)
     utils.wait_and_tap(img.button_go_blue_medium)
     func.wait_profile()
     func.auto_attack()

@@ -48,12 +48,12 @@ schedule.every().monday.at("07:00").do(ygg_fight)
 schedule.every().monday.at("20:00").do(feast)
 
 # tuesday
-schedule.every().monday.at("07:00").do(ygg_fight)
+schedule.every().tuesday.at("07:00").do(ygg_fight)
 schedule.every().tuesday.at("20:00").do(feast)
 schedule.every().tuesday.at("20:30").do(time_anomaly)
 
 # wednesday
-schedule.every().tuesday.at("20:00").do(feast)
+schedule.every().wednesday.at("20:00").do(feast)
 
 # thursday
 schedule.every().thursday.at("20:00").do(feast)

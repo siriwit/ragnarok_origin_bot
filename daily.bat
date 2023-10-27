@@ -1,11 +1,13 @@
-@REM make preset_daily
-@REM make alfheim
-@REM make dldt
-@REM make dlcp
+make preset_daily
+make alfheim
+make dldt
+make dlcp
 make dlat
 make dlat
 make hazy
 make forging
 make fishing
+make cooking
 make helheim
+make collect
 make oracle

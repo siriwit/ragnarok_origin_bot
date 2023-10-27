@@ -6,6 +6,22 @@ import time
 import sys
 import utils
 
+
+def start():
+    print("Mode:")
+    print(" 0. Back")
+    print(" 1. Fight")
+    print(" 2. Collect Item")
+    input_number = int(input("Enter Mode: "))
+    if input_number == 0:
+        return
+    elif input_number == 1:
+        preset()
+        alfheim_fight()
+    elif input_number == 2:
+        alfheim_collect_item()
+
+
 def alfheim_collect_item():
     func.wait_profile()
     if func.go_to_event(img.event_alfheim):
@@ -21,10 +37,10 @@ def alfheim_fight():
     if func.go_to_event(img.event_alfheim):
         while True:
             utils.wait_and_tap(img.button_start_blue_medium)
-            utils.wait_for_image(img.loading)
-            utils.wait_until_disappear(img.loading)
+            func.wait_loading_screen()
             attack()
 
+            fail = False
             while True:
                 if utils.is_found(img.alfheim_victory):
                     utils.wait_and_tap(img.button_next_floor)
@@ -32,13 +48,18 @@ def alfheim_fight():
                 elif utils.is_found(img.alfheim_defeat):
                     utils.wait_and_tap(img.button_exit_trial_orange)
                     func.close_any_panel()
-                    sys.exit(0)
+                    fail = True
+                    break
                 time.sleep(1)
+
+            if fail:
+                func.close()
+                break
             
 
 def attack():
     func.wait_profile()
-    func.move_up(hold=2)
+    # func.move_up(hold=2)
     func.auto_attack(const.att_all)
 
 

@@ -127,3 +127,6 @@ create_party:
 
 helheim:
 	python .\ragnarok.py helheim
+
+collect:
+	python .\ragnarok.py collect

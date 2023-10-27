@@ -1,3 +1,4 @@
+import configparser
 import pyautogui
 import pytesseract
 import time
@@ -10,13 +11,21 @@ import cv2 as cv
 import sys
 from PIL import Image
 
-
+config = configparser.ConfigParser()
+config_file_path = 'bot.ini'
+config.read(config_file_path)
+settings = config['SETTINGS']
 new_capture = True
 new_click = True
 new_sendkey = True
 new_drag_drop = True
-debug=True
-window_name = 'LDPlayer'
+
+debug=(False if settings['debug'] == 'False' else bool(settings['debug']))
+print(f"debug: {debug}")
+window_name = settings['window_name']
+print(f"window name: {window_name}")
+# window_name = 'LDPlayer-PP'
+
 window = windows_capture.WindowCapture(window_name)
  ## check click hwid
 myclick = click.Click(window_name)
@@ -262,8 +271,8 @@ def wait_and_tap(image_path, timeout=10, similarity=0.9):
 
 
 def wait_and_tap_any(image_paths, timeout=10, similarity=0.9):
-    wait_any_image(image_paths, timeout)
-    tap_any(image_paths, similarity=similarity)
+    location = wait_any_image(image_paths, timeout)
+    tap_location(location)
 
 
 def wait_until_disappear(image_path, timeout=10):
@@ -302,7 +311,7 @@ def tap_offset_until_found(image_path, util_found_image, interval=1, offset_x=0,
     start_time = time.time()
     while time.time() - start_time < timeout:
         if wait_for_image(util_found_image, timeout=interval) is not None:
-            print('tap_offset_util_found break')
+            log(f'tap_offset_util_found: {image_path} until found: {util_found_image} - break')
             break
         tap_image_offset(image_path, offset_x, offset_y)
 
@@ -342,8 +351,10 @@ def save_screenshot():
 
 def is_found(image_path, similarity=0.9):
     if find_image_with_similarity(image_path, similarity=similarity) is not None:
+        log(f"{image_path} is found.")
         return True
     else:
+        log(f"{image_path} is not found.")
         return False
 
 

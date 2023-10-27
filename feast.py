@@ -27,8 +27,8 @@ def go_to_guild_hall(is_weekend=False):
     else:
         utils.wait_and_tap(img.feast_skip_button, timeout=20)
     func.wait_profile()
-    utils.hold_press('s', timeout=1)
-    utils.hold_press('d', timeout=0.3)
+    func.move_down(hold=1)
+    func.move_right(hold=0.5)
 
     duration_minutes = 20
     end_time = time.time() + duration_minutes * 60

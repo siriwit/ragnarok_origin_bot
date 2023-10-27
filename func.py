@@ -1,4 +1,5 @@
 import constanst as const
+import cv2 as cv
 import img
 import func
 import time
@@ -18,8 +19,14 @@ def disable_aura():
 def butterfly_wing_morroc():
     utils.tap_until_found(img.butterfly_wing, img.city_morroc)
     utils.wait_and_tap(img.city_morroc)
+    wait_loading_screen()
     func.wait_profile()
     time.sleep(3)
+
+
+def wait_loading_screen():
+    utils.wait_for_image(img.loading)
+    utils.wait_until_disappear(img.loading)
 
 
 def send_message(message, send_to='party'):
@@ -162,6 +169,8 @@ def go_to_event(event_image=None):
         
     if utils.tap_any_until_found_offset(const.menu_guides, img.event_page, offset_x=-100):
         if event_image != None:
+            if utils.is_found(img.event_moonlit_arena):
+                utils.scroll_down_util_found(event_image, img.event_moonlit_arena, offset_y=100, timeout=1)
             if not utils.scroll_down_util_found(event_image, img.event_drag_icon, offset_y=200, timeout=10, similarity=0.85):
                 utils.scroll_down_util_found(event_image, img.event_drag_icon_inactive, offset_y=200, similarity=0.85)
             utils.wait_and_tap(event_image, similarity=0.85)
@@ -177,7 +186,7 @@ def ang_pao():
     while True:
         if utils.is_found(img.ang_pao_red):
             utils.tap_image(img.ang_pao_red, screenshot=True, result_filename=img.angpao_header)
-            utils.tap_any(const.pets)
+            utils.tap_offset_until_notfound(img.angpao_header, img.angpao_header, offset_x=400)
             continue
         elif utils.is_found(img.ang_pao_yellow):
             utils.tap_image(img.ang_pao_yellow, screenshot=True, result_filename=img.angpao_header)
@@ -231,14 +240,14 @@ def move_up(hold=0.5):
 
 
 def get_move_area():
-    if utils.is_found_any(const.guilds):
-        offset_x = -268
-        offset_y = -150
-        return get_move_area_location(const.guilds, offset_x, offset_y)
-    elif utils.is_found(img.ride_peco):
+    if utils.is_found(img.ride_peco):
         offset_x = 238
         offset_y = 22
-        return get_move_area_location(img.ride_peco, offset_x, offset_y)
+        return get_move_area_location([img.ride_peco], offset_x, offset_y)
+    elif utils.is_found_any(const.guilds):
+        offset_x = -223
+        offset_y = -118
+        return get_move_area_location(const.guilds, offset_x, offset_y)
 
 def get_move_area_location(image_paths, offset_x, offset_y):
     image_objs = utils.find_all_images(image_paths, similarity=0.8)
@@ -249,7 +258,11 @@ def get_move_area_location(image_paths, offset_x, offset_y):
 
 def create_and_invite(friend=img.party_ppinwza, auto_accept=True):
     func.wait_profile()
-    utils.tap_if_found(img.party_inactive)
+    
+    if utils.is_found(img.party_inactive):
+        utils.tap_image(img.party_inactive)
+        utils.wait_for_image(img.create_party, timeout=2)
+
     if utils.is_found(img.create_party):
         utils.wait_and_tap(img.create_party)
         if auto_accept:
@@ -260,7 +273,8 @@ def create_and_invite(friend=img.party_ppinwza, auto_accept=True):
         utils.wait_and_tap(img.party_tap_to_invite)
         utils.wait_for_image(img.party_friend_tap)
         utils.tap_until_found(img.party_friend_tap, img.party_friend_tap_active)
-        utils.wait_for_image(img.party_ppinwza)
+        wait(1)
+        utils.wait_for_image(friend)
         utils.tap_image_offset(friend, offset_x=380, offset_y=50)
         close_any_panel()
 
@@ -274,3 +288,27 @@ def leave_event():
 
 def wait_profile(timeout=10):
     utils.wait_any_image(const.profiles, timeout)
+
+
+def wait(timeout=10):
+    marked_time = time.time()
+    while time.time() - marked_time < timeout:
+        utils.wait_any_image(const.profiles, timeout=0.5)
+
+def close_hidden_menu():
+    func.close_any_panel()
+    func.wait_profile()
+    if utils.is_found_any(const.menu_guilds):
+        utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)
+
+def open_bag():
+    utils.tap_until_found(img.menu_bag, img.backpack_title)
+
+
+def open_hidden_menu():
+    if not utils.is_found_any(const.menu_guilds):
+        utils.tap_offset_until_found(img.menu_bag, img.menu_album, offset_x=180)
+
+
+def close():
+    cv.destroyAllWindows()
