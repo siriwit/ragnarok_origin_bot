@@ -43,5 +43,10 @@ def feast():
     func.use_items()
     if utils.is_found(img.food_grab):
         utils.tap_image(img.food_grab)
-        utils.wait_and_tap(img.food_taste, timeout=2)
+        if utils.wait_for_image(img.food_taste, timeout=1) is not None:
+            utils.wait_and_tap(img.food_taste, timeout=2)
+        elif utils.wait_for_image(img.feast_action_block_while_mounted, timeout=1, similarity=0.85) is not None:
+            utils.wait_and_tap(const.mounts)
         time.sleep(2)
+
+    

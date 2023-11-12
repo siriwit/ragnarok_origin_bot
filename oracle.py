@@ -9,8 +9,11 @@ def request_oracle():
     while True:
         func.open_hidden_menu()
         utils.wait_and_tap_any(const.menu_guilds, timeout=2)
+        check_oracle_request()
         utils.wait_for_image(img.guild_menu_info, timeout=2)
+        check_oracle_request()
         utils.tap_image_offset(img.guild_menu_info, offset_y=100)
+        check_oracle_request()
         is_anyone_accept = request_all_member()
         if not is_anyone_accept:
             oracle()
@@ -19,7 +22,9 @@ def request_oracle():
 def request_all_member():
     is_found_teasing = False
     utils.wait_for_image(img.oracle_guild_page)
+    check_oracle_request()
     utils.wait_for_image(img.guild_request_oracle_icon, timeout=3)
+    check_oracle_request()
     while True:
 
         utils.tap_image(img.guild_request_oracle_icon)
@@ -27,8 +32,7 @@ def request_all_member():
             is_found_teasing = True
             utils.drag_up(img.guild_request_oracle_icon, offset_y=80)
 
-        if utils.is_found(img.button_agree):
-            oracle(in_main_page=False)
+        if check_oracle_request():
             return True
 
         if is_found_teasing and not utils.is_found(img.guild_request_oracle_icon):
@@ -54,9 +58,17 @@ def oracle(in_main_page=True):
             func.send_message('[z1]')
             func.leave_event()
             func.wait_profile()
+            check_oracle_request()
             time.sleep(3)
+            check_oracle_request()
             func.leave_party()
+            check_oracle_request()
             func.wait_profile()
             break
 
         time.sleep(1)
+
+def check_oracle_request():
+    if utils.is_found(img.button_agree):
+        oracle(in_main_page=False)
+        return True

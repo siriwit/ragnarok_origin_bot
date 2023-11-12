@@ -72,11 +72,8 @@ def find_image_with_similarity(image_filename, similarity=0.9, region=None):
 def search_image(image_filename, similarity, screen=None):
     if screen is None:
         screen = window.screenshot()
-    search = search_screen.Classbot(screen,image_filename)
-    regtangles = search.search(debug=debug,mytxt=image_filename.split('/')[-1],threshold=similarity)
-    if cv.waitKey(1) == ord('q'):
-        cv.destroyAllWindows()
-        sys.exit(0)
+    search = search_screen.Classbot(screen, image_filename, window_name=settings['window_name'])
+    regtangles = search.search(debug=debug, image_path=image_filename, threshold=similarity)
     return regtangles
 
 
@@ -105,6 +102,18 @@ def find_most_left_coordinate(image_array):
         center_x, _ = find_image_center(image_coordinate)
         if center_x < least_x:
             least_x = center_x
+            tobe_return_coordinate = image_coordinate
+    return tobe_return_coordinate
+
+
+def find_most_bottom_coordinate(image_array):
+    image_coordinates = find_all_images(image_array)
+    least_y = 9999
+    tobe_return_coordinate = list()
+    for image_coordinate in image_coordinates:
+        _, center_y = find_image_center(image_coordinate)
+        if center_y < least_y:
+            least_y = center_y
             tobe_return_coordinate = image_coordinate
     return tobe_return_coordinate
 
@@ -162,12 +171,12 @@ def wait_for_image(image_filename, timeout=10, enable_log=True, similarity=0.9):
     return None
 
 
-def wait_any_image(image_filenames, timeout=10):
+def wait_any_image(image_filenames, timeout=10, similarity=0.9):
     start_time = time.time()
 
     while time.time() - start_time < timeout:
         for image_filename in image_filenames:
-            image_location = wait_for_image(image_filename, timeout=1, enable_log=False)
+            image_location = wait_for_image(image_filename, timeout=1, enable_log=False, similarity=similarity)
             if image_location is not None:
                 log(image_filename + " found.")
                 return image_location
@@ -179,11 +188,8 @@ def tap(x, y):
 
     if debug:
         screen = window.screenshot()
-        search = search_screen.Classbot(screen)
-        search.draw_debug_rect("tap", int(x-5), int(y-5), 10, 10)
-        if cv.waitKey(1) == ord('q'):
-            cv.destroyAllWindows()
-            sys.exit(0)
+        search = search_screen.Classbot(screen, window_name=settings['window_name'])
+        search.draw_debug_rect("tap", int(x-5), int(y-5), 10, 10, show_finding_image=True)
     if new_click:
         
         x2 = int(x - ld_offset_x)
@@ -271,7 +277,7 @@ def wait_and_tap(image_path, timeout=10, similarity=0.9):
 
 
 def wait_and_tap_any(image_paths, timeout=10, similarity=0.9):
-    location = wait_any_image(image_paths, timeout)
+    location = wait_any_image(image_paths, timeout, similarity)
     tap_location(location)
 
 
@@ -307,13 +313,13 @@ def tap_until_notfound(image_path, util_notfound_image, interval=1, timeout=10):
         if wait_until_disappear(util_notfound_image, timeout=interval):
             break
 
-def tap_offset_until_found(image_path, util_found_image, interval=1, offset_x=0, offset_y=0, timeout=10):
+def tap_offset_until_found(image_path, util_found_image, interval=1, offset_x=0, offset_y=0, timeout=10, similarity=0.9):
     start_time = time.time()
     while time.time() - start_time < timeout:
-        if wait_for_image(util_found_image, timeout=interval) is not None:
+        if wait_for_image(util_found_image, timeout=interval, similarity=similarity) is not None:
             log(f'tap_offset_util_found: {image_path} until found: {util_found_image} - break')
             break
-        tap_image_offset(image_path, offset_x, offset_y)
+        tap_image_offset(image_path, offset_x, offset_y, similarity=similarity)
 
 
 def tap_offset_until_notfound(image_path, util_notfound_image, interval=1, offset_x=0, offset_y=0, timeout=10):

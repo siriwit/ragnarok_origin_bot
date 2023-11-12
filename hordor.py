@@ -23,7 +23,7 @@ def hordor_dreamland(mode=img.hordor_poring_dream):
 
 def fight():
     func.wait_profile()
-    func.auto_attack()
+    func.auto_attack(const.att_all)
 
     while True:
         if utils.is_found(img.button_challenge_again):

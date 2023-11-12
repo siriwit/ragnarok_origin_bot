@@ -9,7 +9,7 @@ import utils
 def start(element=const.earth, level=const.normal):
     func.wait_profile()
     if not utils.is_found_any(const.party_members):
-        func.create_and_invite()
+        func.create_party_and_invite()
         utils.wait_for_image(img.party_number_2, timeout=60)
     preset.againt_monster_card(element=element)
     func.party_finder('NT ' + element + ' ' + level)
@@ -49,7 +49,7 @@ def fight(element=None):
             func.close_any_panel()
             func.leave_event()
             break
-    utils.wait_any_image(const.profiles, timeout=60)
+    func.wait_profile(60)
     func.send_message('[z1][z1]')
     func.leave_party()
 

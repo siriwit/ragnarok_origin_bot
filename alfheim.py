@@ -7,21 +7,6 @@ import sys
 import utils
 
 
-def start():
-    print("Mode:")
-    print(" 0. Back")
-    print(" 1. Fight")
-    print(" 2. Collect Item")
-    input_number = int(input("Enter Mode: "))
-    if input_number == 0:
-        return
-    elif input_number == 1:
-        preset()
-        alfheim_fight()
-    elif input_number == 2:
-        alfheim_collect_item()
-
-
 def alfheim_collect_item():
     func.wait_profile()
     if func.go_to_event(img.event_alfheim):
@@ -53,7 +38,7 @@ def alfheim_fight():
                 time.sleep(1)
 
             if fail:
-                func.close()
+                func.close_debug_window()
                 break
             
 

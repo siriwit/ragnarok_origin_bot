@@ -1,4 +1,5 @@
 import constanst as const
+import configparser
 import img
 import func
 import preset
@@ -6,6 +7,11 @@ import re
 import sys
 import time
 import utils
+
+config = configparser.ConfigParser()
+config_file_path = 'bot.ini'
+config.read(config_file_path)
+settings = config['SETTINGS']
 
 boss_remaining_time_dict = {}
 
@@ -19,10 +25,10 @@ def boss_hunt_loop(is_active=True, min_level=0, max_level=999, ignore_spawn=True
                 close_boss_page()
                 # func.wait_profile()
                 # func.send_message('Finished 5/5 TR [z1][z1]')
-                sys.exit(0)
+                return True
             elif min_level > 0 and count5x5 >= 1:
                 close_boss_page()
-                sys.exit(0)
+                return True
 
         else:
             utils.scroll_down_util_found(img.event_drag_icon_inactive, img.event_drag_icon, offset_y=300)
@@ -35,7 +41,28 @@ def boss_hunt_loop(is_active=True, min_level=0, max_level=999, ignore_spawn=True
                 break
     else:
         utils.tap_if_found(img.button_back)
-        sys.exit(0)
+    
+    return False
+
+
+def boss_follower():
+    while True:
+        if utils.is_found(img.die_upgrade_title):
+            handle_die_loop()
+
+        utils.tap_if_found(img.boss_fightend_battery_saving)
+        func.ang_pao()
+        func.use_items()
+
+        if utils.is_found(img.button_battle_log):
+            func.use_items()
+            utils.tap_offset_until_notfound(img.button_battle_log, img.button_battle_log, offset_y=100)
+            func.butterfly_wing_morroc()
+        
+        utils.tap_if_found(img.button_join)
+        utils.tap_if_found(img.button_agree_small_blue)
+
+        time.sleep(1)
 
 
 def close_boss_page():
@@ -73,7 +100,8 @@ def boss_config_obj(
         boss_name, boss_wing_timeout, 
         tribe, element,
         size, level,
-        boss_fight_icon=None
+        boss_fight_icon=None,
+        coord_imgs=None
         ):
     config = {}
     config['boss_region_icon'] = boss_region_icon
@@ -87,110 +115,125 @@ def boss_config_obj(
     config['size'] = size
     config['level'] = level
     config['boss_fight_icon'] = boss_fight_icon
+    config['coord_imgs'] = coord_imgs
     return config
 
 
 def get_boss_config_list(min_level=0, max_level=999):
+    boss_wing_base_timeout = int(settings['boss_wing_base_timeout'])
     boss_configs = [
         boss_config_obj(
             img.boss_region_angeling, img.boss_angeling, 
             img.boss_map_poring_island, img.boss_coming_angeling, 
-            'Angeling', 60, const.angel, const.holy, const.medium,
+            'Angeling', boss_wing_base_timeout, const.angel, const.holy, const.medium,
             35, img.boss_angeling_fight),
         boss_config_obj(
             img.boss_region_golden_thief_bug, img.boss_golden_thief_bug, 
             img.boss_map_culvert_2f, img.boss_coming_golden_thief_bug, 
-            'Golden Thief Bug', 60, const.insect, const.fire, const.large,
+            'Golden Thief Bug', boss_wing_base_timeout, const.insect, const.fire, const.large,
             45),
         boss_config_obj(
             img.boss_region_deviling, img.boss_deviling, 
             img.boss_map_poring_island, img.boss_coming_deviling, 
-            'Deviling', 60, const.demon, const.shadow, const.medium,
+            'Deviling', boss_wing_base_timeout, const.demon, const.shadow, const.medium,
             48, img.boss_deviling_fight),
         boss_config_obj(
             img.boss_region_orc_hero, img.boss_orc_hero, 
             img.boss_map_orc_village, img.boss_coming_orc_hero, 
-            'Orc Hero', 120, const.demi_human, const.earth, const.large,
-            55, img.boss_orc_hero_fight),
+            'Orc Hero', boss_wing_base_timeout+60, const.demi_human, const.earth, const.large,
+            55, img.boss_orc_hero_fight, 
+            [img.chat_party_coord_orc_village1, img.chat_party_coord_orc_village2]),
         boss_config_obj(
             img.boss_region_maya, img.boss_maya, 
             img.boss_map_ant_hell, img.boss_coming_maya, 
-            'Maya', 120, const.insect, const.earth, const.large,
-            58, img.boss_maya_fight),
+            'Maya', boss_wing_base_timeout+60, const.insect, const.earth, const.large,
+            58, img.boss_maya_fight,
+            [img.chat_party_coord_ant_hell1, img.chat_party_coord_ant_hell2]),
         boss_config_obj(
             img.boss_region_orc_lord, img.boss_orc_lord, 
             img.boss_map_orc_village, img.boss_coming_orc_lord, 
-            'Orc Lord', 120, const.demi_human, const.earth, const.large,
-            60, img.boss_orc_lord_fight),
+            'Orc Lord', boss_wing_base_timeout+60, const.demi_human, const.earth, const.large,
+            60, img.boss_orc_lord_fight,
+            [img.chat_party_coord_orc_village1, img.chat_party_coord_orc_village2]),
         boss_config_obj(
             img.boss_region_goblin_chief, img.boss_goblin_chief, 
             img.boss_map_goblin_forest, img.boss_coming_goblin_chief,
-            'Goblin Chief', 150, const.demi_human, const.wind, const.medium,
-            62, img.boss_goblin_fight),
+            'Goblin Chief', boss_wing_base_timeout+90, const.demi_human, const.wind, const.medium,
+            62, img.boss_goblin_fight,
+            [img.chat_party_coord_goblin_forest1, img.chat_party_coord_goblin_forest2]),
         boss_config_obj(
             img.boss_region_drake, img.boss_drake, 
             img.boss_map_shipwreck_labyrinth, img.boss_coming_drake, 
-            'Drake', 150, const.undead, const.undead, const.medium,
-            65, img.boss_drake_fight),
+            'Drake', boss_wing_base_timeout+90, const.undead, const.undead, const.medium,
+            65, img.boss_drake_fight,
+            [img.chat_party_coord_shipwreck_labyrinth1, img.chat_party_coord_shipwreck_labyrinth2]),
         boss_config_obj(
             img.boss_region_eddga, img.boss_eddga, 
             img.boss_map_deep_payon_forest, img.boss_coming_eddga, 
-            'Eddga', 150, const.brute, const.fire, const.large,
-            68, img.boss_eddga_fight),
+            'Eddga', boss_wing_base_timeout+90, const.brute, const.fire, const.large,
+            68, img.boss_eddga_fight,
+            [img.chat_party_coord_deep_payon_forest1, img.chat_party_coord_deep_payon_forest2]),
         boss_config_obj(
             img.boss_region_mistress, img.boss_mistress, 
             img.boss_map_garden, img.boss_coming_mistress, 
-            'Mistress', 180, const.insect, const.wind, const.small,
-            70, img.boss_mistress_fight),
+            'Mistress', boss_wing_base_timeout+120, const.insect, const.wind, const.small,
+            70, img.boss_mistress_fight,
+            [img.chat_party_coord_garden1, img.chat_party_coord_garden2]),
         boss_config_obj(
             img.boss_region_osiris, img.boss_osiris, 
             img.boss_map_pyramid_3f, img.boss_coming_osiris, 
-            'Osiris', 150, const.undead, const.undead, const.medium,
-            72, img.boss_osiris_fight),
+            'Osiris', boss_wing_base_timeout+90, const.undead, const.undead, const.medium,
+            72, img.boss_osiris_fight,
+            [img.chat_party_coord_pyramid_3f1, img.chat_party_coord_pyramid_3f2]),
         boss_config_obj(
             img.boss_region_phreeoni, img.boss_phreeoni, 
             img.boss_map_southern_sograt, img.boss_coming_phreeoni, 
-            'Phreeoni', 150, const.brute, const.neutral, const.large,
-            76, img.boss_phreeoni_fight),
+            'Phreeoni', boss_wing_base_timeout+90, const.brute, const.neutral, const.large,
+            76, img.boss_phreeoni_fight,
+            [img.chat_party_coord_southern_sograt1, img.chat_party_coord_southern_sograt2]),
         boss_config_obj(
             img.boss_region_moonlight, img.boss_moonlight, 
             img.boss_map_payon_cave_3f, img.boss_coming_moonlight, 
-            'Moonlight', 180, const.demon, const.fire, const.medium,
-            79, img.boss_moonlight_fight),
+            'Moonlight', boss_wing_base_timeout+120, const.demon, const.fire, const.medium,
+            79, img.boss_moonlight_fight,
+            [img.chat_party_coord_payon_cave_3f1, img.chat_party_coord_payon_cave_3f2]),
         boss_config_obj(
             img.boss_region_dracula, img.boss_dracula, 
             img.boss_map_geffen_underground_2f, img.boss_coming_dracula, 
-            'Dracula', 180, const.demon, const.shadow, const.large,
-            80),
+            'Dracula', boss_wing_base_timeout+120, const.demon, const.shadow, const.large,
+            80, None,
+            [img.chat_party_coord_geffen_underground1, img.chat_party_coord_geffen_underground2]),
         boss_config_obj(
             img.boss_region_doppelganger, img.boss_doppelganger, 
             img.boss_map_geffen_underground_3f, img.boss_coming_doppel, 
-            'Doppel', 180, const.demon, const.shadow, const.medium,
-            83, img.boss_doppelganger_fight),
+            'Doppel', boss_wing_base_timeout+120, const.demon, const.shadow, const.medium,
+            83, img.boss_doppelganger_fight,
+            [img.chat_party_coord_geffen_underground1, img.chat_party_coord_geffen_underground2]),
         boss_config_obj(
             img.boss_region_pharaoh, img.boss_pharaoh, 
             img.boss_map_sphinx_crypt_level_2, img.boss_coming_pharaoh, 
-            'Pharaoh', 180, const.demi_human, const.shadow, const.large,
-            86, img.boss_pharaoh_fight),
+            'Pharaoh', boss_wing_base_timeout+120, const.demi_human, const.shadow, const.large,
+            86, img.boss_pharaoh_fight,
+            [img.chat_party_coord_sphinx_crypt_level_2_1, img.chat_party_coord_sphinx_crypt_level_2_2]),
         boss_config_obj(
             img.boss_region_chimera, img.boss_chimera, 
             img.boss_map_glast_heim, img.boss_coming_pharaoh, 
-            'Chimera', 210, const.brute, const.fire, const.large,
+            'Chimera', boss_wing_base_timeout+150, const.brute, const.fire, const.large,
             109),
         boss_config_obj(
             img.boss_region_owl_baron, img.boss_owl_baron, 
             img.boss_map_glast_heim_2f, img.boss_coming_pharaoh, 
-            'Owl Baron', 210, const.demon, const.neutral, const.large,
+            'Owl Baron', boss_wing_base_timeout+150, const.demon, const.neutral, const.large,
             110, img.boss_owl_baron_fight),
         boss_config_obj(
             img.boss_region_bloody_knight, img.boss_bloody_knight, 
             img.boss_map_glast_heim_order_2f, img.boss_coming_pharaoh, 
-            'Bloody Knight', 210, const.formless, const.shadow, const.large,
+            'Bloody Knight', boss_wing_base_timeout+150, const.formless, const.shadow, const.large,
             112),
         boss_config_obj(
             img.boss_region_dark_lord, img.boss_dark_lord, 
             img.boss_map_catacomb, img.boss_coming_pharaoh, 
-            'Dark Lord', 210, const.demon, const.undead, const.large,
+            'Dark Lord', boss_wing_base_timeout+150, const.demon, const.undead, const.large,
             113)
     ]
     filtered_boss_config = filter(lambda config: config['level'] >= min_level and config['level'] <= max_level, boss_configs)
@@ -221,13 +264,14 @@ def boss_monitoring_with_config(boss_config, threshold, ignore_spawn, send_messa
             boss_config['boss_coming_icon'], boss_config['boss_name'], 
             time_left, boss_config['tribe'], 
             boss_config['element'], boss_config['size'],
+            boss_config['level'],
             send_message_to)
-        boss(boss_config['boss_wing_timeout'], boss_config['boss_fight_icon'])
+        boss(boss_config['boss_wing_timeout'], boss_config['boss_fight_icon'], boss_config['coord_imgs'])
         return 0
     return time_left
 
 
-def wait_boss_coming_icon_disapear(boss_coming_icon, boss_name, time_left, boss_tribe, boss_element, boss_size, send_message_to='world'):
+def wait_boss_coming_icon_disapear(boss_coming_icon, boss_name, time_left, boss_tribe, boss_element, boss_size, boss_level, send_message_to='world'):
 
     start_time = time.time()
     func.wait_profile()
@@ -237,8 +281,9 @@ def wait_boss_coming_icon_disapear(boss_coming_icon, boss_name, time_left, boss_
     func.find_boss_party(boss_name, send_message_to)
 
     if time_left > 30:
-        preset.againt_monster_card(boss_tribe, boss_element, boss_size)
-        preset.pet_selector(img.pet_icon_sohee)
+        if settings["preset"] == 'jj':
+            preset.againt_monster_card(boss_tribe, boss_element, boss_size, boss_level)
+            preset.pet_selector(img.pet_icon_sohee)
 
     diff_time = time.time() - start_time
     time_left = int(time_left-diff_time)
@@ -329,14 +374,15 @@ def find_remaining_time_util_realistic(previous_boss_time, current_boss_time, bo
         time.sleep(1)
 
 
-def boss_wing(timeout=120):
+def boss_wing(timeout=120, coord_imgs=None):
     marked_time = time.time()
     diff_time = 0
+    similarity = 0.85
     while True:
         if diff_time > timeout:
             return False
 
-        utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, interval=0.3, offset_x=85)
+        utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, interval=0.3, offset_x=85, similarity=similarity)
         if utils.is_found(img.icon_auto_attack_boss):
             utils.wait_and_tap(img.icon_auto_attack_boss)
             utils.tap_image(img.button_auto_attack_close)
@@ -344,13 +390,40 @@ def boss_wing(timeout=120):
             return True
         else:
             utils.tap_image(img.button_auto_attack_close)
-        utils.tap_image_offset(img.menu_bag, offset_y=100)
-        utils.tap_image_offset(img.menu_bag, offset_y=100)
+        utils.tap_image_offset(img.menu_bag, offset_y=100, similarity=similarity)
+        utils.tap_image_offset(img.menu_bag, offset_y=100, similarity=similarity)
         diff_time = time.time() - marked_time
 
-def boss(timeout=120, boss_fight_icon=None):
+        if coord_imgs is not None and utils.is_found(img.chat_party_icon):
+            if follow_coord(coord_imgs, (timeout-diff_time), similarity):
+                return True
+
+
+def follow_coord(coord_imgs, remaining_time, similarity):
+    marked_time_main = time.time()
+    while time.time() - marked_time_main < remaining_time:
+        func.open_chat()
+        img_coord = utils.find_most_left_coordinate(coord_imgs)
+        print(img_coord)
+        if len(img_coord) == 0:
+            break
+        utils.tap_location(img_coord)
+        func.close_chat()
+        utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, interval=0.3, offset_x=85, similarity=similarity)
+        marked_time = time.time()
+        while time.time() - marked_time < 5:
+            if utils.is_found(img.icon_auto_attack_boss):
+                utils.wait_and_tap(img.icon_auto_attack_boss)
+                utils.tap_image(img.button_auto_attack_close)
+                return True
+    utils.tap_image(img.button_auto_attack_close)
+    func.close_any_panel()
+    return False
+
+
+def boss(timeout=120, boss_fight_icon=None, boss_coord_img=None):
     func.wait_profile()
-    if boss_wing(timeout):
+    if boss_wing(timeout, boss_coord_img):
         boss_fight(boss_fight_icon=boss_fight_icon)
     else:
         utils.wait_and_tap(img.button_auto_attack_close, timeout=2)

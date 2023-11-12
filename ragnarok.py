@@ -36,10 +36,10 @@ def farm():
     func.use_items()
     # convert_weapon(element='wind')
 
-    # if utils.is_found(img.fatique_icon, similarity=0.95):
-    #     utils.wait_and_tap(img.fatique_close)
-    #     func.butterfly_wing_morroc()
-    #     sys.exit()
+    if utils.is_found(img.fatique_icon, similarity=0.95):
+        utils.wait_and_tap(img.fatique_close)
+        func.butterfly_wing_morroc()
+        sys.exit()
 
 
 def farm_mr():
@@ -109,11 +109,8 @@ def maintain_woe():
 
 
 def dev():
-    utils.wait_any_image(const.profiles, timeout=2)
-    # utils.wait_and_tap_any(const.city_lord_room_treasures, similarity=0.25)
-    # preset.ensure_replace_skill(img.preset_skill_provoke, img.preset_skill_touse_provoke, img.preset_skill_providence)
-    # utils.wait_and_tap(img.button_combine,timeout=1)
-    life_skill.cooking_3star()
+    utils.wait_for_image(img.power_up_icon, timeout=2)
+    preset.ensure_use_support_skill(img.preset_skill_shield_reflect, img.preset_skill_touse_shield_reflect)
     sys.exit(0)
 
 convert_weapon_time = time.time()
@@ -257,7 +254,7 @@ while True:
         nightmare.start(element)
         sys.exit(0)
     elif value == 'create_party':
-        func.create_and_invite()
+        func.create_party_and_invite()
         sys.exit(0)
     elif value == 'helheim':
         hellheim.start()

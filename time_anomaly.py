@@ -56,5 +56,5 @@ def fight(horn_mode=False):
 def preset():
     ps.change_skill_preset()
     ps.change_skill_auto(preset=const.time_anomaly)
-    ps.againt_monster_card(tribe=const.dragon, element=const.water, size=const.large)
+    ps.againt_monster_card(tribe=const.dragon, element=const.earth, size=const.large, boss_level=95)
     ps.attack_preset()

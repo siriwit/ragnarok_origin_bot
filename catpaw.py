@@ -26,6 +26,12 @@ def load_cargo():
         utils.wait_and_tap(img.button_confirm, timeout=2)
         utils.tap_image(img.cat_paw_caravan_claim_finished)
 
+        utils.tap_if_found(img.cat_paw_caravan_return_now)
+
+        if utils.is_found(img.cat_paw_caravan_return_now):
+            utils.tap_image(img.cat_paw_caravan_return_now)
+            time.sleep(1)
+
         if utils.is_found(img.button_claimed):
             func.close_any_panel()
             break

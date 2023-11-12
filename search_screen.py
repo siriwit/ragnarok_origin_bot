@@ -1,16 +1,20 @@
 import cv2 as cv
 import numpy as np
+import sys
 
 class Classbot:
     TRACKBAR_WINDOW = "Trackbars"
-    def __init__(self,main_img,temp_img=""):
+    def __init__(self, main_img, temp_img="", window_name="ROO Bot"):
         self.tempimg = temp_img
         self.mainimg = main_img
+        self.image_to_draw_path = None
+        self.window_name = window_name
         if temp_img != "":
             self.tempimg = cv.imread(temp_img,cv.IMREAD_ANYCOLOR)
        
         
-    def search(self,threshold=0.9,debug=False,mytxt=""):   
+    def search(self,threshold=0.9, debug=False, image_path=""):
+        self.image_to_draw_path = image_path
         result = cv.matchTemplate(self.mainimg,self.tempimg,cv.TM_CCOEFF_NORMED)    
         _,_,_,_ = cv.minMaxLoc(result)
         locations = np.where(result >= threshold)
@@ -26,7 +30,8 @@ class Classbot:
         rectangles,_ =cv.groupRectangles(rectangles,groupThreshold=1,eps=0.2)
         
         if debug:
-            self.draw_debug_rect(f"Finding {mytxt}", 60, 80, 10, 10, show_text=True, show_rect=False, show_marker=False)
+            mytxt = image_path.split('/')[-1]
+            self.draw_debug_rect(f"Finding {mytxt}", 60, 80, 10, 10, show_text=True, show_rect=False, show_marker=False, show_finding_image=True)
             if len(rectangles):
                 for (x,y,w,h) in rectangles:
                     self.draw_debug_rect(mytxt, x, y, w, h)
@@ -38,13 +43,14 @@ class Classbot:
 
     def draw_debug_rect(
             self, text, 
-            x, y, width, height, 
+            x, y, width, height,
             font=cv.FONT_ITALIC, 
             fontsize=0.8, 
             color=(255,0,255),
             show_text=True,
             show_rect=True,
-            show_marker=True):
+            show_marker=True,
+            show_finding_image=True):
         topleft = (x, y)
         bottomright = (x + width, y + height)
         centerx = x + int(width / 2)
@@ -58,11 +64,26 @@ class Classbot:
             cv.rectangle(self.mainimg,topleft,bottomright,color=(255,0,255),thickness=2,lineType=cv.LINE_8)
         if show_marker:
             cv.drawMarker(self.mainimg,(centerx,centery),color=(0,255,0),thickness=2,markerSize=40,markerType=cv.MARKER_CROSS)
+        if show_finding_image and self.image_to_draw_path is not None:
+            x_offset = 80
+            y_offset = 100
+            image_to_draw = cv.imread(self.image_to_draw_path)
+            image_to_draw_height = image_to_draw.shape[0]
+            image_to_draw_width = image_to_draw.shape[1]
+            image_to_draw_topleft = (x_offset, y_offset)
+            image_to_draw_bottomright = (x_offset + image_to_draw_width, y_offset + image_to_draw_height)
+            draw_x = x_offset+image_to_draw_width
+            draw_y = y_offset+image_to_draw_height
+            self.mainimg[y_offset:draw_y, x_offset:draw_x] = image_to_draw
+            cv.rectangle(self.mainimg, image_to_draw_topleft, image_to_draw_bottomright, color=(255,0,255), thickness=2, lineType=cv.LINE_8)
         self.show_image()
 
 
     def show_image(self):
-        cv.imshow("ROO Bot Debugging",self.mainimg)
+        cv.imshow(f"{self.window_name} Debugging",self.mainimg)
+        if cv.waitKey(1) == ord('q'):
+            cv.destroyAllWindows()
+            sys.exit(0)
 
 
     def getcolor(self,x,y,color="0x000000"):

@@ -73,6 +73,7 @@ schedule.every().sunday.at("20:30").do(guild_expedition)
 schedule.every().days.at("10:33").do(daily)
 
 # Keep the program running to allow scheduling to work
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+def start():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

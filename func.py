@@ -20,6 +20,7 @@ def butterfly_wing_morroc():
     utils.tap_until_found(img.butterfly_wing, img.city_morroc)
     utils.wait_and_tap(img.city_morroc)
     wait_loading_screen()
+    close_any_panel()
     func.wait_profile()
     time.sleep(3)
 
@@ -128,10 +129,10 @@ def find_remaining_party_number():
     return ''
 
         
-def auto_attack(mode=const.boss, all_radius=True):
+def auto_attack(mode=const.boss, all_radius=True, timeout=10):
     while True:
         if not utils.is_found(img.auto_attack_title):
-            utils.tap_any_until_found_offset([img.menu_bag, img.menu_bag2], img.auto_attack_title, offset_x=85)
+            utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, offset_x=85, timeout=timeout)
             continue
         if mode == const.boss:
             utils.wait_for_image(img.icon_auto_attack_boss, timeout=1)
@@ -206,37 +207,51 @@ def leave_party():
 def close_any_panel(depth=99):
     depth_count = 1
     while True:
-        if utils.is_found_any(const.profiles) or depth_count >= depth:
+        if utils.is_found(img.power_up_icon) or depth_count >= depth:
             break
         
         utils.tap_if_found(img.button_back)
         utils.tap_any(const.button_closes)
+        utils.tap_if_found(img.chat_collapse)
+        utils.tap_any(const.tap_anywheres)
         depth_count += 1
         time.sleep(1)
 
 
 def move_left(hold=0.5):
+    if not can_move():
+        return
     offset = -100
     start_x, start_y = get_move_area()
     utils.drag_and_drop(start_x, start_y, start_x + offset, start_y, duration=hold)
 
 
 def move_right(hold=0.5):
+    if not can_move():
+        return
     offset = 100
     start_x, start_y = get_move_area()
     utils.drag_and_drop(start_x, start_y, start_x + offset, start_y, duration=hold)
 
 
 def move_down(hold=0.5):
+    if not can_move():
+        return
     offset = 100
     start_x, start_y = get_move_area()
     utils.drag_and_drop(start_x, start_y, start_x , start_y + offset, hold=hold)
 
 
 def move_up(hold=0.5):
+    if not can_move():
+        return
     offset = -100
     start_x, start_y = get_move_area()
     utils.drag_and_drop(start_x, start_y, start_x , start_y + offset, hold=hold)
+
+
+def can_move():
+    return utils.is_found(img.ride_peco) or utils.is_found_any(const.guilds)
 
 
 def get_move_area():
@@ -256,7 +271,7 @@ def get_move_area_location(image_paths, offset_x, offset_y):
         return (center_x + offset_x), (center_y + offset_y)
     return None
 
-def create_and_invite(friend=img.party_ppinwza, auto_accept=True):
+def create_party_and_invite(friend=img.party_ppinwza, auto_accept=True):
     func.wait_profile()
     
     if utils.is_found(img.party_inactive):
@@ -277,6 +292,8 @@ def create_and_invite(friend=img.party_ppinwza, auto_accept=True):
         utils.wait_for_image(friend)
         utils.tap_image_offset(friend, offset_x=380, offset_y=50)
         close_any_panel()
+        utils.wait_and_tap(img.party_one_tap_rally)
+
 
 
 def leave_event():
@@ -287,13 +304,13 @@ def leave_event():
 
 
 def wait_profile(timeout=10):
-    utils.wait_any_image(const.profiles, timeout)
+    utils.wait_for_image(img.power_up_icon, timeout)
 
 
 def wait(timeout=10):
     marked_time = time.time()
     while time.time() - marked_time < timeout:
-        utils.wait_any_image(const.profiles, timeout=0.5)
+        utils.wait_for_image(img.power_up_icon, timeout=0.5)
 
 def close_hidden_menu():
     func.close_any_panel()
@@ -310,5 +327,5 @@ def open_hidden_menu():
         utils.tap_offset_until_found(img.menu_bag, img.menu_album, offset_x=180)
 
 
-def close():
+def close_debug_window():
     cv.destroyAllWindows()
