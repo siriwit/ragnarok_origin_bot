@@ -1,20 +1,34 @@
 import constanst as const
 import cv2 as cv
+import datetime
 import img
 import func
 import time
 import utils
 
 
-def enable_aura():
-    if utils.is_found(img.aura_defending_neutral):
-            utils.key_press("num1")
-            utils.key_press("num1")
+def use_rune_knight_skill():
+    while True:
+        
+        utils.tap_if_found(img.quests_inactive)
 
-def disable_aura():
-    if utils.is_found(img.aura_defending_activated):
-            utils.key_press("num1")
-            utils.key_press("num1")
+        for _ in range(0, 5):
+            if utils.is_found(img.rune_knight_skill_berserk_disabled, similarity=0.99):
+                utils.tap_if_found(img.rune_knight_skill_rune_of_faith)
+                continue
+
+            if utils.is_found(img.rune_knight_skill_dragon_state, similarity=0.85) and utils.is_found(img.hp_sp_80_percent):
+                utils.tap_if_found(img.rune_knight_skill_berserk)
+
+            utils.tap_if_found(img.rune_knight_skill_ignition_break)
+            utils.tap_if_found(img.rune_knight_skill_ignition_break2)
+            utils.tap_if_found(img.rune_knight_skill_rune_of_courage)
+            utils.tap_if_found(img.rune_knight_skill_dragon_breath_fire)
+
+        if not utils.is_found(img.rune_knight_skill_dragon_state):
+            utils.tap_if_found(img.rune_knight_skill_provoke)
+        break
+
 
 def butterfly_wing_morroc():
     utils.tap_until_found(img.butterfly_wing, img.city_morroc)
@@ -63,12 +77,34 @@ def close_chat():
         time.sleep(1)
 
 
+def open_map():
+    utils.execute_until_invalid_state(5, 1, open_map_state)
+
+
+def open_map_state():
+    utils.key_press('m')
+    if utils.wait_for_image(img.wing, timeout=1) is not None:
+        return False
+    return True
+
+
+def close_map():
+    utils.execute_until_invalid_state(5, 1, close_map_state)
+
+
+def close_map_state():
+    utils.key_press('m')
+    if utils.wait_for_image(img.butterfly_wing, timeout=1) is not None:
+        return False
+    return True
+
+
 def send_location(send_to='party'):
     open_chat(send_to)
     utils.tap_image(img.chat_button_plus)
     utils.wait_and_tap(img.chat_button_map)
-    utils.tap_image(img.chat_button_send_background)
-    utils.tap_image(img.chat_button_send)
+    utils.tap_until_notfound(img.chat_button_send_background, img.chat_button_map)
+    utils.wait_and_tap(img.chat_button_send)
     close_chat()
 
 
@@ -88,12 +124,13 @@ def party_finder(message, expected_number=img.party_number_5):
 
 
 def find_boss_party(boss_name, send_message_to):
+    utils.tap_if_found(img.party_inactive)
     message = boss_name + ' ' + find_remaining_party_number() + ' auto join'
     if not utils.is_found(img.party_number_5):
         send_message(message, send_message_to)
 
 
-def wait_and_find_party(boss_coming_icon, boss_name, send_to, timeout=180, is_icon_apprear=True):
+def wait_and_find_party(boss_coming_icon, boss_name, send_to, timeout=180, is_icon_apprear=True, party_mode=True):
     print("wait_and_find_party with is_icon_apprear=" + str(is_icon_apprear) + ", timeout=" + str(timeout))
     marked_time = time.time()
     last_sent_time = time.time()
@@ -109,7 +146,8 @@ def wait_and_find_party(boss_coming_icon, boss_name, send_to, timeout=180, is_ic
         message = boss_name + ' ' + find_remaining_party_number() + ' auto join'
         if not utils.is_found(img.party_number_5) and diff_last_sent > 30:
             print("not found number 5 icon")
-            send_message(message, send_to)
+            if party_mode:
+                send_message(message, send_to)
             last_sent_time = time.time()
 
         diff_time = time.time() - marked_time
@@ -132,8 +170,8 @@ def find_remaining_party_number():
 def auto_attack(mode=const.boss, all_radius=True, timeout=10):
     while True:
         if not utils.is_found(img.auto_attack_title):
-            utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, offset_x=85, timeout=timeout)
-            continue
+            if utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, offset_x=85, timeout=timeout):
+                continue
         if mode == const.boss:
             utils.wait_for_image(img.icon_auto_attack_boss, timeout=1)
             if utils.is_found(img.icon_auto_attack_boss):
@@ -174,10 +212,13 @@ def go_to_event(event_image=None):
                 utils.scroll_down_util_found(event_image, img.event_moonlit_arena, offset_y=100, timeout=1)
             if not utils.scroll_down_util_found(event_image, img.event_drag_icon, offset_y=200, timeout=10, similarity=0.85):
                 utils.scroll_down_util_found(event_image, img.event_drag_icon_inactive, offset_y=200, similarity=0.85)
-            utils.wait_and_tap(event_image, similarity=0.85)
+            # utils.wait_and_tap(event_image, similarity=0.85)
             # if event_image != img.event_boss and event_image != img.event_guild_expedition:
             if event_image not in [img.event_boss, img.event_guild_expedition]:
+                utils.tap_until_found(event_image, img.button_go_orange_small)
                 utils.wait_and_tap(img.button_go_orange_small)
+            else:
+                utils.tap_until_notfound(event_image, event_image)
         return True
     else:
         return False
@@ -193,20 +234,23 @@ def ang_pao():
             utils.tap_image(img.ang_pao_yellow, screenshot=True, result_filename=img.angpao_header)
             utils.tap_any(const.pets)
             continue
+        utils.tap_offset_until_notfound(img.angpao_header, img.angpao_header, offset_x=400)
+        utils.tap_image(img.ang_pao_yellow, screenshot=True, result_filename=img.angpao_header)
         break
 
 
 def leave_party():
     func.wait_profile()
-    time.sleep(3)
+    func.wait(2)
     if utils.is_found_any(const.party_members):
         utils.tap_any_until_found(const.party_members, img.party_leave_button)
         utils.wait_and_tap(img.party_leave_button)
 
 
-def close_any_panel(depth=99):
+def close_any_panel(depth=99, timeout=10):
     depth_count = 1
-    while True:
+    marked_time_main = time.time()
+    while time.time() - marked_time_main < timeout:
         if utils.is_found(img.power_up_icon) or depth_count >= depth:
             break
         
@@ -215,7 +259,6 @@ def close_any_panel(depth=99):
         utils.tap_if_found(img.chat_collapse)
         utils.tap_any(const.tap_anywheres)
         depth_count += 1
-        time.sleep(1)
 
 
 def move_left(hold=0.5):
@@ -251,7 +294,7 @@ def move_up(hold=0.5):
 
 
 def can_move():
-    return utils.is_found(img.ride_peco) or utils.is_found_any(const.guilds)
+    return utils.is_found(img.ride_peco) or utils.is_found_any(const.guilds) is not None
 
 
 def get_move_area():
@@ -266,17 +309,16 @@ def get_move_area():
 
 def get_move_area_location(image_paths, offset_x, offset_y):
     image_objs = utils.find_all_images(image_paths, similarity=0.8)
-    if len(image_objs):
+    if len(image_objs) > 0:
         center_x, center_y = utils.find_image_center(image_objs[0])
         return (center_x + offset_x), (center_y + offset_y)
     return None
 
-def create_party_and_invite(friend=img.party_ppinwza, auto_accept=True):
+def create_party_and_invite(auto_accept=True):
     func.wait_profile()
     
     if utils.is_found(img.party_inactive):
-        utils.tap_image(img.party_inactive)
-        utils.wait_for_image(img.create_party, timeout=2)
+        utils.tap_until_found(img.party_inactive, img.create_party, timeout=5)
 
     if utils.is_found(img.create_party):
         utils.wait_and_tap(img.create_party)
@@ -285,15 +327,24 @@ def create_party_and_invite(friend=img.party_ppinwza, auto_accept=True):
             utils.tap_image_offset(img.party_member, offset_y=120)
             utils.wait_and_tap(img.party_auto_accept)
             utils.tap_image_offset(img.party_request, offset_y=-120)
-        utils.wait_and_tap(img.party_tap_to_invite)
-        utils.wait_for_image(img.party_friend_tap)
-        utils.tap_until_found(img.party_friend_tap, img.party_friend_tap_active)
-        wait(1)
-        utils.wait_for_image(friend)
-        utils.tap_image_offset(friend, offset_x=380, offset_y=50)
+        # utils.wait_and_tap(img.party_tap_to_invite)
+        # utils.wait_for_image(img.party_friend_tap)
+        # utils.tap_until_found(img.party_friend_tap, img.party_friend_tap_active)
+        # wait(1)
+        # utils.scroll_down_util_found(friend, img.button_invite, timeout=5)
+        # utils.wait_for_image(friend)
+        # utils.tap_image_offset(friend, offset_x=380, offset_y=50)
         close_any_panel()
-        utils.wait_and_tap(img.party_one_tap_rally)
+        # utils.wait_and_tap(img.party_one_tap_rally)
+        # one_tap_rally()
 
+
+def one_tap_rally():
+    utils.wait_and_tap(img.party_one_tap_rally)
+
+
+def accept_rally():
+    utils.tap_if_found(img.button_join)
 
 
 def leave_event():
@@ -329,3 +380,25 @@ def open_hidden_menu():
 
 def close_debug_window():
     cv.destroyAllWindows()
+
+
+def card_change_object(used_card, selected_current_card, to_be_selected_card):
+    card_object = {}
+    card_object['used_card'] = used_card
+    card_object['selected_current_card'] = selected_current_card
+    card_object['to_be_selected_card'] = to_be_selected_card
+    return card_object
+
+def ensure_replace_skill(ensure_skill, ensure_touse_skill, tobe_replaced_skills):
+    for tobe_replaced_skill in tobe_replaced_skills:
+        if not utils.is_found(ensure_skill):
+            if utils.is_found(tobe_replaced_skill, similarity=0.95):
+                utils.drag_and_drop_image(ensure_touse_skill, tobe_replaced_skill)
+                break
+            elif utils.is_found(img.preset_skill_empty_slot, similarity=0.95):
+                utils.drag_and_drop_image(ensure_touse_skill, img.preset_skill_empty_slot)
+                break
+
+def ensure_use_support_skill(ensure_skill, ensure_touse_skill):
+    if utils.wait_for_image(ensure_skill, timeout=1) is None:
+        utils.drag_and_drop_image(ensure_touse_skill, img.preset_skill_empty_slot)

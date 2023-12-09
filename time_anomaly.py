@@ -47,7 +47,11 @@ def fight(horn_mode=False):
         func.wait_profile()
         func.auto_attack(mode=const.boss)
 
-        utils.wait_for_image(img.time_anomaly_page, timeout=60)
+        while True:
+            func.use_rune_knight_skill()
+            if utils.is_found(img.time_anomaly_page):
+                break
+
         return True
 
     return False
@@ -58,3 +62,4 @@ def preset():
     ps.change_skill_auto(preset=const.time_anomaly)
     ps.againt_monster_card(tribe=const.dragon, element=const.earth, size=const.large, boss_level=95)
     ps.attack_preset()
+    ps.eat_food()

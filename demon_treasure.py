@@ -14,8 +14,12 @@ def daily_demon_treasure():
 
 
 def demon_treasure(firstime=True):
+    count = 0
     while True:
-        utils.tap_image(img.daily_demon_treasure_rescue)
+        if utils.is_found(img.daily_demon_treasure_rescue):
+            utils.tap_image(img.daily_demon_treasure_rescue)
+            count = 0
+
         func.use_items()
         if utils.is_found(img.button_close_purple):
             time.sleep(5)
@@ -27,3 +31,10 @@ def demon_treasure(firstime=True):
             if firstime:
                 demon_treasure(firstime=False)
             break
+
+        count += 1
+        print(f"count: {count}")
+
+        if count > 10:
+            daily_demon_treasure()
+        func.wait(1)

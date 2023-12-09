@@ -102,13 +102,13 @@ def cooking_normal_food(expected_food):
         func.wait(1)
 
     if expected_food == img.life_skill_cooking_seafood_fried_noodles:
-        cook(img.life_skill_cooking_chewy_noodles, 4, main_food=expected_food)
+        cook(img.life_skill_cooking_chewy_noodles, 5, main_food=expected_food)
         func.wait()
         utils.wait_and_tap(img.life_skill_cooking_pot)
         cook(img.life_skill_cooking_tuna_kebab, 5, main_food=expected_food)
         func.wait()
     elif expected_food == img.life_skill_cooking_scallop_and_crab_congee:
-        cook(img.life_skill_cooking_crab_stick, 4, main_food=expected_food)
+        cook(img.life_skill_cooking_crab_stick, 5, main_food=expected_food)
         func.wait()
         utils.wait_and_tap(img.life_skill_cooking_pot)
         cook(img.life_skill_cooking_scallop_congee, 5, main_food=expected_food)

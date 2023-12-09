@@ -2,6 +2,9 @@ import constanst as const
 import configparser
 import img
 import func
+import jj_paladin_preset
+import jj_rune_knight_preset
+import shared_preset
 import sys
 import time
 import utils
@@ -13,55 +16,128 @@ config.read(config_file_path)
 settings = config['SETTINGS']
 
 def daily():
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin':
+        farm()
+    elif settings["preset"] == 'jj_rune_knight':
         farm()
 
 
 def farm():
     func.close_hidden_menu()
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin':
         # change_skill_preset(const.farm)
         change_skill_auto(const.farm)
         # change_item_preset(const.farm)
         pet_selector()
         attack_preset()
+        sigil(const.tank)
+    elif settings["preset"] == 'jj_rune_knight':
+        change_skill_auto(const.sword)
+        # change_item_preset(const.farm)
+        pet_selector()
+        attack_preset()
+        sigil(const.farm)
 
 
 def boss():
     func.close_hidden_menu()
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin':
         # change_skill_preset(const.farm)
         change_skill_auto(const.boss)
         # change_item_preset(const.farm)
         pet_selector(img.pet_icon_sohee)
         attack_preset()
+        sigil(const.tank)
+    elif settings["preset"] == 'jj_rune_knight':
+        # change_skill_preset(const.farm)
+        change_skill_auto(const.boss)
+        # change_item_preset(const.farm)
+        pet_selector(img.pet_icon_sohee)
+        attack_preset()
+        sigil(const.farm)
 
 
 def tank():
     func.close_hidden_menu()
-    if settings["preset"] == 'jj':
-    # change_skill_preset(const.tank)
-    # change_skill_auto(const.tank)
-    # change_item_preset(const.tank)
+    if settings["preset"] == 'jj_paladin':
         pet_selector()
         attack_preset()
+        sigil(const.tank)
+    elif settings["preset"] == 'jj_rune_knight':
+        pet_selector()
+        attack_preset()
+        sigil(const.tank)
 
 
 def pvp():
-    if settings["preset"] == 'jj':
-        # change_skill_preset(const.tank)
+    if settings["preset"] == 'jj_paladin':
         change_skill_auto(const.farm)
-        # change_item_preset(const.tank)
         pet_selector(img.pet_icon_sohee)
         attack_preset()
         againt_monster_card(tribe=const.human, element=const.neutral, size=const.medium)
+        sigil(const.pvp)
+    elif settings["preset"] == 'jj_rune_knight':
+        change_skill_auto(const.farm)
+        pet_selector(img.pet_icon_sohee)
+        attack_preset()
+        againt_monster_card(tribe=const.human, element=const.neutral, size=const.medium)
+        sigil(const.pvp)
+
+
+def eat_food():
+    if settings["preset"] == 'jj_paladin':
+        func.open_bag()
+        utils.tap_image_offset(img.button_close, offset_x=100, offset_y=220)
+        utils.tap_until_found(img.backpack_seafood_fried_noodles, img.button_use_small_blue)
+        utils.tap_image(img.button_use_small_blue)
+        func.close_any_panel()
+    elif settings["preset"] == 'jj_rune_knight':
+        func.open_bag()
+        utils.tap_image_offset(img.button_close, offset_x=100, offset_y=220)
+        utils.tap_until_found(img.backpack_seafood_fried_noodles, img.button_use_small_blue)
+        utils.tap_image(img.button_use_small_blue)
+        func.close_any_panel()
+
 
 def party():
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin':
+        func.create_party_and_invite()
+    elif settings["preset"] == 'jj_rune_knight':
         func.create_party_and_invite()
 
+
+def sigil(preset=const.tank):
+    if settings["preset"] == 'jj_paladin':
+        func.open_hidden_menu()
+        utils.wait_for_image(img.menu_album, timeout=2)
+        utils.tap_image_offset(img.menu_album, offset_x=-320)
+        utils.wait_for_image(img.sigil_paladin)
+        utils.wait_and_tap(img.sigil_preset_dropdown)
+        if preset == const.tank:
+            utils.wait_and_tap(img.sigil_preset_tank)
+        elif preset == const.farm:
+            utils.wait_and_tap(img.sigil_preset_farm)
+        elif preset == const.pvp:
+            utils.wait_and_tap(img.sigil_preset_pvp)
+        func.close_any_panel()
+    elif settings["preset"] == 'jj_rune_knight':
+        func.open_hidden_menu()
+        utils.wait_for_image(img.menu_album, timeout=2)
+        utils.tap_image_offset(img.menu_album, offset_x=-320)
+        utils.wait_for_image(img.sigil_rune_knight)
+        utils.wait_and_tap(img.sigil_preset_dropdown)
+        if preset == const.tank:
+            utils.wait_and_tap(img.sigil_preset_tank)
+        elif preset == const.farm:
+            utils.wait_and_tap(img.sigil_preset_farm)
+        elif preset == const.pvp:
+            utils.wait_and_tap(img.sigil_preset_pvp)
+        func.close_any_panel()
+
+
+
 def change_preset(preset):
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin':
         # change_skill_preset(preset)
         # change_skill_auto(preset)
         # change_item_preset(preset)
@@ -69,6 +145,10 @@ def change_preset(preset):
         attack_preset()
         change_card()
         sys.exit(0)
+    elif settings["preset"] == 'jj_rune_knight':
+        pet_selector()
+        attack_preset()
+        change_card()
 
 
 def change_skill_preset(preset='farm'):
@@ -111,7 +191,14 @@ def change_item_preset(preset='farm'):
 def pet_selector(pet=img.pet_icon_earthlord):
     func.wait_profile()
     func.close_hidden_menu()
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin':
+        if not utils.is_found(pet):
+            utils.tap_any_offset(const.pets, offset_x=-75)
+            most_left_coordinate = utils.find_most_left_coordinate(const.pets)
+            utils.tap_image(pet)
+            time.sleep(0.5)
+            utils.tap_location(most_left_coordinate, offset_x=-75)
+    elif settings["preset"] == 'jj_rune_knight':
         if not utils.is_found(pet):
             utils.tap_any_offset(const.pets, offset_x=-75)
             most_left_coordinate = utils.find_most_left_coordinate(const.pets)
@@ -121,49 +208,26 @@ def pet_selector(pet=img.pet_icon_earthlord):
 
 
 def change_skill_auto(preset=None):
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin':
         func.wait_profile()
-        utils.tap_any_until_found_offset(const.menu_guides, img.preset_skill, offset_x=220, offset_y=-80)
-        utils.wait_and_tap(img.preset_skill)
-        utils.tap_image_offset(img.preset_tab_skill, offset_y=120)
-
+        open_preset_skill()
         utils.wait_and_tap(img.preset_auto_settings)
-        
-        if preset == const.boss or preset == const.ygg:
-            # ensure_use_support_skill(img.preset_skill_normal_attack, img.preset_skill_touse_normal_attack)
-            utils.scroll_down_util_found(img.preset_skill_touse_provoke, img.preset_skill_drag_icon, offset_y=200)
-            ensure_replace_skill(img.preset_skill_provoke, img.preset_skill_touse_provoke, [img.preset_skill_providence, img.preset_skill_endure])
-            ensure_use_support_skill(img.preset_skill_shield_reflect, img.preset_skill_touse_shield_reflect)
-            ensure_use_support_skill(img.preset_skill_spear_quicken, img.preset_skill_touse_spear_quicken)
-            ensure_use_support_skill(img.preset_skill_auto_guard, img.preset_skill_touse_auto_guard)
-            ensure_use_support_skill(img.preset_skill_martyr, img.preset_skill_touse_martyr)
-        else:
-            # ensure_use_support_skill(img.preset_skill_normal_attack, img.preset_skill_touse_normal_attack)
-            utils.scroll_down_util_found(img.preset_skill_touse_provoke, img.preset_skill_drag_icon, offset_y=200)
-            ensure_replace_skill(img.preset_skill_providence, img.preset_skill_touse_providence, [img.preset_skill_provoke])
-            ensure_use_support_skill(img.preset_skill_shield_reflect, img.preset_skill_touse_shield_reflect)
-            ensure_use_support_skill(img.preset_skill_spear_quicken, img.preset_skill_touse_spear_quicken)
-            ensure_use_support_skill(img.preset_skill_auto_guard, img.preset_skill_touse_auto_guard)
-            ensure_use_support_skill(img.preset_skill_martyr, img.preset_skill_touse_martyr)
-            
-        utils.tap_image(img.button_close_skill)
+        jj_paladin_preset.change_skill_auto(preset)
+        func.close_any_panel()
+
+    elif settings["preset"] == 'jj_rune_knight':
         func.wait_profile()
+        open_preset_skill()
+        utils.wait_and_tap(img.preset_auto_settings)
+        jj_rune_knight_preset.change_skill_auto()
+        func.close_any_panel()
 
-
-def ensure_replace_skill(ensure_skill, ensure_touse_skill, tobe_replaced_skills):
-    for tobe_replaced_skill in tobe_replaced_skills:
-        if not utils.is_found(ensure_skill):
-            if utils.is_found(tobe_replaced_skill, similarity=0.95):
-                utils.drag_and_drop_image(ensure_touse_skill, tobe_replaced_skill)
-                break
-            elif utils.is_found(img.preset_skill_empty_slot, similarity=0.95):
-                utils.drag_and_drop_image(ensure_touse_skill, img.preset_skill_empty_slot)
-                break
-
-
-def ensure_use_support_skill(ensure_skill, ensure_touse_skill):
-    if utils.wait_for_image(ensure_skill, timeout=1) is None:
-        utils.drag_and_drop_image(ensure_touse_skill, img.preset_skill_empty_slot)
+def open_preset_skill():
+    # sometime the offset need to be 80
+    utils.tap_any_until_found_offset(const.menu_guides, img.preset_skill, offset_x=80, offset_y=-80)
+    # utils.tap_any_until_found_offset(const.menu_guides, img.preset_skill, offset_x=220, offset_y=-80)
+    utils.wait_and_tap(img.preset_skill)
+    utils.tap_image_offset(img.preset_tab_skill, offset_y=120)
 
 
 def dismiss_skill(tobe_dismiss):
@@ -179,10 +243,16 @@ def attack_preset():
 
 
 def open_change_card_page():
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin':
         func.wait_profile()
         func.open_bag()
-        utils.wait_and_tap(img.weapon5)
+        utils.wait_and_tap(img.weapon7)
+        utils.wait_and_tap(img.button_more)
+        utils.wait_and_tap(img.button_card)
+    elif settings["preset"] == 'jj_rune_knight':
+        func.wait_profile()
+        func.open_bag()
+        utils.wait_and_tap(img.weapon7)
         utils.wait_and_tap(img.button_more)
         utils.wait_and_tap(img.button_card)
 
@@ -198,7 +268,7 @@ def change_card(preset=None):
 
 def againt_monster_card(tribe='', element='', size='', boss_level=0):
     open_change_card_page()
-    # card_weapon_preset(tribe, element, size)
+    card_weapon_preset(tribe, element, size)
     card_shield_preset(tribe, boss_level)
     card_armor(tribe, element, boss_level)
     card_cloak_preset(element)
@@ -206,124 +276,43 @@ def againt_monster_card(tribe='', element='', size='', boss_level=0):
 
 
 def card_cloak_preset(element=None):
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin' or settings["preset"] == 'jj_rune_knight':
         utils.wait_and_tap_any([img.card_cloak, img.card_cloak2, img.card_cloak3])
-
-        if element == const.earth:
-            card_objects = [card_change_object(img.card_hode, img.card_hode_current, img.card_hode_touse),
-                            card_change_object(img.card_hode, img.card_hode_current, img.card_hode_touse)]
-        elif element == const.fire:
-            card_objects = [card_change_object(img.card_jakk, img.card_jakk_current, img.card_jakk_touse),
-                            card_change_object(img.card_jakk, img.card_jakk_current, img.card_jakk_touse)]
-        elif element == const.water:
-            card_objects = [card_change_object(img.card_marse, img.card_marse_current, img.card_marse_touse),
-                            card_change_object(img.card_marse, img.card_marse_current, img.card_marse_touse)]
-        elif element == const.wind:
-            card_objects = [card_change_object(img.card_dustiness, img.card_dustiness_current, img.card_dustiness_touse),
-                            card_change_object(img.card_dustiness, img.card_dustiness_current, img.card_dustiness_touse)]
-        elif element == const.shadow:
-            card_objects = [card_change_object(img.card_isis, img.card_isis_current, img.card_isis_touse),
-                            card_change_object(img.card_isis, img.card_isis_current, img.card_isis_touse)]
-        elif element == const.undead:
-            card_objects = [card_change_object(img.card_orc_zombie, img.card_orc_zombie_current, img.card_orc_zombie_touse),
-                            card_change_object(img.card_orc_zombie, img.card_orc_zombie_current, img.card_orc_zombie_touse)]
-        elif element == const.poison:
-            card_objects = [card_change_object(img.card_myst, img.card_myst_current, img.card_myst_touse),
-                            card_change_object(img.card_myst, img.card_myst_current, img.card_myst_touse)]
-        elif element == const.neutral:
-            card_objects = [card_change_object(img.card_orc_baby, img.card_orc_baby_current, img.card_orc_baby_touse),
-                            card_change_object(img.card_jakk, img.card_jakk_current, img.card_jakk_touse)]
-        else:
-            card_objects = [card_change_object(img.card_isis, img.card_isis_current, img.card_isis_touse),
-                            card_change_object(img.card_orc_zombie, img.card_orc_zombie_current, img.card_orc_zombie_touse)]
+        card_objects = shared_preset.card_cloak(element)
         
-        if len(card_objects) > 0:
-            card_edges = [img.card_edge_cloak1, img.card_edge_cloak2]
-            card_change(card_edges, card_objects)
+    if len(card_objects) > 0:
+        card_edges = [img.card_edge_cloak1, img.card_edge_cloak2]
+        card_change(card_edges, card_objects)
 
 
 def card_armor(tribe=None, element=None, boss_level=0):
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin' or settings["preset"] == 'jj_rune_knight':
         utils.wait_and_tap(img.card_armor)
-        if tribe == const.human:
-            card_objects = [card_change_object(img.card_sasquatch, img.card_sasquatch_current, img.card_sasquatch_touse)]
-        elif boss_level > 0 and boss_level < 100:
-            card_objects = [card_change_object(img.card_peco_peco, img.card_peco_peco_current, img.card_peco_peco_touse)]
-        elif element == const.earth:
-            card_objects = [card_change_object(img.card_sandman, img.card_sandman_current, img.card_sandman_touse)]
-        elif element == const.fire:
-            card_objects = [card_change_object(img.card_pasana, img.card_pasana_current, img.card_pasana_touse)]
-        elif element == const.water:
-            card_objects = [card_change_object(img.card_swordfish, img.card_swordfish_current, img.card_swordfish_touse)]
-        elif element == const.wind:
-            card_objects = [card_change_object(img.card_dokebi, img.card_dokebi_current, img.card_dokebi_touse)]
-        else:
-            card_objects = [card_change_object(img.card_peco_peco, img.card_peco_peco_current, img.card_peco_peco_touse)]
+        card_objects = shared_preset.card_armor(tribe, boss_level, element)
             
-        if len(card_objects) > 0:
-            card_edges = [img.card_edge_armor1, img.card_edge_armor2]
-            card_change(card_edges, card_objects)
+    if len(card_objects) > 0:
+        card_edges = [img.card_edge_armor1, img.card_edge_armor2]
+        card_change(card_edges, card_objects)
 
 
 def card_shield_preset(tribe=None, boss_level=0):
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin' or settings["preset"] == 'jj_rune_knight':
         utils.wait_and_tap(img.card_shield)
-
-        if tribe == const.human:
-            card_objects = [card_change_object(img.card_tirfing, img.card_tirfing_current, img.card_tirfing_touse)]
-        elif boss_level > 0 and boss_level < 100:
-            card_objects = [card_change_object(img.card_sting, img.card_sting_current, img.card_sting_touse)]
-        else:
-            card_objects = [card_change_object(img.card_alice, img.card_alice_current, img.card_alice_touse)]
-            
-        if len(card_objects) > 0:
-            card_edges = [img.card_edge_shield1, img.card_edge_shield2]
-            card_change(card_edges, card_objects)
+        card_objects = shared_preset.card_shield(tribe, boss_level)
+        
+    if len(card_objects) > 0:
+        card_edges = [img.card_edge_shield1, img.card_edge_shield2]
+        card_change(card_edges, card_objects)
 
 
 def card_weapon_preset(tribe='', element='', size=''):
-    if settings["preset"] == 'jj':
+    if settings["preset"] == 'jj_paladin' or settings["preset"] == 'jj_rune_knight':
         utils.wait_and_tap(img.card_weapon)
-        card_objects = []
-        if size == const.medium:
-            card_objects = [card_change_object(img.card_skeleton_worker, img.card_skeleton_worker_current, img.card_skeleton_worker_touse),
-                        card_change_object(img.card_skeleton_worker, img.card_skeleton_worker_current, img.card_skeleton_worker_touse)]
-        elif size == const.large:
-            card_objects = [card_change_object(img.card_minorous, img.card_minorous_current, img.card_minorous_touse),
-                        card_change_object(img.card_minorous, img.card_minorous_current, img.card_minorous_touse)]
-        elif element == const.fire:
-            card_objects = [card_change_object(img.card_vadon, img.card_vadon_current, img.card_vadon_touse),
-                        card_change_object(img.card_vadon, img.card_vadon_current, img.card_vadon_touse)]
-        elif element == const.wind:
-            card_objects = [card_change_object(img.card_mandragora, img.card_mandragora_current, img.card_mandragora_touse),
-                        card_change_object(img.card_mandragora, img.card_mandragora_current, img.card_mandragora_touse)]
-        elif element == const.water:
-            card_objects = [card_change_object(img.card_drainliar, img.card_drainliar_current, img.card_drainliar_touse),
-                        card_change_object(img.card_drainliar, img.card_drainliar_current, img.card_drainliar_touse)]
-        elif tribe == const.demon:
-            card_objects = [card_change_object(img.card_strouf, img.card_strouf_current, img.card_strouf_touse),
-                        card_change_object(img.card_strouf, img.card_strouf_current, img.card_strouf_touse)]
-        elif tribe == const.brute:
-            card_objects = [card_change_object(img.card_goblin, img.card_goblin_current, img.card_goblin_touse),
-                        card_change_object(img.card_goblin, img.card_goblin_current, img.card_goblin_touse)]
-        elif tribe == const.formless:
-            card_objects = [card_change_object(img.card_peco_egg, img.card_peco_egg_current, img.card_peco_egg_touse),
-                        card_change_object(img.card_peco_egg, img.card_peco_egg_current, img.card_peco_egg_touse)]
-        else:
-            card_objects = [card_change_object(img.card_skeleton_worker, img.card_skeleton_worker_current, img.card_skeleton_worker_touse),
-                        card_change_object(img.card_skeleton_worker, img.card_skeleton_worker_current, img.card_skeleton_worker_touse)]
+        card_objects = shared_preset.card_weapon(size, element, tribe)
         
-        if len(card_objects) > 0:
-            card_edges = [img.card_edge_weapon1, img.card_edge_weapon2]
-            card_change(card_edges, card_objects)
-
-
-def card_change_object(used_card, selected_current_card, to_be_selected_card):
-    card_object = {}
-    card_object['used_card'] = used_card
-    card_object['selected_current_card'] = selected_current_card
-    card_object['to_be_selected_card'] = to_be_selected_card
-    return card_object
+    if len(card_objects) > 0:
+        card_edges = [img.card_edge_weapon1, img.card_edge_weapon2]
+        card_change(card_edges, card_objects)
 
 
 def card_change(card_edges, card_objects):
@@ -340,19 +329,16 @@ def card_change(card_edges, card_objects):
     print(f"found card_edges: {len(card_edges)} {card_edges}")
     for card_edge in card_edges:
         card_object = card_objects[index]
-        utils.tap_location(card_edge)
-        utils.wait_for_image(img.card_select_a_card_title, timeout=1)
+        utils.tap_location_until_found(card_edge, img.card_select_a_card_title)
         if not utils.is_found(card_object['selected_current_card'], similarity=similarity):
             if utils.scroll_down_util_found(card_object['to_be_selected_card'], img.card_drag_icon, offset_y=200, similarity=similarity, timeout=3):
-                utils.wait_and_tap(card_object['to_be_selected_card'], similarity=similarity)
-                utils.wait_and_tap(img.button_change)
-                utils.wait_and_tap(img.button_receive)
-                utils.wait_for_image(img.card_select_a_card_title, timeout=1)
+                utils.tap_until_found(card_object['to_be_selected_card'], img.button_confirm, similarity=similarity)
+                utils.tap_until_notfound(img.button_confirm, img.button_confirm)
+                utils.wait_for_image(img.card_page, timeout=1)
             else:
-                utils.tap_any_until_found(const.button_closes, img.card_select_a_card_title)
+                utils.tap_any_until_found(const.button_closes, img.card_page)
         else:
-            utils.tap_any_until_found(const.button_closes, img.card_select_a_card_title)
-        time.sleep(0.5)
+            utils.tap_any_until_found(const.button_closes, img.card_page)
         index += 1
 
 

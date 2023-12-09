@@ -11,6 +11,8 @@ def party_finder():
         func.wait_profile()
         message = 'dbbb ' + func.find_remaining_party_number()
         if utils.is_found(img.party_number_5):
+            if utils.is_found(img.dbbb_player_away):
+                continue
             break
         else:
             func.send_message(message, 'world')

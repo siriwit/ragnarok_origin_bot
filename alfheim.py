@@ -46,6 +46,16 @@ def attack():
     func.wait_profile()
     # func.move_up(hold=2)
     func.auto_attack(const.att_all)
+    utils.execute_until_invalid_state(300, 1, fight_state)
+    
+
+def fight_state():
+    func.use_rune_knight_skill()
+
+    if utils.is_found(img.alfheim_victory) or utils.is_found(img.alfheim_defeat):
+        return False
+    return True
+
 
 
 def preset():

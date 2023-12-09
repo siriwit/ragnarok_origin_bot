@@ -8,6 +8,7 @@ import search_screen
 import windows_capture
 import click
 import cv2 as cv
+import os
 import sys
 from PIL import Image
 
@@ -237,6 +238,15 @@ def tap_location(coordinate, offset_x=0, offset_y=0):
     tap(center_x + offset_x, center_y + offset_y)
 
 
+def tap_location_until_found(location, expected_found_image, timeout=10):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        tap_location(location)
+        wait_for_image(expected_found_image, timeout=1)
+        if is_found(expected_found_image):
+            return True
+    return False
+
 def tap_if_found(image_path):
     if is_found(image_path):
         tap_image(image_path)
@@ -250,8 +260,8 @@ def tap_all(images):
 def tap_any(menu_images, similarity=0.9):
     for menu in menu_images:
         if is_found(menu, similarity):
-            tap_image(menu, similarity)
-            return
+            return tap_image(menu, similarity)
+    return None
         
 
 def tap_any_until_found_offset(to_be_tap_images, expected_found_image, offset_x=0, offset_y=0, timeout=10):
@@ -278,7 +288,8 @@ def wait_and_tap(image_path, timeout=10, similarity=0.9):
 
 def wait_and_tap_any(image_paths, timeout=10, similarity=0.9):
     location = wait_any_image(image_paths, timeout, similarity)
-    tap_location(location)
+    if location is not None:
+        tap_location(location)
 
 
 def wait_until_disappear(image_path, timeout=10):
@@ -292,11 +303,11 @@ def wait_until_disappear(image_path, timeout=10):
 
 
 
-def tap_until_found(image_path, util_found_image, interval=1, timeout=10):
+def tap_until_found(image_path, util_found_image, interval=1, timeout=10, similarity=0.9):
     start_time = time.time()
     while time.time() - start_time < timeout:
-        tap_image(image_path)
-        if wait_for_image(util_found_image, timeout=interval) is not None:
+        tap_image(image_path, similarity)
+        if wait_for_image(util_found_image, timeout=interval, similarity=similarity) is not None:
             break
 
 def tap_any_until_found(image_paths, util_found_image, interval=1, timeout=10):
@@ -350,9 +361,15 @@ def tap_image_in_region(image_filename, region_filename):
 def save_screenshot():
     current_datetime = datetime.datetime.now()
     datetime_string = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"screenshots/screenshot_{datetime_string}.png"
+    folder_path = 'screenshots'
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    
+    file_name = f'screenshot_{datetime_string}.png'
+    file_path = os.path.join(folder_path, file_name)
+    
     screenshot = pyautogui.screenshot()
-    screenshot.save(filename)
+    screenshot.save(file_path)
 
 
 def is_found(image_path, similarity=0.9):
@@ -364,9 +381,9 @@ def is_found(image_path, similarity=0.9):
         return False
 
 
-def is_found_any(images, threshold=0.90):
+def is_found_any(images, similarity=0.90):
     for image in images:
-        if is_found(image, threshold):
+        if is_found(image, similarity):
             return image
     return None
 
@@ -457,21 +474,65 @@ def drag_down(image_path, offset_y=100):
     drag_and_drop(center_x, center_y, center_x, center_y + offset_y)
 
 
+def drag_up_location(location, offset_y=100):
+    center_x, center_y = find_image_center(location)
+    drag_and_drop(center_x, center_y, center_x, center_y - offset_y)
+
+
+def drag_down_location(location, offset_y=100):
+    center_x, center_y = find_image_center(location)
+    drag_and_drop(center_x, center_y, center_x, center_y + offset_y)
+
+
 def scroll_down_util_found(expected_image, drag_image, offset_y=100, similarity=0.9, timeout=10):
     print('scroll to find: ' + expected_image + ' with drag image:' + drag_image)
-    return scroll_until_found(expected_image, drag_image, offset_y=offset_y, is_drag_up=True, similarity=similarity, timeout=timeout)
+    return scroll_until_found(expected_image, [drag_image], offset_y=offset_y, is_drag_up=True, similarity=similarity, timeout=timeout)
 
 
 def scroll_up_util_found(expected_image, drag_image, offset_y=100, similarity=0.9, timeout=10):
-    return scroll_until_found(expected_image, drag_image, offset_y=offset_y, is_drag_up=False, similarity=similarity, timeout=timeout)
+    return scroll_until_found(expected_image, [drag_image], offset_y=offset_y, is_drag_up=False, similarity=similarity, timeout=timeout)
 
 
-def scroll_until_found(expected_image, drag_image, offset_y=100, is_drag_up=True, similarity=0.9, timeout=10):
+def scroll_down_util_found_any_drag_images(expected_image, drag_images, offset_y=100, similarity=0.9, timeout=10):
+    return scroll_until_found(expected_image, drag_images, offset_y=offset_y, is_drag_up=True, similarity=similarity, timeout=timeout)
+
+
+def scroll_up_util_found_any_drag_images(expected_image, drag_images, offset_y=100, similarity=0.9, timeout=10):
+    return scroll_until_found(expected_image, drag_images, offset_y=offset_y, is_drag_up=False, similarity=similarity, timeout=timeout)
+
+
+def scroll_until_found(expected_image, drag_images, offset_y=100, is_drag_up=True, similarity=0.9, timeout=10):
     end_time = time.time() + timeout
     while time.time() < end_time:
         if is_found(expected_image, similarity):
             return True
+        
+        location = wait_any_image(drag_images, timeout=2)
+        if location is not None:
+            if is_drag_up:
+                drag_up_location(location, offset_y=offset_y)
+            else:
+                drag_down_location(location, offset_y=offset_y)
+        else:
+            return False
+    return False
+
+
+def scroll_down_util_not_found(not_expected_image, drag_image, offset_y=100, similarity=0.9, timeout=10):
+    return scroll_until_not_found(not_expected_image, drag_image, offset_y=offset_y, is_drag_up=True, similarity=similarity, timeout=timeout)
+
+
+def scroll_up_util_not_found(not_expected_image, drag_image, offset_y=100, similarity=0.9, timeout=10):
+    return scroll_until_not_found(not_expected_image, drag_image, offset_y=offset_y, is_drag_up=False, similarity=similarity, timeout=timeout)
+
+
+def scroll_until_not_found(not_expected_image, drag_image, offset_y=100, is_drag_up=True, similarity=0.9, timeout=10):
+    end_time = time.time() + timeout
+    while time.time() < end_time:
+        if not is_found(not_expected_image, similarity):
+            return True
         if not is_empty(wait_for_image(drag_image, timeout=2)):
+            print('Found:' + drag_image + ' found')
             if is_drag_up:
                 drag_up(drag_image, offset_y=offset_y)
             else:
@@ -480,4 +541,67 @@ def scroll_until_found(expected_image, drag_image, offset_y=100, is_drag_up=True
             print('drag_image:' + drag_image + ' not found')
             return False
         time.sleep(1)
+    return False
+
+
+def write_to_file(file_name, text):
+    with open(file_name + '.txt', 'w') as file:
+        file.write(text)
+
+
+def read_file(file_path, file_name):
+    with open(file_path + "/" + file_name + '.txt', 'r') as file:
+        content = file.read()
+    return content
+
+def execute_until_invalid_state(timeout, interval, function, *args):
+    end_time = time.time() + timeout
+    while time.time() < end_time:
+        if not function(*args):
+            break
+        time.sleep(interval)
+
+
+def find_target_time(hour, minute):
+    target_time = create_target_time(hour, minute, False)
+    target_nextday_time = create_target_time(hour, minute, True)
+    duration = time_diff(target_time)
+    if duration > 0:
+        return target_time
+    else:
+        return target_nextday_time
+    
+
+def time_diff(target_time):
+    current_time = datetime.datetime.now()
+    time_difference = target_time - current_time
+    duration = time_difference.total_seconds()
+    return duration
+
+
+def create_target_time(hour, minute, add1day=False):
+    if add1day:
+        current_date = datetime.datetime.now().date()
+        target_time = datetime.datetime.combine(current_date + datetime.timedelta(days=1), datetime.time(hour, minute))
+    else:
+        target_time = datetime.datetime.now().replace(hour=hour, minute=minute, second=0, microsecond=0)
+    return target_time
+
+
+def exit_at_specific_time(hour, minute, function, *args):
+    target_time = find_target_time(hour, minute)
+    duration = time_diff(target_time)
+    print(duration)
+    while duration > 0:
+        print(duration)
+        function(*args)
+        duration = time_diff(target_time)
+
+
+def execute_valid_state_with_timeout(timeout, interval, function, *args):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        if function(*args):
+            return True
+        time.sleep(interval)
     return False

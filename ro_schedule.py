@@ -10,6 +10,7 @@ import preset
 import schedule
 import time
 import ygg
+import guild_league as gl
 
 
 def guild_expedition():
@@ -29,7 +30,6 @@ def feast():
 def daily():
     func.use_items()
     preset.daily()
-    func.leave_party()
     alfheim.alfheim_collect_item()
     dt.daily_demon_treasure()
     catpaw.daily_cat_paw()
@@ -41,6 +41,11 @@ def ygg_fight():
     ygg.ygg_fight()
 
 
+def guild_league():
+    preset.pvp()
+    gl.start()
+
+
 # Schedule the function to be called daily at a specific time
 
 # monday
@@ -49,8 +54,9 @@ schedule.every().monday.at("20:00").do(feast)
 
 # tuesday
 schedule.every().tuesday.at("07:00").do(ygg_fight)
-schedule.every().tuesday.at("20:00").do(feast)
+schedule.every().tuesday.at("20:07").do(feast)
 schedule.every().tuesday.at("20:30").do(time_anomaly)
+schedule.every().tuesday.at("20:55").do(guild_league)
 
 # wednesday
 schedule.every().wednesday.at("20:00").do(feast)

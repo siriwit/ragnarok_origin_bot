@@ -30,11 +30,7 @@ def go_to_guild_hall(is_weekend=False):
     func.move_down(hold=1)
     func.move_right(hold=0.5)
 
-    duration_minutes = 20
-    end_time = time.time() + duration_minutes * 60
-    while time.time() < end_time:
-        feast()
-        time.sleep(1)
+    utils.exit_at_specific_time(20, 20, feast)
 
 
 def feast():

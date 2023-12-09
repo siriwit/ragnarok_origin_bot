@@ -11,7 +11,7 @@ import sys
 import utils
 import img
 import oracle
-import picky_boss
+import event_boss
 import preset
 import time_anomaly
 import ygg
@@ -28,6 +28,10 @@ import hellheim
 import halfyear
 import cv2 as cv
 import guild_collect
+import datetime
+import guild_league
+import quest
+import jj_rune_knight_preset
         
 
 def farm():
@@ -109,8 +113,15 @@ def maintain_woe():
 
 
 def dev():
-    utils.wait_for_image(img.power_up_icon, timeout=2)
-    preset.ensure_use_support_skill(img.preset_skill_shield_reflect, img.preset_skill_touse_shield_reflect)
+    func.wait_profile(timeout=1)
+    jj_rune_knight_preset.change_skill_auto()
+    # boss.boss_wing()
+    # boss.boss_fight(False, None, 500)
+    # while True:
+    #     utils.is_found(img.hp_sp_60_percent)
+    # preset.sigil(const.farm)
+    # utils.tap_if_found(img.party_inactive)
+    
     sys.exit(0)
 
 convert_weapon_time = time.time()
@@ -155,7 +166,7 @@ while True:
     elif value == "boss":
         boss.boss()
     elif value == "boss_fight":
-        boss.boss_fight()
+        boss.boss_fight(False, None, 500)
     elif value == "oracle":
         print('select mode:' + str(sys.argv[2]))
         mode = sys.argv[2]
@@ -179,7 +190,7 @@ while True:
         preset.tank()
         boss.boss_hunt_specific()
     elif value == "picky_boss":
-        picky_boss.picky_boss_hunt()
+        event_boss.picky_boss_hunt()
     elif value == "preset":
         print('select preset:' + str(sys.argv[2]))
         preset.change_preset(sys.argv[2])
