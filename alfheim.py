@@ -21,6 +21,9 @@ def alfheim_fight():
     func.wait_profile()
     if func.go_to_event(img.event_alfheim):
         while True:
+            if utils.wait_for_image(img.alfheim_page) is not None and utils.is_found(img.button_locked):
+                break
+
             utils.wait_and_tap(img.button_start_blue_medium)
             func.wait_loading_screen()
             attack()
@@ -44,13 +47,12 @@ def alfheim_fight():
 
 def attack():
     func.wait_profile()
-    # func.move_up(hold=2)
     func.auto_attack(const.att_all)
     utils.execute_until_invalid_state(300, 1, fight_state)
     
 
 def fight_state():
-    func.use_rune_knight_skill()
+    func.use_manual_skill()
 
     if utils.is_found(img.alfheim_victory) or utils.is_found(img.alfheim_defeat):
         return False

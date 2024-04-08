@@ -1,13 +1,24 @@
 cd bot/jj
 
-roobot.exe "Go To Main Page"
-@REM roobot.exe "Feast"
-@REM timeout /t 10 /nobreak
+@REM roobot.exe "Go To Main Page"
 
-@REM roobot.exe "Guild Expedition" "Deviling" "Level 2"
-@REM timeout /t 10 /nobreak
+roobot.exe "Feast"
 
-@REM roobot.exe "Time Anomaly"
-@REM timeout /t 10 /nobreak
+@REM Tuesday Saturday
+roobot.exe "life skill" "eat"
+roobot.exe "preset" "boss" "Event"
+roobot.exe "preset" "Card" "dragon" "earth" "large"
+roobot.exe "Preset" "Element" "earth"
+roobot.exe "Time Anomaly"
+roobot.exe "Preset" "Element" "Neutral"
 
+@REM roobot.exe "preset" "pvp"
+@REM roobot.exe "Guild Expedition" "Goblin" "Level 2"
+
+@REM roobot.exe "life skill" "eat"
+@REM roobot.exe "preset" "pvp"
+@REM roobot.exe "phantom"
+
+roobot.exe "life skill" "eat"
+roobot.exe "preset" "pvp"
 roobot.exe "Guild League"

@@ -4,8 +4,10 @@ import boss
 import catpaw
 import constanst as const
 import dbbb
+import extreme_challenge
 import guild_collect
 import guild_league
+from datetime import datetime
 import demon_treasure
 import hazy
 import hellheim
@@ -25,6 +27,9 @@ import ro_schedule
 import monster_research
 import treasure_map
 import event_boss
+import utils
+import ygg
+import phantom
 
 
 def is_number(s):
@@ -36,7 +41,8 @@ def is_number(s):
 
 def get_input(position, options=[], msg="Choose Number: "):
     if len(arguments) <= position:
-        return int(input(msg))
+        input_value = input(msg)
+        return int(input_value) if is_number(input_value) else input_value
     
     input_number = 0
     value = arguments[position]
@@ -48,6 +54,8 @@ def get_input(position, options=[], msg="Choose Number: "):
                 if value.lower() in option.lower():
                     input_number = index
                     break
+        else:
+            return value
 
     return input_number
 
@@ -79,6 +87,7 @@ def alfheim_mode():
     if input_number == 0:
         return
     elif input_number == 1:
+        preset.boss(is_event=True)
         alfheim.alfheim_fight()
     elif input_number == 2:
         alfheim.alfheim_collect_item()
@@ -87,9 +96,10 @@ def alfheim_mode():
 def life_skill_mode():
     sub_menu = [
         '0. Back',
-        '1. Forging',
+        '1. Foraging',
         '2. Fishing',
-        '3. Cooking'
+        '3. Cooking',
+        '4. Eat'
     ]
     print_menu('Life Skill', sub_menu)
     input_number = get_input(2, sub_menu)
@@ -101,6 +111,8 @@ def life_skill_mode():
         life_skill.start(mode='fishing')
     elif input_number == 3:
         cooking_mode()
+    elif input_number == 4:
+        preset.eat_food()
 
 def cooking_mode():
     sub_menu = [
@@ -190,13 +202,16 @@ def boss_hunt_mode():
         print(f" max_level= {max_level}")
         print(f" ignore_spawn= {ignore_spawn}")
         print(f" party= {party_mode}\n")
-        while True:
-            if boss.boss_hunt_loop(is_active, min_level, max_level, ignore_spawn, party_mode):
-                break
+        utils.exit_at_specific_time_or_invalid_state(4, 50, boss_loop_state, is_active, min_level, max_level, ignore_spawn, party_mode)
     elif input_number == 2:
         boss.boss_follower()
 
-    
+
+def boss_loop_state(is_active, min_level, max_level, ignore_spawn, party_mode):
+    if boss.boss_hunt_loop(is_active, min_level, max_level, ignore_spawn, party_mode):
+        return False
+    return True
+
 
 def hordor_mode():
     sub_menu = [
@@ -219,6 +234,7 @@ def hordor_mode():
     elif input_number == 4:
         hordor.hordor_dreamland(mode=img.hordor_paradise_courage)
 
+
 def preset_mode():
     sub_menu = [
             '0. Back',
@@ -227,7 +243,8 @@ def preset_mode():
             '3. Boss',
             '4. Party',
             '5. PVP',
-            '6. Card'
+            '6. Card',
+            '7. Element'
         ]
     print_menu('Preset', sub_menu)
     input_number = get_input(2, sub_menu)
@@ -238,7 +255,15 @@ def preset_mode():
     elif input_number == 2:
         preset.farm()
     elif input_number == 3:
-        preset.boss()
+        sub_menu = [
+                '0. Back',
+                '1. Event',
+                '2. Not Event'
+            ]
+        print_menu('Mode', sub_menu)
+        is_event = True if get_input(3, sub_menu, "Is event?: ") == 1 else False
+        print(f"is event: {is_event}")
+        preset.boss(is_event)
     elif input_number == 4:
         preset.party()
     elif input_number == 5:
@@ -260,20 +285,7 @@ def preset_mode():
         print_menu('Tribe', sub_menu)
         tribe = get_input(3, sub_menu, 'Choose Tribe: ')
         
-        sub_menu = [
-            '0. Back',
-            '1. None',
-            '2. holy',
-            '3. fire',
-            '4. earth',
-            '5. neutral',
-            '6. shadow',
-            '7. wind',
-            '8. water',
-            '9. undead'
-        ]
-        print_menu('Element', sub_menu)
-        element = get_input(4, sub_menu, 'Choose Element: ')
+        element = choose_element(4)
 
         sub_menu = [
             '0. Back',
@@ -309,24 +321,7 @@ def preset_mode():
             return
         
         if element > 0:
-            if element == 1:
-                element = None
-            elif element == 2:
-                element = const.holy
-            elif element == 3:
-                element = const.fire
-            elif element == 4:
-                element = const.earth
-            elif element == 5:
-                element = const.neutral
-            elif element == 6:
-                element = const.shadow
-            elif element == 7:
-                element = const.wind
-            elif element == 8:
-                element = const.water
-            elif element == 9:
-                element = const.undead
+            element = get_element_text(element)
         else:
             return
         
@@ -341,23 +336,86 @@ def preset_mode():
                 size = const.large
         else:
             return
-        
         print(f"tribe: {tribe} element: {element} size: {size}")
         preset.againt_monster_card(tribe, element, size)
+    elif input_number == 7:
+        element = choose_element(3)
+        if element > 0:
+            element = get_element_text(element)
+        else:
+            return
+        func.element_convert(element)
     func.close_any_panel()
 
-def monster_research_mode():
+
+def choose_element(input_index):
     sub_menu = [
-            '0. Back',
-            '1. Put Name'
-        ]
-    print_menu('Put MR Name', sub_menu)
-    input_number = get_input(2, sub_menu)
-    if input_number == 0:
-        return
-    elif input_number == 1:
-        mr_name = input('MR Name: ')
-        monster_research.start(mr_name)
+        '0. Back',
+        '1. None',
+        '2. holy',
+        '3. fire',
+        '4. earth',
+        '5. neutral',
+        '6. shadow',
+        '7. wind',
+        '8. water',
+        '9. undead'
+    ]
+    print_menu('Element', sub_menu)
+    element = get_input(input_index, sub_menu, 'Choose Element: ')
+    return element
+
+
+def get_element_text(number):
+    element = None
+    if number == 2:
+        element = const.holy
+    elif number == 3:
+        element = const.fire
+    elif number == 4:
+        element = const.earth
+    elif number == 5:
+        element = const.neutral
+    elif number == 6:
+        element = const.shadow
+    elif number == 7:
+        element = const.wind
+    elif number == 8:
+        element = const.water
+    elif number == 9:
+        element = const.undead
+    return element
+
+def monster_research_mode():
+    mr_name = get_input(2, [], 'Map Name: ')
+
+    sub_menu = [
+                '0. Back',
+                '1. Wing',
+                '2. Not Wing'
+            ]
+    print_menu('Wing Mode', sub_menu)
+    wing_mini_mode = True if get_input(3, sub_menu, "Wing Mini?: ") == 1 else False
+
+    sub_menu = [
+                '0. Back',
+                '1. Invite',
+                '2. Not Invite'
+            ]
+    print_menu('Invite People Mode', sub_menu)
+    invite_people = True if get_input(4, sub_menu, "Invite People?: ") == 1 else False
+
+    sub_menu = [
+                '0. Back',
+                '1. All Monsters',
+                '2. No Attack'
+            ]
+    print_menu('Attack Mode', sub_menu)
+    attack_monster = True if get_input(5, sub_menu, "Attack Monster?: ") == 1 else False
+    
+    print(f"Map Name: {mr_name}, Wing Mini?: {wing_mini_mode}, Invite People?: {invite_people}, Attack All Mons?: {attack_monster}")
+    preset.change_skill_auto(const.mr)
+    monster_research.start(mr_name, wing_mini_mode, invite_people, attack_monster)
 
 
 def guild_expedetion_mode():
@@ -419,7 +477,9 @@ def event_boss_mode():
         '3. Hellhound',
         '4. Abyss Demon',
         '5. Fallen Genesis',
-        '6. Fallen Nemesis'
+        '6. Fallen Nemesis',
+        '7. Antonio',
+        '8. Evil Reindeer'
     ]
 
     print_menu('Event Boss', sub_menu)
@@ -440,6 +500,74 @@ def event_boss_mode():
         event_boss.awakening('Fallen Genesis')
     elif input_number == 6:
         event_boss.awakening('Fallen Nemesis')
+    elif input_number == 7:
+        utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.christmas)
+    elif input_number == 8:
+        utils.execute_until_valid_state_with_timeout(180, 1, event_boss.christmas_evil_reindeer)
+
+
+def farm_mode():
+    sub_menu = [
+        '0. Back',
+        '1. Normal Farm',
+        '2. Monster Annihilation',
+        '3. Disable',
+        '4. Enable'
+    ]
+
+    print_menu('Farm', sub_menu)
+    input_number = get_input(2, sub_menu, 'Choose Mode: ')
+    if input_number == 0:
+        return
+    elif input_number == 1:
+        minutes = get_input(3, [], 'How long? (miute): ')
+        monster_name = get_input(4, [], 'Put monster name: ')
+        element = choose_element(5)
+        element = get_element_text(element)
+        print(f"Farm end in {minutes} mins, Monster Name: {monster_name}, element: {element}")
+        farm.farm_enable()
+        farm.farm(minutes, monster_name, element)
+    elif input_number == 2:
+        minutes = get_input(3, [], 'How long? (miute): ')
+        farm.monster_annihilation(minutes)
+    elif input_number == 3:
+        farm.farm_disable()
+    elif input_number == 4:
+        farm.farm_enable()
+
+
+def ygg_mode():
+    sub_menu = [
+        '0. Back',
+        '1. Fight',
+        '2. Skip'
+    ]
+    print_menu('YGG', sub_menu)
+    input_number = get_input(2, sub_menu, 'Choose Mode: ')
+    if input_number == 0:
+        return
+    elif input_number == 1:
+        ygg.ygg_fight()
+    elif input_number == 2:
+        ygg.ygg_fight(True)
+
+
+def extreme_challenge_mode():
+    sub_menu = [
+        '0. Back',
+        '1. Fight',
+        '2. Assist'
+    ]
+    print_menu('Extreme Challenge', sub_menu)
+    input_number = get_input(2, sub_menu, 'Choose Mode: ')
+    print(f"Extreme Challenge: {input_number}")
+    if input_number == 0:
+        return
+    elif input_number == 1:
+        extreme_challenge.start()
+    elif input_number == 2:
+        extreme_challenge.start(is_assist=True)
+
 
 print("==================================================================")
 print("=====================  Ragnarok Origin v0.1 ======================")
@@ -471,7 +599,10 @@ while True:
         '18. Treasure Map',
         '19. Go To Main Page',
         '20. Guild League',
-        '21. Event Boss']
+        '21. Event Boss',
+        '22. YGG',
+        '23. Extreme Challenge',
+        '24. Phantom']
     print_menu('Main Menu', main_menu)
 
     input_number = get_input(1, main_menu)
@@ -491,7 +622,7 @@ while True:
     elif input_number == 6:
         guild_collect.start()
     elif input_number == 7:
-        farm.farm()
+        farm_mode()
     elif input_number == 8:
         dbbb.party_finder()
     elif input_number == 9:
@@ -503,16 +634,19 @@ while True:
     elif input_number == 12:
         preset_mode()
     elif input_number == 13:
-        # preset.pvp()
-        guild_expedetion_mode()
+        if datetime.now().weekday() == 3 or datetime.now().weekday() == 6:
+            guild_expedetion_mode()
+        else:
+            print("Not the event date")
     elif input_number == 14:
         ro_schedule.start()
     elif input_number == 15:
         feast.start()
     elif input_number == 16:
-        preset.daily()
-        preset.eat_food()
-        time_anomaly.start()
+        if datetime.now().weekday() == 1 or datetime.now().weekday() == 5:
+            time_anomaly.start()
+        else:
+            print("Not the event date")
     elif input_number == 17:
         monster_research_mode()
     elif input_number == 18:
@@ -522,10 +656,15 @@ while True:
         func.close_any_panel()
         func.leave_party()
     elif input_number == 20:
-        preset.pvp()
         guild_league.start()
     elif input_number == 21:
         event_boss_mode()
+    elif input_number == 22:
+        ygg_mode()
+    elif input_number == 23:
+        extreme_challenge_mode()
+    elif input_number == 24:
+        phantom.start()
     
     func.close_debug_window()
 

@@ -6,25 +6,32 @@ import time
 import sys
 
 
-def start(mode='forging', expected_food=img.life_skill_cooking_seafood_fried_noodles):
+def start(mode='foraging', expected_food=img.life_skill_cooking_seafood_fried_noodles):
+    utils.execute_until_valid_state_with_timeout(600, 1, life_skill_state, mode, expected_food)
+
+
+def life_skill_state(mode, expected_food):
+    func.use_items()
+    func.close_any_panel()
     utils.tap_offset_until_found(img.menu_bag, img.menu_life_skill, offset_x=180)
+    func.wait(1)
     utils.tap_image(img.menu_life_skill)
     utils.wait_for_image(img.life_skill_path_of_arts, timeout=2)
-    if mode == 'forging' or mode == 'fishing':
+    if mode == 'foraging' or mode == 'fishing':
         if not utils.is_found(img.life_skill_path_of_arts):
             utils.tap_until_found(img.life_skill_path_of_nature, img.life_skill_path_of_arts)
     elif mode == 'cooking':
         if not utils.is_found(img.life_skill_path_of_nature):
             utils.tap_until_found(img.life_skill_path_of_arts, img.life_skill_path_of_nature)
 
-    if mode == 'forging':
-        utils.wait_and_tap(img.life_skill_forging, timeout=3, similarity=0.7)
+    if mode == 'foraging':
+        utils.wait_and_tap(img.life_skill_foraging, timeout=3, similarity=0.7)
     elif mode == 'fishing':
         utils.wait_and_tap(img.life_skill_fishing)
     elif mode == 'cooking':
         utils.wait_and_tap(img.life_skill_cooking)
 
-    if mode == 'forging' or mode == 'fishing':
+    if mode == 'foraging' or mode == 'fishing':
         utils.wait_for_image(img.life_skill_magnifying_glass)
         utils.tap_until_found(img.life_skill_magnifying_glass, img.life_skill_nature_go)
         utils.wait_and_tap(img.life_skill_nature_go)
@@ -33,29 +40,41 @@ def start(mode='forging', expected_food=img.life_skill_cooking_seafood_fried_noo
         utils.wait_and_tap(img.life_skill_arts_go)
         utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)
 
-    if mode == 'forging':
-        utils.wait_for_image(img.forging, timeout=120)
-        forging()
+    if mode == 'foraging':
+        if utils.wait_for_image(img.foraging, timeout=120) is not None:
+            forging()
+        else:
+            life_skill_state('foraging', None)
+        return True
     elif mode == 'fishing':
-        utils.wait_for_image(img.life_skill_fishing_bait, timeout=120)
-        fishing()
+        if utils.wait_for_image(img.life_skill_fishing_bait, timeout=120) is not None:
+            fishing()
+        else:
+            life_skill_state('fishing', None)
+        return True
     elif mode == 'cooking':
-        while True:
-            if utils.is_found(img.life_skill_cooking_page):
-                break
-            if utils.is_found(img.life_skill_cooking_pot):
-                utils.tap_until_found(img.life_skill_cooking_pot, img.life_skill_cooking_page)
+        utils.execute_until_valid_state_with_timeout(60, 1, wait_cooking_page_state, expected_food)
+        return True
+    
+    return False
+
+
+def wait_cooking_page_state(expected_food):
+    utils.wait_and_tap(img.life_skill_cooking_pot, timeout=2)
+    if utils.is_found(img.life_skill_cooking_page):
         cooking(expected_food)
+        return True
+    return False
 
 
 def forging():
     while True:
-        if utils.is_found(img.life_skill_forging_run_out):
+        if utils.wait_for_image(img.life_skill_foraging_run_out, timeout=2) is not None:
             sys.exit(0)
 
-        func.wait_profile()
+        func.close_any_panel()
         func.ang_pao()
-        utils.tap_image(img.forging)
+        utils.tap_image(img.foraging)
 
 
 def fishing():
@@ -69,6 +88,7 @@ def fishing():
         if utils.is_found(img.life_skill_fishing_bait):
             sys.exit(0)
         func.ang_pao()
+        func.close_any_panel()
         utils.tap_any_offset(const.guilds, offset_x=-100, offset_y=-200)
         found_image = utils.wait_and_tap(img.fishing_alert, timeout=5)
         if found_image is not None:
@@ -166,8 +186,8 @@ def combine_food(expected_food):
 
 def combine(food_item):
     func.open_bag()
-    utils.wait_and_tap(img.backpack_menu_consumable)
-    utils.wait_for_image(food_item)
+    utils.tap_image_offset(img.backpack_eden_coin, offset_x=30, offset_y=280)
+    utils.tap_offset_until_found(img.backpack_star, food_item, offset_y=280)
     foods = utils.find_all_image_with_similarity(food_item, similarity=0.95)
     for food in foods:
         utils.tap_location(food)

@@ -27,8 +27,7 @@ def start(selected_boss, level, mode='leader'):
 
 
 def fight_mode(selected_boss, level):
-    duration_minutes = 20 * 60
-    utils.execute_until_invalid_state(duration_minutes, 1, fight_state, 1, selected_boss, level)
+    utils.exit_at_specific_time_or_invalid_state(20, 59, fight_state, selected_boss, level)
         
 
 def fight_state(selected_boss, level):
@@ -39,6 +38,9 @@ def fight_state(selected_boss, level):
             utils.wait_any_image(const.menu_bags)
             func.auto_attack(const.att_all, timeout=2)
             # func.one_tap_rally()
+
+    if utils.is_found(img.button_escape):
+        func.use_manual_skill()
 
     if utils.is_found_any(const.menu_guides):
         start(selected_boss, level)

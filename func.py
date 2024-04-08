@@ -1,4 +1,5 @@
 import constanst as const
+import configparser
 import cv2 as cv
 import datetime
 import img
@@ -6,42 +7,193 @@ import func
 import time
 import utils
 
+config = configparser.ConfigParser()
+config_file_path = 'bot.ini'
+config.read(config_file_path)
+settings = config['SETTINGS']
 
-def use_rune_knight_skill():
+shield_reflection_timeout=(0.5*60)
+shield_reflection_time = time.time() - shield_reflection_timeout - 10
+cooldowns = {}
+
+def check_cooldown(key, timeout):
+    if key in cooldowns:
+        remaining_time = (cooldowns[key] + timeout) - time.time()
+        print(f"Remaining of {key} cooldown: {remaining_time}")
+        if remaining_time < 0:
+            return True
+    else:
+        cooldowns[key] = time.time() - 10
+        return True
+    return False
+
+
+def reset_cooldown(key):
+    if key in cooldowns:
+        cooldowns[key] = time.time()
+
+
+def reset_shield_reflection_time():
+    global shield_reflection_time
+    shield_reflection_time = time.time()
+
+
+def use_manual_skill(preset=const.boss, monster_element=const.neutral):
+    if settings["preset"] == 'jj_royal_guard':
+        return use_royal_guard_skill(preset, monster_element)
+    elif settings["preset"] == 'jj_rune_knight':
+        return use_rune_knight_skill(preset)
+
+
+def use_royal_guard_skill(preset, monster_element=const.neutral):
+    if preset == const.boss:
+        return royal_guard_fight()
+    elif preset == const.farm:
+        return royal_guard_farm(monster_element)
+
+
+def royal_guard_farm(monster_element=const.neutral):
+    count = 0
     while True:
+        if count > 20:
+            break
+
+        if utils.is_found(img.royal_guard_skill_battle_rage_100):
+            count += 1
+            continue
+
+        if utils.is_found(img.converter_page):
+            element_recharge(monster_element)
+
+        if utils.is_found(img.royal_guard_skill_battle_chant):
+            enable_battle_chant()
         
+        break
+    return 0
+
+
+def enable_battle_chant():
+    utils.tap_offset_until_found(img.royal_guard_skill_battle_chant, img.royal_guard_skill_sacrifice, offset_x=230, offset_y=-40)
+    utils.tap_until_found(img.royal_guard_skill_battle_chant, img.royal_guard_skill_battle_chant_activated)
+    func.wait(2)
+    utils.tap_if_found(img.royal_guard_skill_battle_chant_activated)
+    utils.tap_offset_until_found(img.royal_guard_skill_battle_chant_activated, img.royal_guard_skill_over_band, offset_x=230, offset_y=-40)
+    utils.tap_until_found(img.royal_guard_skill_battle_chant, img.royal_guard_skill_battle_chant_activated)
+
+
+def royal_guard_fight():
+    fight_state_count = 0
+    count_battle_rage = 0
+    while True:
+        if count_battle_rage > 20:
+            break
+
+        if utils.is_found(img.royal_guard_skill_over_band):
+            fight_state_count += 1
+
+        for _ in range(0, 3):
+            if utils.count_image_on_screen(img.royal_guard_skill_roar) > 1:
+                utils.tap_if_found(img.royal_guard_skill_roar)
+                continue
+
+        if not utils.is_found(img.royal_guard_skill_battle_rage_100):
+            if func.check_cooldown("shield_reflection", 30):
+                utils.tap_if_found(img.royal_guard_skill_shield_reflection)
+                func.reset_cooldown("shield_reflection")
+            utils.tap_if_found(img.swordman_skill_endure)
+            utils.tap_if_found(img.swordman_skill_provoke)
+            utils.tap_if_found(img.paladin_skill_providence)
+        utils.tap_if_found(img.sigil_skill_descending_swords)
+
+        if utils.is_found(img.royal_guard_skill_battle_chant):
+            enable_battle_chant()
+        break
+    return fight_state_count
+
+
+def use_rune_knight_skill(preset=const.boss):
+    if preset == const.boss:
+        return rune_knight_preset_fight()
+    elif preset == const.farm:
+        return rune_knight_preset_farm()
+
+
+def rune_knight_preset_farm():
+    count = 0
+    while True:
+        if count > 20:
+            break
+
+        if utils.is_found(img.rune_knight_skill_dragon_scion_ready):
+            utils.tap_image(img.rune_knight_skill_dragon_scion)
+            count += 1
+            continue
+        break
+    return 0
+
+
+def rune_knight_preset_fight():
+    fight_state_count = 0
+    count_dragon_scion = 0
+    while True:
+        if count_dragon_scion > 20:
+            break
+
+        if utils.is_found(img.rune_knight_skill_dragon_scion_ready):
+            utils.tap_image(img.rune_knight_skill_dragon_scion)
+            count_dragon_scion += 1
+            continue
+
         utils.tap_if_found(img.quests_inactive)
 
+        if utils.is_found(img.rune_knight_skill_berserk):
+            fight_state_count += 1
+
         for _ in range(0, 5):
-            if utils.is_found(img.rune_knight_skill_berserk_disabled, similarity=0.99):
+            if utils.count_image_on_screen(img.rune_knight_skill_rune_of_faith) > 1:
                 utils.tap_if_found(img.rune_knight_skill_rune_of_faith)
                 continue
 
             if utils.is_found(img.rune_knight_skill_dragon_state, similarity=0.85) and utils.is_found(img.hp_sp_80_percent):
                 utils.tap_if_found(img.rune_knight_skill_berserk)
-
+            utils.tap_if_found(img.rune_knight_skill_charge_attack)
             utils.tap_if_found(img.rune_knight_skill_ignition_break)
             utils.tap_if_found(img.rune_knight_skill_ignition_break2)
             utils.tap_if_found(img.rune_knight_skill_rune_of_courage)
-            utils.tap_if_found(img.rune_knight_skill_dragon_breath_fire)
+            utils.tap_if_found(img.rune_knight_skill_rune_of_mercy)
+            # utils.tap_if_found(img.rune_knight_skill_dragon_breath_fire)
 
         if not utils.is_found(img.rune_knight_skill_dragon_state):
-            utils.tap_if_found(img.rune_knight_skill_provoke)
+            utils.tap_if_found(img.swordman_skill_provoke)
+        utils.tap_if_found(img.sigil_skill_descending_swords)
         break
-
+    return fight_state_count
 
 def butterfly_wing_morroc():
-    utils.tap_until_found(img.butterfly_wing, img.city_morroc)
-    utils.wait_and_tap(img.city_morroc)
+    if utils.is_found(img.map_morroc):
+        return
+    func.close_hidden_menu()
+    utils.execute_until_valid_state_with_timeout(30, 1, try_butterfly_wing)
     wait_loading_screen()
     close_any_panel()
     func.wait_profile()
     time.sleep(3)
 
 
+def try_butterfly_wing():
+    if utils.is_found(img.map_morroc):
+        return True
+    if utils.is_found(img.loading):
+        return True
+    utils.tap_until_found(img.butterfly_wing, img.city_morroc, timeout=2)
+    utils.tap_until_notfound(img.city_morroc, img.city_morroc, timeout=2)
+    return False
+
+
 def wait_loading_screen():
-    utils.wait_for_image(img.loading)
+    wait_screen = utils.wait_for_image(img.loading)
     utils.wait_until_disappear(img.loading)
+    return wait_screen
 
 
 def send_message(message, send_to='party'):
@@ -55,30 +207,45 @@ def send_message(message, send_to='party'):
     close_chat()
 
 def open_chat(send_to='party'):
-    while True:
-        if utils.is_found(img.chat_tab_party_active) or utils.is_found(img.chat_tab_party_inactive):
-            break
-        utils.key_press("enter")
-        time.sleep(1)
+    utils.execute_until_valid_state_with_timeout(15, 1, open_chat_state)
+
     if send_to == 'party' and utils.is_found(img.chat_tab_party_inactive):
         utils.tap_image(img.chat_tab_party_inactive)
     elif send_to == 'world' and utils.is_found(img.chat_tab_world_inactive):
         utils.tap_image(img.chat_tab_world_inactive)
+    elif send_to == 'guild' and utils.is_found(img.chat_tab_guild_inactive):
+        utils.tap_image(img.chat_tab_guild_inactive)
     
     time.sleep(1)
 
 
+def open_chat_state():
+    if utils.is_found(img.chat_tab_party_active) or utils.is_found(img.chat_tab_party_inactive):
+        return True
+    if utils.is_found(img.chat_tab_guild_active) or utils.is_found(img.chat_tab_guild_inactive):
+        return True
+    else:
+        func.close_any_panel()
+    utils.key_press("enter")
+    time.sleep(1)
+    return False
+
+
 def close_chat():
-    while True:
-        if utils.is_found(img.chat_button_plus):
-            utils.tap_until_notfound(img.chat_collapse, img.chat_collapse)
-        else:
-            break
-        time.sleep(1)
+    if not utils.execute_until_valid_state_with_timeout(15, 1, close_chat_state):
+        close_any_panel()
+
+
+def close_chat_state():
+    if not utils.is_found(img.chat_button_plus):
+        return True
+    utils.tap_until_notfound(img.chat_collapse, img.chat_collapse)
+    time.sleep(1)
+    return False
 
 
 def open_map():
-    utils.execute_until_invalid_state(5, 1, open_map_state)
+    utils.execute_until_invalid_state(10, 1, open_map_state)
 
 
 def open_map_state():
@@ -89,11 +256,13 @@ def open_map_state():
 
 
 def close_map():
-    utils.execute_until_invalid_state(5, 1, close_map_state)
+    utils.execute_until_invalid_state(10, 1, close_map_state)
 
 
 def close_map_state():
-    utils.key_press('m')
+    if utils.is_found(img.wing):
+        utils.key_press('m')
+
     if utils.wait_for_image(img.butterfly_wing, timeout=1) is not None:
         return False
     return True
@@ -102,9 +271,9 @@ def close_map_state():
 def send_location(send_to='party'):
     open_chat(send_to)
     utils.tap_image(img.chat_button_plus)
-    utils.wait_and_tap(img.chat_button_map)
-    utils.tap_until_notfound(img.chat_button_send_background, img.chat_button_map)
-    utils.wait_and_tap(img.chat_button_send)
+    utils.wait_and_tap(img.chat_button_map, timeout=7)
+    utils.tap_until_notfound(img.chat_button_send_background, img.chat_button_map, timeout=3)
+    utils.wait_and_tap(img.chat_button_send, timeout=3)
     close_chat()
 
 
@@ -144,6 +313,7 @@ def wait_and_find_party(boss_coming_icon, boss_name, send_to, timeout=180, is_ic
             
         diff_last_sent = time.time() - last_sent_time
         message = boss_name + ' ' + find_remaining_party_number() + ' auto join'
+        kick_party_member()
         if not utils.is_found(img.party_number_5) and diff_last_sent > 30:
             print("not found number 5 icon")
             if party_mode:
@@ -168,6 +338,7 @@ def find_remaining_party_number():
 
         
 def auto_attack(mode=const.boss, all_radius=True, timeout=10):
+    result = False
     while True:
         if not utils.is_found(img.auto_attack_title):
             if utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, offset_x=85, timeout=timeout):
@@ -176,6 +347,7 @@ def auto_attack(mode=const.boss, all_radius=True, timeout=10):
             utils.wait_for_image(img.icon_auto_attack_boss, timeout=1)
             if utils.is_found(img.icon_auto_attack_boss):
                 utils.wait_and_tap(img.icon_auto_attack_boss)
+                result = True
             else:
                 utils.wait_and_tap(img.auto_attack_allmonster)
         else:
@@ -184,6 +356,7 @@ def auto_attack(mode=const.boss, all_radius=True, timeout=10):
             utils.tap_if_found(img.auto_attack_all)
         utils.tap_image(img.button_auto_attack_close)
         break
+    return result
 
 def use_items():
     while True:
@@ -200,28 +373,41 @@ def use_items():
         elif utils.is_found(img.button_submit):
             utils.tap_image(img.button_submit)
             continue
+        utils.tap_if_found(img.button_back)
         break
 
 def go_to_event(event_image=None):
-    func.wait_profile()
+    func.close_any_panel(img.power_up_icon)
     utils.tap_any(const.batterry_savings)
-        
+    utils.tap_if_found(img.button_confirm)
+    handle_if_need_to_go_to_checkpoint()
+    handle_battle_log(True)
+
     if utils.tap_any_until_found_offset(const.menu_guides, img.event_page, offset_x=-100):
         if event_image != None:
             if utils.is_found(img.event_moonlit_arena):
                 utils.scroll_down_util_found(event_image, img.event_moonlit_arena, offset_y=100, timeout=1)
+            if utils.is_found(img.event_theme_party):
+                utils.scroll_down_util_found(event_image, img.event_theme_party, offset_y=100, timeout=1)
+            if utils.is_found(img.event_initial_trial_of_nerdiness):
+                utils.scroll_down_util_found(event_image, img.event_initial_trial_of_nerdiness, offset_y=100, timeout=1)
+            if utils.is_found(img.event_initial_trial_of_nerdiness):
+                utils.scroll_down_util_found(event_image, img.event_initial_trial_of_nerdiness, offset_y=100, timeout=1)
             if not utils.scroll_down_util_found(event_image, img.event_drag_icon, offset_y=200, timeout=10, similarity=0.85):
                 utils.scroll_down_util_found(event_image, img.event_drag_icon_inactive, offset_y=200, similarity=0.85)
-            # utils.wait_and_tap(event_image, similarity=0.85)
-            # if event_image != img.event_boss and event_image != img.event_guild_expedition:
+
             if event_image not in [img.event_boss, img.event_guild_expedition]:
                 utils.tap_until_found(event_image, img.button_go_orange_small)
-                utils.wait_and_tap(img.button_go_orange_small)
+                if utils.wait_and_tap(img.button_go_orange_small) is not None:
+                    return True
+            elif event_image == img.event_boss:
+                if utils.tap_until_found(event_image, img.boss_title_mvp, interval=2):
+                    return True
             else:
-                utils.tap_until_notfound(event_image, event_image)
-        return True
-    else:
-        return False
+                if utils.tap_until_notfound(event_image, event_image):
+                    return True
+    func.close_any_panel()
+    return False
     
 
 def ang_pao():
@@ -247,17 +433,22 @@ def leave_party():
         utils.wait_and_tap(img.party_leave_button)
 
 
-def close_any_panel(depth=99, timeout=10):
+def close_any_panel(expected_found_image=img.power_up_icon, depth=99, timeout=10, is_boss_mode=False):
     depth_count = 1
     marked_time_main = time.time()
     while time.time() - marked_time_main < timeout:
-        if utils.is_found(img.power_up_icon) or depth_count >= depth:
+        utils.tap_if_found(img.button_back)
+        if utils.is_found(expected_found_image) or depth_count >= depth:
             break
         
-        utils.tap_if_found(img.button_back)
         utils.tap_any(const.button_closes)
         utils.tap_if_found(img.chat_collapse)
         utils.tap_any(const.tap_anywheres)
+        # utils.tap_offset_if_found(img.rune_knight_skill_popup_rune_of_faith, offset_y=-50)
+        
+        if not is_boss_mode and utils.is_found(img.button_battle_log):
+            utils.tap_offset_until_notfound(img.button_battle_log, img.button_battle_log, offset_y=100)
+
         depth_count += 1
 
 
@@ -347,9 +538,9 @@ def accept_rally():
     utils.tap_if_found(img.button_join)
 
 
-def leave_event():
-    utils.wait_and_tap(img.button_escape, timeout=30)
-    utils.wait_and_tap(img.button_confirm, timeout=5)
+def leave_event(timeout=30):
+    utils.tap_until_found(img.button_escape, img.button_confirm, timeout=timeout)
+    utils.tap_until_notfound(img.button_confirm, img.button_confirm)
     utils.wait_for_image(img.loading, timeout=5)
     utils.wait_until_disappear(img.loading, timeout=5)
 
@@ -364,13 +555,13 @@ def wait(timeout=10):
         utils.wait_for_image(img.power_up_icon, timeout=0.5)
 
 def close_hidden_menu():
-    func.close_any_panel()
+    func.close_any_panel(img.butterfly_wing)
     func.wait_profile()
     if utils.is_found_any(const.menu_guilds):
         utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)
 
 def open_bag():
-    utils.tap_until_found(img.menu_bag, img.backpack_title)
+    utils.tap_any_until_found(const.menu_bags, img.backpack_title)
 
 
 def open_hidden_menu():
@@ -402,3 +593,140 @@ def ensure_replace_skill(ensure_skill, ensure_touse_skill, tobe_replaced_skills)
 def ensure_use_support_skill(ensure_skill, ensure_touse_skill):
     if utils.wait_for_image(ensure_skill, timeout=1) is None:
         utils.drag_and_drop_image(ensure_touse_skill, img.preset_skill_empty_slot)
+
+
+def remove_skill_if_needed(ensure_skill):
+    if utils.wait_for_image(ensure_skill, timeout=1) is not None:
+        utils.drag_and_drop_image(ensure_skill, img.preset_skill_manual)
+
+
+def handle_if_need_to_go_to_checkpoint():
+    if utils.wait_for_image(img.button_return_to_checkpoint, timeout=2) is not None:
+        utils.tap_until_notfound(img.button_return_to_checkpoint, img.button_return_to_checkpoint)
+        func.wait_loading_screen()
+        func.wait_profile()
+
+
+def handle_battle_log(butterflywing):
+    utils.tap_if_found(img.battery_saving1)
+    if utils.is_found(img.button_battle_log):
+        func.use_items()
+        func.close_any_panel(timeout=3)
+        func.handle_if_need_to_go_to_checkpoint()
+        if butterflywing:
+            func.butterfly_wing_morroc()
+        return True
+    return False
+
+
+def request_people_join_message(prefix, suffix='auto join', send_to='world'):
+    message = f'{prefix} {func.find_remaining_party_number()} {suffix}'
+    if not utils.is_found(img.party_number_5):
+        func.send_message(message, send_to=send_to)
+
+
+def kick_party_member():
+    similarity = 0.9
+    if utils.is_found_any(const.party_kicks):
+        if utils.is_found(img.party_offline):
+            print("Tap img.party_offline")
+            utils.tap_offset_until_found(img.party_offline, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
+        elif utils.is_found(img.party_offline2):
+            print("Tap img.party_offline2")
+            utils.tap_offset_until_found(img.party_offline2, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
+        elif utils.is_found(img.party_offline3):
+            print("Tap img.party_offline3")
+            utils.tap_offset_until_found(img.party_offline3, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
+        elif utils.is_found(img.party_die_afk):
+            print("Tap img.party_die_afk")
+            utils.tap_offset_until_found(img.party_die_afk, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
+        elif utils.is_found(img.party_die_afk2):
+            print("Tap img.party_die_afk2")
+            utils.tap_offset_until_found(img.party_die_afk2, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
+        utils.wait_and_tap(img.button_kick_out)
+        utils.wait_and_tap(img.button_confirm)
+
+
+def party_checking():
+    if utils.is_found(img.party_number_5):
+        utils.tap_until_found(img.party_number_5, img.party_title)
+        if utils.is_found(img.party_away):
+            utils.tap_until_found(img.party_away, img.button_kick_out)
+            utils.tap_until_found(img.button_kick_out, img.button_confirm)
+        close_any_panel()
+
+
+def element_convert(element=None):
+    open_bag()
+    utils.tap_until_found(img.weapon7, img.button_more)
+    utils.tap_until_found(img.button_more, img.button_element)
+    utils.tap_until_found(img.button_element, img.converter_page)
+    utils.tap_until_found(img.converter_dropdown_button, img.converter_dropdown_disable)
+
+    element_select(element)
+    close_any_panel()
+
+
+def element_select(element):
+    if element == const.fire:
+        utils.tap_until_notfound(img.converter_dropdown_water_icon, img.converter_water_active)
+    elif element == const.wind:
+        utils.tap_until_notfound(img.converter_dropdown_earth_icon, img.converter_earth_active)
+    elif element == const.water:
+        utils.tap_until_notfound(img.converter_dropdown_wind_icon, img.converter_wind_active)
+    elif element == const.earth:
+        utils.tap_until_found(img.converter_dropdown_fire_icon, img.converter_fire_active)
+    else:
+        utils.tap_until_found(img.converter_dropdown_disable, img.converter_neutral_active)
+
+
+def element_recharge(element=None):
+    if utils.is_found(img.converter_page):
+        if element == const.fire:
+            utils.execute_until_valid_state_with_timeout(10, 1, recharge_loop, img.converter_recharge_water)
+        elif element == const.wind:
+            utils.execute_until_valid_state_with_timeout(10, 1, recharge_loop, img.converter_recharge_earth)
+        elif element == const.water:
+            utils.execute_until_valid_state_with_timeout(10, 1, recharge_loop, img.converter_recharge_wind)
+        elif element == const.earth:
+            utils.execute_until_valid_state_with_timeout(10, 1, recharge_loop, img.converter_recharge_fire)
+            
+
+def recharge_loop(element):
+    utils.tap_if_found(element)
+    utils.tap_until_found(img.button_recharge, img.converter_recharge_select_button, timeout=2)
+    if utils.is_found(img.converter_recharge_select_button):
+        for _ in range(0, 5):
+            utils.tap_if_found(img.converter_recharge_select_button)
+            func.wait(0.5)
+        utils.tap_until_notfound(img.button_recharge_inactive, img.converter_recharge_select_button)
+        element_select(element)
+        return True
+    return False
+
+
+def wing():
+    utils.tap_any_offset(const.menu_bags, offset_y=100)
+    utils.tap_any_offset(const.menu_bags, offset_y=100)
+
+
+def guild_quest_aid():
+    if utils.is_found(img.chat_guild_icon):
+        func.open_chat(const.chat_guild)
+
+        if utils.is_found(img.button_aid):
+            utils.tap_until_found(img.button_aid, img.button_aid_eden)
+            utils.tap_until_notfound(img.button_aid_eden, img.button_aid_eden)
+
+        engrave_gemstone()
+        func.close_chat()
+
+
+def engrave_gemstone():
+    if utils.is_found_any(const.gemstone_help_graves):
+        utils.tap_any_until_found(const.gemstone_help_graves, img.gemstone_page)
+        locations = utils.find_all_images([img.gemstone_empty, img.gemstone_not_empty, img.gemstone_big_empty, img.gemstone_big_not_empty])
+        for location in locations:
+            utils.tap_location(location)
+            func.wait(1)
+        close_any_panel()

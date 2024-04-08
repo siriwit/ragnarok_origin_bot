@@ -4,23 +4,31 @@ import img
 import utils
 
 def daily_anthem(skip=False):
+    utils.execute_until_valid_state_with_timeout(600, 1, daily_anthem_state, skip)
+
+
+def daily_anthem_state(skip):
+    func.close_any_panel()
     func.wait_profile()
     utils.tap_any_until_found_offset(const.menu_guides, img.daily_anthem, offset_x=-210)
-    utils.wait_and_tap(img.daily_anthem, timeout=2)
-
-    if skip:
-        utils.wait_and_tap(img.quick_pass_ticket)
-        utils.wait_and_tap_any(const.button_confirms)
-        func.use_items()
-        func.close_any_panel()
-    else:
-        utils.wait_and_tap(img.button_go)
-        utils.wait_and_tap(img.daily_anthem_anthem_trial_option, timeout=120)
-        utils.wait_and_tap(img.button_start)
-        utils.wait_for_image(img.team_confirm, timeout=1)
-        if utils.is_found(img.team_confirm):
-            utils.wait_until_disappear(img.team_confirm)
-        anthem()
+    if utils.wait_and_tap(img.daily_anthem, timeout=2) is not None:
+        if skip:
+            utils.wait_and_tap(img.quick_pass_ticket)
+            utils.wait_and_tap_any(const.button_confirms)
+            func.use_items()
+            func.close_any_panel()
+            return True
+        else:
+            utils.wait_and_tap(img.button_go)
+            utils.wait_and_tap(img.daily_anthem_anthem_trial_option, timeout=120)
+            utils.wait_and_tap(img.button_start)
+            utils.wait_for_image(img.team_confirm, timeout=1)
+            if utils.is_found(img.team_confirm):
+                utils.wait_until_disappear(img.team_confirm)
+            anthem()
+            return True
+    
+    return False
 
 
 def anthem():

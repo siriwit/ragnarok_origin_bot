@@ -40,9 +40,9 @@ def card_weapon(size, element, tribe):
 
 def card_armor(tribe, boss_level, element):
     if tribe == const.human:
-        card_objects = [func.card_change_object(img.card_angeling_mvp, img.card_angeling_mvp_current, img.card_angeling_mvp_touse)]
+        card_objects = [func.card_change_object(img.card_dokebi, img.card_dokebi_current, img.card_dokebi_touse)]
     elif boss_level > 0 and boss_level < 100:
-        card_objects = [func.card_change_object(img.card_angeling_mvp, img.card_angeling_mvp_current, img.card_angeling_mvp_touse)]
+        card_objects = [func.card_change_object(img.card_peco_peco, img.card_peco_peco_current, img.card_peco_peco_touse)]
     elif element == const.earth:
         card_objects = [func.card_change_object(img.card_sandman, img.card_sandman_current, img.card_sandman_touse)]
     elif element == const.fire:
@@ -51,8 +51,10 @@ def card_armor(tribe, boss_level, element):
         card_objects = [func.card_change_object(img.card_swordfish, img.card_swordfish_current, img.card_swordfish_touse)]
     elif element == const.wind:
         card_objects = [func.card_change_object(img.card_dokebi, img.card_dokebi_current, img.card_dokebi_touse)]
+    elif element == const.shadow or element == const.undead:
+        card_objects = [func.card_change_object(img.card_argiope, img.card_argiope_current, img.card_argiope_touse)]
     else:
-        card_objects = [func.card_change_object(img.card_angeling_mvp, img.card_angeling_mvp_current, img.card_angeling_mvp_touse)]
+        card_objects = [func.card_change_object(img.card_peco_peco, img.card_peco_peco_current, img.card_peco_peco_touse)]
 
     return card_objects
 
@@ -68,8 +70,14 @@ def card_shield(tribe, boss_level):
     return card_objects
 
 
-def card_cloak(element):
-    if element == const.earth:
+def card_cloak(tribe, element, boss_level):
+    if tribe == const.human:
+        card_objects = [func.card_change_object(img.card_jakk, img.card_jakk_current, img.card_jakk_touse),
+                        func.card_change_object(img.card_jakk, img.card_jakk_current, img.card_jakk_touse)]
+    elif boss_level > 0 and boss_level < 100:
+        card_objects = [func.card_change_object(img.card_isis, img.card_isis_current, img.card_isis_touse),
+                        func.card_change_object(img.card_orc_zombie, img.card_orc_zombie_current, img.card_orc_zombie_touse)]
+    elif element == const.earth:
         card_objects = [func.card_change_object(img.card_hode, img.card_hode_current, img.card_hode_touse),
                         func.card_change_object(img.card_hode, img.card_hode_current, img.card_hode_touse)]
     elif element == const.fire:

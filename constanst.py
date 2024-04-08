@@ -37,8 +37,11 @@ ygg = 'ygg'
 farm = 'farm'
 tank = 'tank'
 boss = 'boss'
+mini_boss = 'mini'
+boss_event = 'boss_event'
 pvp = 'pvp'
 sword = 'sword'
+mr = 'mr'
 
 # day
 workday = 'workday'
@@ -50,6 +53,11 @@ hard = 'hard'
 
 # keymap
 map = 'm'
+
+# chat tab
+chat_party = 'party'
+chat_guild = 'guild'
+chat_world = 'world'
 
 batterry_savings = [img.battery_saving1]
 boss_icons = [img.icon_boss, img.icon_boss_bottom, img.icon_boss_left, img.icon_boss_right, img.icon_boss_top]
@@ -70,13 +78,15 @@ city_lord_room_treasures = [
     img.guild_collect_city_lord_room_treasure3, img.guild_collect_city_lord_room_treasure4,
     img.guild_collect_city_lord_room_treasure5, img.guild_collect_city_lord_room_treasure6]
 guild_exp_maps = [img.guild_expedition_map_fun_arena, img.guild_expedition_map_fun_arena2, img.guild_expedition_map_fun_hideout]
+gemstone_help_graves = [img.gemstone_help_grave1, img.gemstone_help_grave2, img.gemstone_help_grave3]
 life_skill_waters = [img.life_skill_water1, img.life_skill_water2, img.life_skill_water3]
 menu_bags = [img.menu_bag, img.menu_bag2, img.menu_bag3]
-menu_guides = [img.menu_guide1, img.menu_guide2, img.menu_guide3, img.menu_guide4, img.menu_guide5, img.menu_guide6]
+menu_guides = [img.menu_guide1, img.menu_guide2, img.menu_guide3, img.menu_guide4, img.menu_guide5, img.menu_guide6, img.menu_guide7, img.menu_guide8]
 menu_guilds = [img.menu_guild, img.menu_guild2]
 mounts = [img.mount, img.mount2]
 party_members = [img.party_number_1, img.party_number_2, img.party_number_3, img.party_number_4, img.party_number_5]
-pets = [img.pet_icon_genesis, img.pet_icon_dunell, img.pet_icon_earthlord, img.pet_icon_king_piggy, img.pet_icon_sohee]
+party_kicks = [img.party_offline, img.party_offline2, img.party_offline3, img.party_die_afk, img.party_die_afk2]
+pets = [img.pet_icon_genesis, img.pet_icon_dunell, img.pet_icon_earthlord, img.pet_icon_squid, img.pet_icon_sohee, img.pet_icon_huanhuan]
 preset_settings = [img.preset_settings1, img.preset_settings2]
 preset_tab_skills = [img.preset_tab_skill]
 picky_boss_times = [img.picky_boss_1m, img.picky_boss_3m, img.picky_boss_19m, img.picky_boss_20m]

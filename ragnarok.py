@@ -28,28 +28,16 @@ import hellheim
 import halfyear
 import cv2 as cv
 import guild_collect
-import datetime
+from datetime import datetime
 import guild_league
 import quest
 import jj_rune_knight_preset
-        
-
-def farm():
-    func.wait_profile()
-    func.ang_pao()
-    func.use_items()
-    # convert_weapon(element='wind')
-
-    if utils.is_found(img.fatique_icon, similarity=0.95):
-        utils.wait_and_tap(img.fatique_close)
-        func.butterfly_wing_morroc()
-        sys.exit()
-
-
-def farm_mr():
-    func.wait_profile()
-    func.ang_pao()
-    func.use_items()
+import monster_research
+import farm
+import extreme_challenge
+import phantom
+import jj_royal_guard_preset
+import woe
 
 
 def convert_weapon(element='fire'):
@@ -60,8 +48,8 @@ def convert_weapon(element='fire'):
 
 def perform_convert_weapon(element='water'):
     func.wait_profile()
-    pyautogui.typewrite('b')
-    utils.wait_and_tap(img.weapon5)
+    func.open_bag()
+    utils.wait_and_tap(img.weapon7)
     utils.wait_and_tap(img.button_more)
     utils.wait_and_tap(img.button_element)
     utils.wait_and_tap(img.button_plus)
@@ -70,7 +58,7 @@ def perform_convert_weapon(element='water'):
         utils.wait_for_image('images/region_fire_slayer_converter.png')
         utils.tap_image_in_region('images/button_select.png', 'images/region_fire_slayer_converter.png')
     elif element == 'wind':
-        utils.wait_for_image(img.region)
+        utils.wait_for_image(img.region_wind_spear_converter)
         utils.tap_image_in_region(img.button_select, img.region_wind_spear_converter)
     elif element == 'water':
         utils.wait_for_image('images/region_water_1hsword_converter.png')
@@ -114,14 +102,39 @@ def maintain_woe():
 
 def dev():
     func.wait_profile(timeout=1)
-    jj_rune_knight_preset.change_skill_auto()
-    # boss.boss_wing()
-    # boss.boss_fight(False, None, 500)
+
     # while True:
-    #     utils.is_found(img.hp_sp_60_percent)
-    # preset.sigil(const.farm)
-    # utils.tap_if_found(img.party_inactive)
+    #     utils.hilight_image(img.party_die_afk, offset_x=85, offset_y=-38)
+
+
+    # utils.exit_at_specific_time_or_invalid_state(21, 20, guild_league.fight_state)
     
+    # utils.tap_offset_until_found(img.party_offline, img.button_kick_out, offset_x=80, offset_y=-40, similarity=similarity)
+    # func.kick_party_member()
+    # phantom.fight()
+
+    # woe.maintain_woe()
+
+    # phantom.fight()
+
+    # if utils.is_found(img.woe_meowmaru_ended):
+    #     utils.tap_offset_until_notfound(img.woe_meowmaru_ended, img.woe_meowmaru_ended, offset_y=-100)
+    # similarity=0.9
+    # if utils.is_found_any(const.party_members):
+    #     if utils.is_found(img.party_offline2):
+    #         utils.tap_offset_until_found(img.party_offline2, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
+        # elif utils.is_found(img.party_die_afk2):
+        #     utils.tap_offset_until_found(img.party_die_afk2, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
+
+    # utils.tap_if_found(img.button_confirm)
+
+    life_skill.combine_food(img.life_skill_cooking_seafood_fried_noodles)
+
+    # while True:
+    #     func.use_manual_skill(const.boss)
+    # preset.change_skill_auto(const.boss)
+    # jj_royal_guard_preset.scroll_to_damage_skill()
+
     sys.exit(0)
 
 convert_weapon_time = time.time()
@@ -134,10 +147,6 @@ while True:
         sys.exit(0)
     elif value == "angpao":
         func.ang_pao()
-    elif value == "farm":
-        farm()
-    elif value == "farm_mr":
-        farm_mr()
     elif value == "forging":
         life_skill.start()
         sys.exit(0)
@@ -166,7 +175,7 @@ while True:
     elif value == "boss":
         boss.boss()
     elif value == "boss_fight":
-        boss.boss_fight(False, None, 500)
+        boss.boss_fight(False, None, 500, 500)
     elif value == "oracle":
         print('select mode:' + str(sys.argv[2]))
         mode = sys.argv[2]

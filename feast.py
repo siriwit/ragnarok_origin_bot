@@ -22,15 +22,15 @@ def start():
 
 def go_to_guild_hall(is_weekend=False):
     if is_weekend:
-        utils.wait_for_image(img.feast_option_weekend, timeout=20)
-        utils.tap_image_offset(img.feast_option_weekend, offset_x=350, offset_y=-200)
+        utils.wait_for_image(img.icon_message, timeout=20)
+        utils.tap_offset_until_found(img.icon_message, img.power_up_icon, offset_x=350, offset_y=-430)
     else:
         utils.wait_and_tap(img.feast_skip_button, timeout=20)
     func.wait_profile()
-    func.move_down(hold=1)
+    func.move_down(hold=0.7)
     func.move_right(hold=0.5)
 
-    utils.exit_at_specific_time(20, 20, feast)
+    utils.exit_at_specific_time_or_invalid_state(20, 20, feast)
 
 
 def feast():
@@ -44,5 +44,6 @@ def feast():
         elif utils.wait_for_image(img.feast_action_block_while_mounted, timeout=1, similarity=0.85) is not None:
             utils.wait_and_tap(const.mounts)
         time.sleep(2)
+    return True
 
     

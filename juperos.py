@@ -15,5 +15,5 @@ def start():
 def fight():
     func.wait_profile(150)
     func.auto_attack()
-    boss.boss_fight(butterflywing=False)
+    boss.boss_fight(butterflywing=False, fight_timeout=360)
 

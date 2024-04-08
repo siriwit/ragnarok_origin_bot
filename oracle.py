@@ -6,6 +6,7 @@ import utils
 import sys
 
 def request_oracle():
+    func.leave_party()
     while True:
         func.open_hidden_menu()
         utils.wait_and_tap_any(const.menu_guilds, timeout=2)

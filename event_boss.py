@@ -38,9 +38,9 @@ def event_boss_hunt(boss_name):
             utils.tap_image(img.picky_boss_turn_in)
 
 
-def wing_boss(boss_name, boss_coord_img, wait_time=60):
+def wing_boss(boss_name, boss_fight_icon, boss_coord_img, wait_time=60):
     func.wait_and_find_party(img.picky_mvp, f'{boss_name}', 'world', wait_time, True)
-    boss.boss(timeout=240, boss_coord_img=boss_coord_img)
+    boss.boss(fight_timeout=120, timeout=120, boss_fight_icon=boss_fight_icon, boss_coord_img=boss_coord_img)
 
 
 def awakening(boss_name):
@@ -56,13 +56,14 @@ def awakening(boss_name):
         count3x3 = utils.count_image_on_screen(img.awakening_boss_3x3)
         if count3x3 == 2:
             print(f'finished 3/3')
+            func.close_any_panel()
             break
 
         while True:
             wait_time = 0
             utils.tap_if_found(img.awakening_boss_hero_challenge)
 
-            if utils.is_found_any([img.awakening_boss_spawned], similarity=similarity):
+            if utils.is_found_any([img.awakening_boss_spawned, img.awakening_boss_spawned2], similarity=similarity):
                 wait_time = 30
             elif utils.is_found_any([img.awakening_boss_1m_left, img.awakening_boss_1m_left2], similarity=similarity):
                 wait_time = 60
@@ -82,3 +83,76 @@ def awakening(boss_name):
                     boss_map_coords = [img.chat_party_coord_payon_cave_1f1, img.chat_party_coord_payon_cave_1f2, img.chat_party_coord_payon_cave_1f3]
                 wing_boss(boss_name, boss_map_coords, wait_time)
                 break
+
+
+def christmas():
+    similarity = 0.95
+    func.close_any_panel()
+    func.wait_profile()
+    func.create_party_and_invite()
+    utils.tap_any_until_found_offset(const.menu_guides, img.christmas_page, offset_x=-430)
+    utils.wait_for_image(img.christmas_page)
+    utils.wait_for_image(img.christmas_sparkling_tree)
+    utils.tap_until_found(img.christmas_sparkling_tree, img.christmas_sparkling_tree_page)
+
+    # check rewards
+    utils.tap_until_found(img.christmas_sparkling_tree_rewards, img.christmas_sparkling_tree_rewards_title)
+    func.wait(1)
+    count_3x3 = utils.count_image_on_screen(img.christmas_sparkling_tree_rewards_3x3)
+    if count_3x3 >= 2:
+        print(f'count 3/3: {count_3x3}')
+        print(f'finished 3/3')
+        func.close_any_panel()
+        func.send_message("done 3/3 [z1]")
+        func.leave_party()
+        return False
+    utils.tap_until_notfound(img.button_close, img.christmas_sparkling_tree_rewards_title)
+
+    while True:
+        wait_time = 0
+        utils.tap_if_found(img.christmas_sparkling_tree_personal_point)
+
+        if utils.is_found_any([img.boss_antonio, img.boss_antonio2]):
+            wait_time = 1
+        elif utils.is_found_any([img.christmas_sparkling_tree_1min], similarity=similarity):
+            wait_time = 100
+        elif utils.is_found_any([img.christmas_sparkling_tree_2min], similarity=similarity):
+            wait_time = 160
+
+        if wait_time > 0:
+            if utils.is_found_any([img.boss_antonio, img.boss_antonio2]):
+                go_buttons = utils.find_all_image_with_similarity(img.christmas_sparkling_tree_go_button)
+                if len(go_buttons) == 2:
+                    utils.tap_location(go_buttons[0])
+            else:
+                utils.tap_until_found(img.christmas_sparkling_tree_go_button, img.christmas_sparkling_tree_go_southeast_payon)
+                utils.tap_until_notfound(img.christmas_sparkling_tree_go_southeast_payon, img.christmas_sparkling_tree_go_southeast_payon)
+
+            while True:
+                utils.wait_for_image(img.loading, timeout=60)
+                utils.wait_until_disappear(img.loading)
+                func.open_map()
+                if utils.is_found(img.map_southeast_payon):
+                    func.close_map()
+                    break
+                func.close_map()
+                
+            func.close_any_panel()
+            func.create_party_and_invite()
+            func.kick_party_member()
+            func.request_people_join_message('Antonio')
+            coords = [img.chat_party_coord_southeast_payon1, img.chat_party_coord_southeast_payon2, img.chat_party_coord_southeast_payon3]
+            wing_boss('Antonio', img.boss_antonio_fight, coords, wait_time)
+            func.use_items()
+            return True
+        else:
+            func.wait(1)
+    
+
+def christmas_evil_reindeer():
+    func.close_any_panel()
+    func.close_hidden_menu()
+    if boss.boss_wing(boss_type='mini', timeout=10):
+        func.wait(5)
+    return False
+

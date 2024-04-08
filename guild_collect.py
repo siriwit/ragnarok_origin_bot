@@ -6,8 +6,7 @@ import utils
 
 def start():
     func.open_hidden_menu()
-    utils.wait_and_tap_any(const.menu_guilds, timeout=2)
-    utils.wait_for_image(img.guild_menu_info, timeout=2)
+    utils.tap_offset_until_found(img.menu_album, img.guild_menu_info, offset_y=-320)
     utils.tap_image_offset(img.guild_menu_info, offset_y=300)
 
     collect_sign_in()
@@ -22,7 +21,15 @@ def collect_sign_in():
 def collect_city_lord():
     utils.scroll_down_util_found(img.guild_collect_city_lord_room, img.guild_collect_guild_sign_in, offset_y=200)
     utils.wait_and_tap(img.guild_collect_city_lord_room)
-    utils.wait_and_tap(img.guild_collect_option_enter_the_master_chamber, timeout=30)
+
+    if utils.wait_for_image(img.guild_collect_city_lord_room_not_available, timeout=3) is not None:
+        func.close_any_panel()
+        return
+    
+    utils.wait_for_image(img.icon_message, timeout=30)
+    icon_message = utils.find_most_top_coordinate([img.icon_message])
+    utils.tap_location(icon_message)
+
     func.wait_loading_screen()
     func.wait_profile()
     utils.key_press('m')

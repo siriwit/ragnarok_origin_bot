@@ -7,15 +7,18 @@ import utils
 def daily_demon_treasure():
     func.wait_profile()
     utils.tap_any_until_found_offset(const.menu_guides, img.daily_quest_page, offset_x=-200)
-    utils.wait_and_tap(img.daily_demon_treasure, timeout=2)
-    utils.tap_until_found(img.button_go, img.daily_demon_treasure_prontera_west)
-    utils.wait_and_tap(img.daily_demon_treasure_prontera_west)
-    demon_treasure()
+    if utils.wait_and_tap(img.daily_demon_treasure, timeout=2) is not None:
+        utils.tap_until_found(img.button_go, img.daily_demon_treasure_prontera_west)
+        utils.wait_and_tap(img.daily_demon_treasure_prontera_west)
+        demon_treasure()
+    else:
+        func.close_any_panel()
 
 
 def demon_treasure(firstime=True):
     count = 0
     while True:
+        func.close_any_panel()
         if utils.is_found(img.daily_demon_treasure_rescue):
             utils.tap_image(img.daily_demon_treasure_rescue)
             count = 0

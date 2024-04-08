@@ -95,6 +95,16 @@ def find_all_images(image_array, similarity=0.9):
     return all_image_locations
 
 
+def find_image_more_than_offset_coordinate(image_array, offset_x=0, offset_y=0, similarity=0.9):
+    image_coordinates = find_all_images(image_array, similarity)
+    tobe_return_coordinate = []
+    for image_coordinate in image_coordinates:
+        center_x, center_y = find_image_center(image_coordinate)
+        if center_x > offset_x and center_y > offset_y:
+            tobe_return_coordinate.append(image_coordinate)
+    return tobe_return_coordinate
+
+
 def find_most_left_coordinate(image_array):
     image_coordinates = find_all_images(image_array)
     least_x = 9999
@@ -109,15 +119,28 @@ def find_most_left_coordinate(image_array):
 
 def find_most_bottom_coordinate(image_array):
     image_coordinates = find_all_images(image_array)
-    least_y = 9999
+    least_y = 0
     tobe_return_coordinate = list()
     for image_coordinate in image_coordinates:
         _, center_y = find_image_center(image_coordinate)
-        if center_y < least_y:
+        print(center_y)
+        if center_y > least_y:
             least_y = center_y
             tobe_return_coordinate = image_coordinate
     return tobe_return_coordinate
 
+
+def find_most_top_coordinate(image_array):
+    image_coordinates = find_all_images(image_array)
+    max_y = 9999
+    tobe_return_coordinate = list()
+    for image_coordinate in image_coordinates:
+        _, center_y = find_image_center(image_coordinate)
+        print(center_y)
+        if center_y < max_y:
+            max_y = center_y
+            tobe_return_coordinate = image_coordinate
+    return tobe_return_coordinate
 
 
 def group_coordinate(image_locations):
@@ -185,6 +208,20 @@ def wait_any_image(image_filenames, timeout=10, similarity=0.9):
     return None
 
 
+def hilight(x, y):
+    if debug:
+        screen = window.screenshot()
+        search = search_screen.Classbot(screen, window_name=settings['window_name'])
+        search.draw_debug_rect("hilight", int(x-5), int(y-5), 10, 10, show_finding_image=True)
+
+
+def hilight_image(image_path, offset_x=0, offset_y=0, similarity=0.9):
+    image_location = find_image_with_similarity(image_path, similarity=similarity)
+    if image_location is not None:
+        center_x, center_y = find_image_center(image_location)
+        hilight(center_x+offset_x, center_y+offset_y)
+
+
 def tap(x, y):
 
     if debug:
@@ -233,6 +270,10 @@ def is_empty(obj):
     return False
 
 
+def hilight_location(coordinate, offset_x=0, offset_y=0):
+    center_x, center_y = find_image_center(coordinate)
+    hilight(center_x + offset_x, center_y + offset_y)
+
 def tap_location(coordinate, offset_x=0, offset_y=0):
     center_x, center_y = find_image_center(coordinate)
     tap(center_x + offset_x, center_y + offset_y)
@@ -249,7 +290,14 @@ def tap_location_until_found(location, expected_found_image, timeout=10):
 
 def tap_if_found(image_path):
     if is_found(image_path):
-        tap_image(image_path)
+        return tap_image(image_path)
+    return None
+
+
+def tap_offset_if_found(image_path, offset_x=0, offset_y=0):
+    if is_found(image_path):
+        return tap_image_offset(image_path, offset_x, offset_y)
+    return None
 
 
 def tap_all(images):
@@ -264,11 +312,11 @@ def tap_any(menu_images, similarity=0.9):
     return None
         
 
-def tap_any_until_found_offset(to_be_tap_images, expected_found_image, offset_x=0, offset_y=0, timeout=10):
+def tap_any_until_found_offset(to_be_tap_images, expected_found_image, offset_x=0, offset_y=0, timeout=10, similarity=0.9):
     start_time = time.time()
     while time.time() - start_time < timeout:
-        tap_any_offset(to_be_tap_images, offset_x, offset_y)
-        wait_for_image(expected_found_image, timeout=1)
+        tap_any_offset(to_be_tap_images, offset_x, offset_y, similarity=similarity)
+        wait_for_image(expected_found_image, timeout=1, similarity=similarity)
         if is_found(expected_found_image):
             return True
     return False
@@ -303,34 +351,48 @@ def wait_until_disappear(image_path, timeout=10):
 
 
 
-def tap_until_found(image_path, util_found_image, interval=1, timeout=10, similarity=0.9):
+def tap_until_found(image_path, util_found_image, interval=1, timeout=10, similarity=0.9, delay=0.25):
     start_time = time.time()
     while time.time() - start_time < timeout:
+        time.sleep(delay)
         tap_image(image_path, similarity)
         if wait_for_image(util_found_image, timeout=interval, similarity=similarity) is not None:
-            break
+            return True
+    return False
 
-def tap_any_until_found(image_paths, util_found_image, interval=1, timeout=10):
+def tap_any_until_found(image_paths, util_found_image, interval=1, timeout=10, delay=0.25):
     start_time = time.time()
     while time.time() - start_time < timeout:
+        time.sleep(delay)
         tap_any(image_paths)
         if wait_for_image(util_found_image, timeout=interval) is not None:
             break
 
-def tap_until_notfound(image_path, util_notfound_image, interval=1, timeout=10):
+def tap_any_until_found_any(image_paths, util_found_images, interval=1, timeout=10, delay=0.25):
     start_time = time.time()
     while time.time() - start_time < timeout:
+        time.sleep(delay)
+        tap_any(image_paths)
+        if wait_any_image(util_found_images, timeout=interval) is not None:
+            break
+
+def tap_until_notfound(image_path, util_notfound_image, interval=1, timeout=10, delay=0.25):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        time.sleep(delay)
         tap_image(image_path)
         if wait_until_disappear(util_notfound_image, timeout=interval):
-            break
+            return True
+    return False
 
 def tap_offset_until_found(image_path, util_found_image, interval=1, offset_x=0, offset_y=0, timeout=10, similarity=0.9):
     start_time = time.time()
     while time.time() - start_time < timeout:
         if wait_for_image(util_found_image, timeout=interval, similarity=similarity) is not None:
             log(f'tap_offset_util_found: {image_path} until found: {util_found_image} - break')
-            break
+            return True
         tap_image_offset(image_path, offset_x, offset_y, similarity=similarity)
+    return False
 
 
 def tap_offset_until_notfound(image_path, util_notfound_image, interval=1, offset_x=0, offset_y=0, timeout=10):
@@ -588,17 +650,18 @@ def create_target_time(hour, minute, add1day=False):
     return target_time
 
 
-def exit_at_specific_time(hour, minute, function, *args):
+def exit_at_specific_time_or_invalid_state(hour, minute, function, *args):
     target_time = find_target_time(hour, minute)
     duration = time_diff(target_time)
     print(duration)
     while duration > 0:
         print(duration)
-        function(*args)
+        if not function(*args):
+            break
         duration = time_diff(target_time)
 
 
-def execute_valid_state_with_timeout(timeout, interval, function, *args):
+def execute_until_valid_state_with_timeout(timeout, interval, function, *args):
     start_time = time.time()
     while time.time() - start_time < timeout:
         if function(*args):
