@@ -7,40 +7,9 @@ import sys
 import time
 
 
-def event_boss_hunt(boss_name):
-    func.wait_profile()
-    utils.tap_all(const.picky_boss_menu_icon)
-    utils.wait_and_tap(img.picky_boss_ultimate_clash)
-    utils.wait_for_image(img.picky_boss_ultimate_clash_page, timeout=2)
-    if utils.is_found(img.picky_boss_ultimate_clash_page):
-
-        if utils.is_found(img.picky_boss_3_3, similarity=0.99):
-            utils.tap_image(img.button_back)
-            utils.tap_image(img.button_back)
-            sys.exit(0)
-        
-        while True:
-            found_image = utils.is_found_any(const.picky_boss_times, similarity=0.99)
-            if found_image == img.picky_boss_1m:
-                wing_boss(boss_name, 60)
-                break
-            elif found_image == img.picky_boss_2m:
-                wing_boss(boss_name, 120)
-                break
-            elif found_image == img.picky_boss_3m:
-                wing_boss(boss_name, 180)
-                break
-            elif found_image == img.picky_boss_19m or found_image == img.picky_boss_20m:
-                utils.wait_for_image(img.picky_boss_map)
-                wing_boss(boss_name, 0)
-                break
-            time.sleep(1)
-            utils.tap_image(img.picky_boss_turn_in)
-
-
 def wing_boss(boss_name, boss_fight_icon, boss_coord_img, wait_time=60):
     func.wait_and_find_party(img.picky_mvp, f'{boss_name}', 'world', wait_time, True)
-    boss.boss(fight_timeout=120, timeout=120, boss_fight_icon=boss_fight_icon, boss_coord_img=boss_coord_img)
+    boss.boss(fight_timeout=120, timeout=600, boss_fight_icon=boss_fight_icon, boss_coord_img=boss_coord_img)
 
 
 def awakening(boss_name):
@@ -156,3 +125,55 @@ def christmas_evil_reindeer():
         func.wait(5)
     return False
 
+def picky_boss(boss_name):
+
+    ultimate_clash_boss_icon = ''
+    coords = []
+    boss_fight_icon = ''
+    if boss_name == 'Angelic Picky':
+        ultimate_clash_boss_icon = img.picky_boss_angelic_picky
+        boss_fight_icon = img.boss_angelic_picky_fight
+        coords = [img.chat_party_coord_prontera_south1, img.chat_party_coord_prontera_south2]
+    elif boss_name == 'Demonic Eggy':
+        ultimate_clash_boss_icon = img.picky_boss_demonic_eggy
+        boss_fight_icon = img.boss_demonic_eggy_fight
+        coords = [img.chat_party_coord_prontera_north1, img.chat_party_coord_prontera_north2, img.chat_party_coord_prontera_north3]
+
+    func.close_any_panel()
+    utils.key_press('u')
+    utils.wait_for_image(img.picky_boss_ultimate_clash)
+    utils.tap_until_found(img.picky_boss_ultimate_clash, img.picky_boss_ultimate_clash_page)
+    if utils.is_found(img.picky_boss_ultimate_clash_page):
+
+        if utils.is_found(img.picky_boss_3_3, similarity=0.99):
+            func.close_any_panel()
+            return False
+        
+        while True:
+            found_image = utils.is_found_any(const.picky_boss_times, similarity=0.99)
+
+            if found_image is not None:
+                utils.tap_until_notfound(ultimate_clash_boss_icon, ultimate_clash_boss_icon)
+                utils.wait_for_image(img.picky_boss_map)
+                if not utils.execute_until_valid_state_with_timeout(150, 1, boss.running_to_boss_map_state, img.picky_boss_map):
+                    func.butterfly_wing_morroc()
+                    return True
+
+                boss_wait_time = 0
+                if found_image == img.picky_boss_1m:
+                    boss_wait_time = 60
+                elif found_image == img.picky_boss_2m:
+                    boss_wait_time = 120
+                elif found_image == img.picky_boss_3m:
+                    boss_wait_time = 180
+                elif found_image == img.picky_boss_19m or found_image == img.picky_boss_20m:
+                    boss_wait_time = 0
+
+                boss_wait_time = boss_wait_time - 10
+                wing_boss(boss_name, boss_fight_icon, coords, boss_wait_time)
+                
+                return True
+            
+            time.sleep(1)
+            
+            

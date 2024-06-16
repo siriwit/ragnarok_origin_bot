@@ -39,7 +39,6 @@ def fight(horn_mode=False):
     if utils.is_found(img.button_go_challenge):
         utils.wait_and_tap(img.button_go_challenge)
         if horn_mode:
-            utils.wait_for_image(img.time_anomaly_horn)
             utils.tap_offset_until_notfound(img.button_go_challenge, img.time_anomaly_page, offset_y=20)
         else:
             utils.tap_until_notfound(img.button_go_challenge, img.time_anomaly_page)

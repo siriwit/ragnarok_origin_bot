@@ -444,7 +444,7 @@ def boss_remaining_time(image_filename, boss_region_icon, count=0):
     text = utils.get_text_from_image(image_filename)
 
     if count > 10 and utils.is_found(img.boss_drag_icon):
-        utils.drag_up(img.boss_drag_icon)
+        utils.drag_up(img.boss_drag_icon, offset_y=25)
         count = 0
             
     try:
@@ -521,7 +521,7 @@ def boss_wing(boss_type='mvp', timeout=120, coord_imgs=None):
 
 def check_boss_icon(boss_type='mvp', delay=0, similarity=0.9):
     func.wait(delay)
-    utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, interval=0.3, offset_x=85, similarity=similarity)
+    utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, delay=0.3, offset_x=85, similarity=similarity)
 
     if boss_type == 'mvp':
         return auto_attack()
@@ -553,7 +553,7 @@ def follow_coord(coord_imgs, remaining_time, similarity, leader_mode=True):
         func.close_chat()
 
         if leader_mode:
-            utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, interval=0.3, offset_x=85, similarity=similarity)
+            utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, delay=0.3, offset_x=85, similarity=similarity)
             marked_time = time.time()
             while time.time() - marked_time < 5:
                 if auto_attack(should_send_location=False):

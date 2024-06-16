@@ -25,69 +25,67 @@ def daily():
 def farm():
     func.close_hidden_menu()
     if settings["preset"] == 'jj_royal_guard':
-        # change_skill_preset(const.farm)
+        card_deck_preset(img.card_album_decks_preset_rgpve)
+        nexus_preset(img.nexus_engine_preset_pve)
+        card_preset(img.preset_card_cripve)
+        character_preset(1)
         change_skill_auto(const.farm)
-        # change_item_preset(const.farm)
         pet_selector()
         attack_preset()
-        sigil(const.tank)
     elif settings["preset"] == 'jj_rune_knight':
         change_skill_auto(const.sword)
-        # change_item_preset(const.farm)
         pet_selector()
         attack_preset()
-        sigil(const.farm)
 
 
 def boss(is_event=False):
     func.close_hidden_menu()
     if settings["preset"] == 'jj_royal_guard':
-        # change_skill_preset(const.farm)
+        card_deck_preset(img.card_album_decks_preset_rgpve)
+        card_preset(img.preset_card_cripve)
+        nexus_preset(img.nexus_engine_preset_pve)
+        character_preset(1)
         if is_event:
             change_skill_auto(const.boss_event)
         else:
             change_skill_auto(const.boss)
-        # change_item_preset(const.farm)
         pet_selector(img.pet_icon_genesis)
         attack_preset()
-        sigil(const.farm)
     elif settings["preset"] == 'jj_rune_knight':
-        # change_skill_preset(const.farm)
         if is_event:
             change_skill_auto(const.boss_event)
         else:
             change_skill_auto(const.boss)
-        # change_item_preset(const.farm)
         pet_selector(img.pet_icon_genesis)
         attack_preset()
-        sigil(const.farm)
 
 
 def tank():
     func.close_hidden_menu()
     if settings["preset"] == 'jj_royal_guard':
+        card_deck_preset(img.card_album_decks_preset_rgtank)
+        card_preset(img.preset_card_tankpvp)
+        nexus_preset(img.nexus_engine_preset_tank)
+        character_preset(0)
         pet_selector()
         attack_preset()
-        sigil(const.tank)
     elif settings["preset"] == 'jj_rune_knight':
         pet_selector()
         attack_preset()
-        sigil(const.tank)
 
 
 def pvp():
     if settings["preset"] == 'jj_royal_guard':
-        change_skill_auto(const.pvp)
+        card_deck_preset(img.card_album_decks_preset_rgtank)
+        card_preset(img.preset_card_tankpvp)
+        nexus_preset(img.nexus_engine_preset_tank)
+        character_preset(0)
         pet_selector(img.pet_icon_genesis)
         attack_preset()
-        againt_monster_card(tribe=const.human, element=const.neutral, size=const.medium)
-        sigil(const.pvp)
     elif settings["preset"] == 'jj_rune_knight':
         change_skill_auto(const.pvp)
         pet_selector(img.pet_icon_sohee)
         attack_preset()
-        againt_monster_card(tribe=const.human, element=const.neutral, size=const.medium)
-        sigil(const.pvp)
 
 
 def eat_food():
@@ -103,6 +101,48 @@ def eat_food():
         utils.tap_until_found(img.backpack_seafood_fried_noodles, img.button_use_small_blue)
         utils.tap_image(img.button_use_small_blue)
         func.close_any_panel()
+
+
+def character_preset(char_preset_index=1):
+    if utils.tap_until_found(img.jj_profile, img.character_page):
+        utils.tap_offset_until_found(img.button_close_trading, img.royalguard_mighty_defender, offset_x=150, offset_y=470)
+        edit_buttons = utils.find_all_image_with_similarity(img.character_edit_button)
+        if len(edit_buttons) > char_preset_index:
+            location = edit_buttons[char_preset_index]
+            for _ in range(0, 3):
+                utils.tap_location(location, offset_y=70)
+                time.sleep(1)
+    func.close_any_panel()
+
+
+def card_preset(preset_name):
+    open_change_card_page()
+    if preset_name == img.preset_card_cripve and not utils.is_found(img.preset_card_cripve_active):
+        utils.tap_until_found(img.preset_card_album_belt, img.preset_card_album_belt_page)
+        utils.tap_until_notfound(img.preset_card_cripve, img.preset_card_cripve)
+    elif preset_name == img.preset_card_tankpvp and not utils.is_found(img.preset_card_tankpvp_active):
+        utils.tap_until_found(img.preset_card_album_belt, img.preset_card_album_belt_page)
+        utils.tap_until_notfound(img.preset_card_tankpvp, img.preset_card_tankpvp)
+    func.close_any_panel()
+
+
+def card_deck_preset(preset):
+    func.open_menu_guide()
+    if utils.tap_until_found(img.guide_card_album, img.card_album_decks):
+        utils.tap_until_found(img.card_album_decks, img.card_album_decks_active)
+        utils.wait_for_image(img.card_album_decks_preset)
+        utils.tap_until_found(img.card_album_decks_preset, preset)
+        utils.tap_until_notfound(preset, preset, similarity=0.95)
+    func.close_any_panel()
+
+
+def nexus_preset(preset):
+    func.open_hidden_menu()
+    if utils.tap_offset_until_found(img.menu_album, img.nexus_engine_page, offset_x=-450, offset_y=-420):
+        utils.wait_for_image(img.nexus_engine_preset)
+        utils.tap_until_found(img.nexus_engine_preset, preset)
+        utils.tap_until_notfound(preset, preset)
+    func.close_hidden_menu()
 
 
 def party():
@@ -271,35 +311,31 @@ def attack_preset():
 
 
 def open_change_card_page():
-    if settings["preset"] == 'jj_royal_guard':
-        func.close_any_panel(img.menu_bag)
-        func.open_bag()
-        utils.wait_and_tap(img.weapon7)
-        utils.wait_and_tap(img.button_more)
-        utils.wait_and_tap(img.button_card)
-    elif settings["preset"] == 'jj_rune_knight':
-        func.close_any_panel(img.menu_bag)
-        func.open_bag()
-        utils.wait_and_tap(img.weapon7)
-        utils.wait_and_tap(img.button_more)
-        utils.wait_and_tap(img.button_card)
+    func.close_any_panel(img.menu_bag)
+    func.open_bag()
+    if utils.wait_and_tap(img.weapon7) is not None and \
+        utils.wait_for_image(img.button_more) is not None:
+        utils.tap_until_found(img.button_more, img.button_card, delay=1)
+        utils.tap_until_found(img.button_card, img.card_page, delay=1)
+        return True
+    return False
 
 
 def change_card(preset=None):
-    open_change_card_page()
-    card_weapon_preset(preset)
-    card_shield_preset(preset)
-    card_armor(preset)
-    card_cloak_preset(preset)
+    if open_change_card_page():
+        card_weapon_preset(preset)
+        card_shield_preset(preset)
+        card_armor(preset)
+        card_cloak_preset(preset)
     func.close_any_panel()
 
 
 def againt_monster_card(tribe='', element='', size='', boss_level=0):
-    open_change_card_page()
-    card_weapon_preset(tribe, element, size)
-    card_shield_preset(tribe, boss_level)
-    card_armor(tribe, element, boss_level)
-    card_cloak_preset(tribe, element, boss_level)
+    if open_change_card_page():
+        card_weapon_preset(tribe, element, size)
+        card_shield_preset(tribe, boss_level)
+        card_armor(tribe, element, boss_level)
+        card_cloak_preset(tribe, element, boss_level)
     func.close_any_panel()
 
 

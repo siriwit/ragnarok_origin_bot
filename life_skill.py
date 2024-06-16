@@ -13,7 +13,7 @@ def start(mode='foraging', expected_food=img.life_skill_cooking_seafood_fried_no
 def life_skill_state(mode, expected_food):
     func.use_items()
     func.close_any_panel()
-    utils.tap_offset_until_found(img.menu_bag, img.menu_life_skill, offset_x=180)
+    func.open_hidden_menu()
     func.wait(1)
     utils.tap_image(img.menu_life_skill)
     utils.wait_for_image(img.life_skill_path_of_arts, timeout=2)
@@ -35,14 +35,14 @@ def life_skill_state(mode, expected_food):
         utils.wait_for_image(img.life_skill_magnifying_glass)
         utils.tap_until_found(img.life_skill_magnifying_glass, img.life_skill_nature_go)
         utils.wait_and_tap(img.life_skill_nature_go)
-        utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)
+        func.close_hidden_menu()
     elif mode == 'cooking':
         utils.wait_and_tap(img.life_skill_arts_go)
-        utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)
+        func.close_hidden_menu()
 
     if mode == 'foraging':
         if utils.wait_for_image(img.foraging, timeout=120) is not None:
-            forging()
+            foraging()
         else:
             life_skill_state('foraging', None)
         return True
@@ -67,33 +67,40 @@ def wait_cooking_page_state(expected_food):
     return False
 
 
-def forging():
-    while True:
-        if utils.wait_for_image(img.life_skill_foraging_run_out, timeout=2) is not None:
-            sys.exit(0)
+def foraging():
+    utils.execute_until_valid_state_with_timeout(600, 1, foraging_state)
 
-        func.close_any_panel()
-        func.ang_pao()
-        utils.tap_image(img.foraging)
+
+def foraging_state():
+    if utils.wait_for_image(img.life_skill_foraging_run_out, timeout=2) is not None:
+        return True
+
+    func.close_any_panel()
+    func.ang_pao()
+    utils.tap_image(img.foraging)
+    return False
 
 
 def fishing():
     utils.tap_if_found(img.party_inactive)
     baiting()
+    utils.execute_until_valid_state_with_timeout(2000, 1, fishing_state)   
 
-    while True:
-        if utils.is_found(img.life_skill_fishing_done):
-            utils.wait_and_tap(img.button_confirm_medium)
-            sys.exit(0)
-        if utils.is_found(img.life_skill_fishing_bait):
-            sys.exit(0)
-        func.ang_pao()
-        func.close_any_panel()
-        utils.tap_any_offset(const.guilds, offset_x=-100, offset_y=-200)
-        found_image = utils.wait_and_tap(img.fishing_alert, timeout=5)
-        if found_image is not None:
-            utils.wait_for_image(img.life_skill_tap_anywhere, timeout=1)
-            utils.tap_image_offset(img.life_skill_tap_anywhere, offset_x=-400, offset_y=-400)
+
+def fishing_state():
+    if utils.is_found(img.life_skill_fishing_done):
+        utils.wait_and_tap(img.button_confirm_medium)
+        return True
+    if utils.is_found(img.life_skill_fishing_bait):
+        return True
+    func.ang_pao()
+    func.close_any_panel()
+    utils.tap_any_offset(const.guilds, offset_x=-200, offset_y=-200)
+    found_image = utils.wait_and_tap(img.fishing_alert, timeout=5)
+    if found_image is not None:
+        utils.wait_for_image(img.life_skill_tap_anywhere, timeout=1)
+        utils.tap_image_offset(img.life_skill_tap_anywhere, offset_x=-400, offset_y=-400)
+    return False
         
 
 def baiting():

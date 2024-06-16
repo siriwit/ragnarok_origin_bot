@@ -279,13 +279,12 @@ def tap_location(coordinate, offset_x=0, offset_y=0):
     tap(center_x + offset_x, center_y + offset_y)
 
 
-def tap_location_until_found(location, expected_found_image, timeout=10):
+def tap_location_until_found(location, expected_found_image, timeout=10, delay=1):
     start_time = time.time()
     while time.time() - start_time < timeout:
-        tap_location(location)
-        wait_for_image(expected_found_image, timeout=1)
-        if is_found(expected_found_image):
+        if wait_for_image(expected_found_image, timeout=delay) is not None:
             return True
+        tap_location(location)
     return False
 
 def tap_if_found(image_path):
@@ -340,10 +339,10 @@ def wait_and_tap_any(image_paths, timeout=10, similarity=0.9):
         tap_location(location)
 
 
-def wait_until_disappear(image_path, timeout=10):
+def wait_until_disappear(image_path, timeout=10, similarity=0.9):
     count = 0
     while count < timeout:
-        if not is_found(image_path):
+        if not is_found(image_path, similarity):
             return True
         count += 1
         time.sleep(1)
@@ -351,55 +350,66 @@ def wait_until_disappear(image_path, timeout=10):
 
 
 
-def tap_until_found(image_path, util_found_image, interval=1, timeout=10, similarity=0.9, delay=0.25):
+def tap_until_found(image_path, util_found_image, interval=1, timeout=10, similarity=0.9, delay=1):
     start_time = time.time()
     while time.time() - start_time < timeout:
-        time.sleep(delay)
+        time.sleep(interval)
         tap_image(image_path, similarity)
-        if wait_for_image(util_found_image, timeout=interval, similarity=similarity) is not None:
+        if wait_for_image(util_found_image, timeout=delay, similarity=similarity) is not None:
             return True
     return False
 
-def tap_any_until_found(image_paths, util_found_image, interval=1, timeout=10, delay=0.25):
+def tap_any_until_found(image_paths, util_found_image, interval=1, timeout=10, delay=1):
     start_time = time.time()
     while time.time() - start_time < timeout:
-        time.sleep(delay)
+        time.sleep(interval)
         tap_any(image_paths)
-        if wait_for_image(util_found_image, timeout=interval) is not None:
+        if wait_for_image(util_found_image, timeout=delay) is not None:
             break
 
-def tap_any_until_found_any(image_paths, util_found_images, interval=1, timeout=10, delay=0.25):
+
+def tap_any_until_notfound_any(image_paths, util_notfound_image, interval=1, timeout=10, delay=1):
     start_time = time.time()
     while time.time() - start_time < timeout:
-        time.sleep(delay)
+        time.sleep(interval)
         tap_any(image_paths)
-        if wait_any_image(util_found_images, timeout=interval) is not None:
+        if wait_any_image(util_notfound_image, timeout=delay) is None:
             break
 
-def tap_until_notfound(image_path, util_notfound_image, interval=1, timeout=10, delay=0.25):
+
+def tap_any_until_found_any(image_paths, util_found_images, interval=1, timeout=10, delay=1):
     start_time = time.time()
     while time.time() - start_time < timeout:
+        time.sleep(interval)
+        tap_any(image_paths)
+        if wait_any_image(util_found_images, timeout=delay) is not None:
+            break
+
+def tap_until_notfound(image_path, util_notfound_image, interval=1, timeout=10, delay=0.25, similarity=0.9):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        time.sleep(interval)
+        tap_image(image_path, similarity=similarity)
         time.sleep(delay)
-        tap_image(image_path)
-        if wait_until_disappear(util_notfound_image, timeout=interval):
+        if wait_until_disappear(util_notfound_image, timeout=delay, similarity=similarity):
             return True
     return False
 
-def tap_offset_until_found(image_path, util_found_image, interval=1, offset_x=0, offset_y=0, timeout=10, similarity=0.9):
+def tap_offset_until_found(image_path, util_found_image, delay=1, offset_x=0, offset_y=0, timeout=10, similarity=0.9):
     start_time = time.time()
     while time.time() - start_time < timeout:
-        if wait_for_image(util_found_image, timeout=interval, similarity=similarity) is not None:
+        if wait_for_image(util_found_image, timeout=delay, similarity=similarity) is not None:
             log(f'tap_offset_util_found: {image_path} until found: {util_found_image} - break')
             return True
         tap_image_offset(image_path, offset_x, offset_y, similarity=similarity)
     return False
 
 
-def tap_offset_until_notfound(image_path, util_notfound_image, interval=1, offset_x=0, offset_y=0, timeout=10):
+def tap_offset_until_notfound(image_path, util_notfound_image, delay=1, offset_x=0, offset_y=0, timeout=10):
     start_time = time.time()
     while time.time() - start_time < timeout:
         tap_image_offset(image_path, offset_x, offset_y)
-        if wait_until_disappear(util_notfound_image, timeout=interval):
+        if wait_until_disappear(util_notfound_image, timeout=delay):
             break
 
 
@@ -448,6 +458,12 @@ def is_found_any(images, similarity=0.90):
         if is_found(image, similarity):
             return image
     return None
+
+
+def is_found_within_timeout(image_path, timeout=10, similarity=0.9):
+    if wait_for_image(image_path, timeout, similarity) is not None:
+        return True
+    return False
 
 
 def hold_press(key, timeout=1):
@@ -501,9 +517,12 @@ def get_text_from_image(image_filename, offset_x=100, offset_y=45):
 
 
 def drag_and_drop_image(source_image, target_image):
-    source_x, source_y = find_image_center(find_image_with_similarity(source_image))
-    target_x, target_y = find_image_center(find_image_with_similarity(target_image))
-    drag_and_drop(source_x, source_y, target_x, target_y)
+    source_object = wait_for_image(source_image)
+    target_object = wait_for_image(target_image)
+    if source_object is not None and target_object is not None:
+        source_x, source_y = find_image_center(source_object)
+        target_x, target_y = find_image_center(target_object)
+        drag_and_drop(source_x, source_y, target_x, target_y)
 
 
 def drag_and_drop(source_x, source_y, destination_x, destination_y, duration=0.25, hold=0):

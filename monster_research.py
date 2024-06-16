@@ -6,10 +6,10 @@ import preset
 import utils
 
 
-def start(name, wing_boss, invite_people, should_att):
+def start(name, wing_boss, invite_people, should_att, warp_detect):
     func.create_party_and_invite()
     func.element_convert(const.neutral)
-    utils.exit_at_specific_time_or_invalid_state(4, 40, mr_farm, name, 'world', wing_boss, invite_people, should_att)
+    utils.exit_at_specific_time_or_invalid_state(4, 40, mr_farm, name, 'world', wing_boss, invite_people, should_att, warp_detect)
     func.butterfly_wing_morroc()
 
 
@@ -18,7 +18,7 @@ def monster(monster, name, invite_people):
     utils.exit_at_specific_time_or_invalid_state(4, 40, specific_monster_state, monster, name, invite_people, 'party')
 
 
-def mr_farm(name, send_msg_to, wing_boss, invite_people, should_att):
+def mr_farm(name, send_msg_to, wing_boss, invite_people, should_att, warp_detect):
 
     if invite_people:
         message = f'MR {name} {func.find_remaining_party_number()}'
@@ -37,12 +37,12 @@ def mr_farm(name, send_msg_to, wing_boss, invite_people, should_att):
     if should_att:
         func.auto_attack(const.att_all, all_radius=False)
 
-    utils.execute_until_invalid_state(240, 1, mr_wait)
+    utils.execute_until_invalid_state(240, 1, mr_wait, warp_detect)
 
     return True
 
 
-def mr_wait():
+def mr_wait(warp_detect):
     func.ang_pao()
     func.use_items()
     func.close_any_panel()
@@ -51,7 +51,7 @@ def mr_wait():
 
     func.guild_quest_aid()
 
-    if utils.is_found_any([img.map_warp1, img.map_warp2]):
+    if warp_detect and utils.is_found_any([img.map_warp1, img.map_warp2]):
         func.wing()
         return False
     return True

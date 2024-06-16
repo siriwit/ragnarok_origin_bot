@@ -17,8 +17,8 @@ farm_mr:
 angpao:
 	python .\ragnarok.py angpao
 
-forging:
-	python .\ragnarok.py forging
+foraging:
+	python .\ragnarok.py foraging
 
 fishing:
 	python .\ragnarok.py fishing

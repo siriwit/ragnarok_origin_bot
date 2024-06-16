@@ -59,6 +59,9 @@ chat_party = 'party'
 chat_guild = 'guild'
 chat_world = 'world'
 
+# card preset
+card_preset_cripve = 'cripve'
+
 batterry_savings = [img.battery_saving1]
 boss_icons = [img.icon_boss, img.icon_boss_bottom, img.icon_boss_left, img.icon_boss_right, img.icon_boss_top]
 small_map_boss_icons = [img.icon_boss2, img.icon_boss_right2, img.icon_boss_top2, img.icon_boss_left2, img.icon_boss_bottom2, img.icon_boss4]
@@ -86,11 +89,10 @@ menu_guilds = [img.menu_guild, img.menu_guild2]
 mounts = [img.mount, img.mount2]
 party_members = [img.party_number_1, img.party_number_2, img.party_number_3, img.party_number_4, img.party_number_5]
 party_kicks = [img.party_offline, img.party_offline2, img.party_offline3, img.party_die_afk, img.party_die_afk2]
-pets = [img.pet_icon_genesis, img.pet_icon_dunell, img.pet_icon_earthlord, img.pet_icon_squid, img.pet_icon_sohee, img.pet_icon_huanhuan]
+pets = [img.pet_icon_genesis, img.pet_icon_dunell, img.pet_icon_earthlord, img.pet_icon_king_piggy]
 preset_settings = [img.preset_settings1, img.preset_settings2]
 preset_tab_skills = [img.preset_tab_skill]
-picky_boss_times = [img.picky_boss_1m, img.picky_boss_3m, img.picky_boss_19m, img.picky_boss_20m]
-picky_boss_menu_icon = [img.picky_boss_menu_icon1, img.picky_boss_menu_icon2]
+picky_boss_times = [img.picky_boss_1m, img.picky_boss_2m, img.picky_boss_3m, img.picky_boss_19m, img.picky_boss_20m]
 preset_pet_expands = [img.preset_pet_expand1, img.preset_pet_expand2, img.preset_pet_expand3]
 tap_anywheres = [img.daily_anthem_tap_anywhere1, img.daily_anthem_tap_anywhere2, img.tap_anywhere2, img.tap_anywhere3]
 ygg_next_wave = [img.ygg_next_wave1, img.ygg_next_wave2, img.ygg_next_wave3, img.ygg_next_wave4]

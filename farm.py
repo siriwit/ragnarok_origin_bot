@@ -56,13 +56,13 @@ def monster_annihilation_state():
 
 def handle_material():
     similarity = 0.95
-    stalling_item_list = [img.item_ice_cube_999, img.item_hinalle_leaflet_999, img.item_lemon_999, img.item_unripe_apple_999, img.item_tassel_999]
-    selling_list = [img.item_pine_apple_999, img.item_melon_999, img.item_red_candle_999]
+    stalling_item_list = [img.item_dust_999, img.item_insect_leg_999]
+    # selling_list = [img.item_pine_apple_999, img.item_melon_999, img.item_red_candle_999]
     func.open_bag()
     utils.tap_image_offset(img.button_close, offset_x=100, offset_y=270)
 
     stalling_item(stalling_item_list, similarity)
-    sell_item(selling_list, similarity)
+    # sell_item(selling_list, similarity)
 
     func.close_any_panel()
 
@@ -70,6 +70,7 @@ def handle_material():
 def stalling_item(stalling_item_list, similarity):
     if utils.wait_any_image(stalling_item_list, timeout=1, similarity=similarity) is not None:
         utils.wait_and_tap_any(stalling_item_list, similarity=similarity)
+        utils.tap_until_found(img.button_more, img.button_stall)
         utils.tap_until_found(img.button_stall, img.button_list_item)
         utils.execute_until_invalid_state(60, 1, stalling_item_loop, stalling_item_list, similarity)
 

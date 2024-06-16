@@ -38,6 +38,7 @@ import extreme_challenge
 import phantom
 import jj_royal_guard_preset
 import woe
+import doram_quest
 
 
 def convert_weapon(element='fire'):
@@ -104,8 +105,14 @@ def dev():
     func.wait_profile(timeout=1)
 
     # while True:
-    #     utils.hilight_image(img.party_die_afk, offset_x=85, offset_y=-38)
+    #     utils.hilight_image(img.menu_album, offset_x=-450, offset_y=-420)
 
+    # func.open_bag()
+    # utils.tap_image_offset(img.button_close, offset_x=100, offset_y=270)
+    # stalling_item_list = [img.item_dust_999, img.item_insect_leg_999]
+    # farm.stalling_item(stalling_item_list, 0.95)
+
+    utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.picky_boss)
 
     # utils.exit_at_specific_time_or_invalid_state(21, 20, guild_league.fight_state)
     
@@ -116,24 +123,7 @@ def dev():
     # woe.maintain_woe()
 
     # phantom.fight()
-
-    # if utils.is_found(img.woe_meowmaru_ended):
-    #     utils.tap_offset_until_notfound(img.woe_meowmaru_ended, img.woe_meowmaru_ended, offset_y=-100)
-    # similarity=0.9
-    # if utils.is_found_any(const.party_members):
-    #     if utils.is_found(img.party_offline2):
-    #         utils.tap_offset_until_found(img.party_offline2, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
-        # elif utils.is_found(img.party_die_afk2):
-        #     utils.tap_offset_until_found(img.party_die_afk2, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
-
-    # utils.tap_if_found(img.button_confirm)
-
-    life_skill.combine_food(img.life_skill_cooking_seafood_fried_noodles)
-
-    # while True:
-    #     func.use_manual_skill(const.boss)
-    # preset.change_skill_auto(const.boss)
-    # jj_royal_guard_preset.scroll_to_damage_skill()
+    # doram_quest.onsen_pool()
 
     sys.exit(0)
 
@@ -147,7 +137,7 @@ while True:
         sys.exit(0)
     elif value == "angpao":
         func.ang_pao()
-    elif value == "forging":
+    elif value == "foraging":
         life_skill.start()
         sys.exit(0)
     elif value == "feast":

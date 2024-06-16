@@ -33,6 +33,11 @@ def reset_cooldown(key):
         cooldowns[key] = time.time()
 
 
+def set_cooldown(key, new_timeout):
+    if key in cooldowns:
+        cooldowns[key] = time.time() + new_timeout
+
+
 def reset_shield_reflection_time():
     global shield_reflection_time
     shield_reflection_time = time.time()
@@ -100,10 +105,10 @@ def royal_guard_fight():
             if func.check_cooldown("shield_reflection", 30):
                 utils.tap_if_found(img.royal_guard_skill_shield_reflection)
                 func.reset_cooldown("shield_reflection")
-            utils.tap_if_found(img.swordman_skill_endure)
-            utils.tap_if_found(img.swordman_skill_provoke)
-            utils.tap_if_found(img.paladin_skill_providence)
-        utils.tap_if_found(img.sigil_skill_descending_swords)
+            # utils.tap_if_found(img.swordman_skill_endure)
+            # utils.tap_if_found(img.swordman_skill_provoke)
+            # utils.tap_if_found(img.paladin_skill_providence)
+        # utils.tap_if_found(img.sigil_skill_descending_swords)
 
         if utils.is_found(img.royal_guard_skill_battle_chant):
             enable_battle_chant()
@@ -376,6 +381,14 @@ def use_items():
         utils.tap_if_found(img.button_back)
         break
 
+
+def open_event_page_state():
+    utils.key_press('f')
+    if utils.wait_for_image(img.event_page) is not None:
+        return True
+    return False
+
+
 def go_to_event(event_image=None):
     func.close_any_panel(img.power_up_icon)
     utils.tap_any(const.batterry_savings)
@@ -383,7 +396,7 @@ def go_to_event(event_image=None):
     handle_if_need_to_go_to_checkpoint()
     handle_battle_log(True)
 
-    if utils.tap_any_until_found_offset(const.menu_guides, img.event_page, offset_x=-100):
+    if utils.execute_until_valid_state_with_timeout(10, 1, open_event_page_state):
         if event_image != None:
             if utils.is_found(img.event_moonlit_arena):
                 utils.scroll_down_util_found(event_image, img.event_moonlit_arena, offset_y=100, timeout=1)
@@ -401,7 +414,7 @@ def go_to_event(event_image=None):
                 if utils.wait_and_tap(img.button_go_orange_small) is not None:
                     return True
             elif event_image == img.event_boss:
-                if utils.tap_until_found(event_image, img.boss_title_mvp, interval=2):
+                if utils.tap_until_found(event_image, img.boss_title_mvp, delay=2):
                     return True
             else:
                 if utils.tap_until_notfound(event_image, event_image):
@@ -443,6 +456,7 @@ def close_any_panel(expected_found_image=img.power_up_icon, depth=99, timeout=10
         
         utils.tap_any(const.button_closes)
         utils.tap_if_found(img.chat_collapse)
+        utils.tap_if_found(img.divination_house_daily_fortune_skip)
         utils.tap_any(const.tap_anywheres)
         # utils.tap_offset_if_found(img.rune_knight_skill_popup_rune_of_faith, offset_y=-50)
         
@@ -573,12 +587,20 @@ def close_debug_window():
     cv.destroyAllWindows()
 
 
+def open_menu_guide():
+    utils.key_press('g')
+    if utils.wait_for_image(img.guide_page, timeout=3) is not None:
+        return True
+    return False
+
+
 def card_change_object(used_card, selected_current_card, to_be_selected_card):
     card_object = {}
     card_object['used_card'] = used_card
     card_object['selected_current_card'] = selected_current_card
     card_object['to_be_selected_card'] = to_be_selected_card
     return card_object
+
 
 def ensure_replace_skill(ensure_skill, ensure_touse_skill, tobe_replaced_skills):
     for tobe_replaced_skill in tobe_replaced_skills:
@@ -637,12 +659,12 @@ def kick_party_member():
         elif utils.is_found(img.party_offline3):
             print("Tap img.party_offline3")
             utils.tap_offset_until_found(img.party_offline3, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
-        elif utils.is_found(img.party_die_afk):
-            print("Tap img.party_die_afk")
-            utils.tap_offset_until_found(img.party_die_afk, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
-        elif utils.is_found(img.party_die_afk2):
-            print("Tap img.party_die_afk2")
-            utils.tap_offset_until_found(img.party_die_afk2, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
+        # elif utils.is_found(img.party_die_afk):
+        #     print("Tap img.party_die_afk")
+        #     utils.tap_offset_until_found(img.party_die_afk, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
+        # elif utils.is_found(img.party_die_afk2):
+        #     print("Tap img.party_die_afk2")
+        #     utils.tap_offset_until_found(img.party_die_afk2, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
         utils.wait_and_tap(img.button_kick_out)
         utils.wait_and_tap(img.button_confirm)
 
@@ -658,24 +680,28 @@ def party_checking():
 
 def element_convert(element=None):
     open_bag()
-    utils.tap_until_found(img.weapon7, img.button_more)
-    utils.tap_until_found(img.button_more, img.button_element)
-    utils.tap_until_found(img.button_element, img.converter_page)
-    utils.tap_until_found(img.converter_dropdown_button, img.converter_dropdown_disable)
+    utils.tap_until_found(img.weapon7, img.button_more, delay=3)
+    utils.tap_until_found(img.button_more, img.button_element, delay=2)
+    utils.tap_until_found(img.button_element, img.converter_page, delay=2)
 
     element_select(element)
     close_any_panel()
 
 
 def element_select(element):
+    utils.tap_until_found(img.converter_dropdown_button, img.converter_dropdown_disable, delay=1)
     if element == const.fire:
+        utils.wait_for_image(img.converter_dropdown_water_icon)
         utils.tap_until_notfound(img.converter_dropdown_water_icon, img.converter_water_active)
     elif element == const.wind:
+        utils.wait_for_image(img.converter_dropdown_earth_icon)
         utils.tap_until_notfound(img.converter_dropdown_earth_icon, img.converter_earth_active)
     elif element == const.water:
+        utils.wait_for_image(img.converter_dropdown_wind_icon)
         utils.tap_until_notfound(img.converter_dropdown_wind_icon, img.converter_wind_active)
-    elif element == const.earth:
-        utils.tap_until_found(img.converter_dropdown_fire_icon, img.converter_fire_active)
+    elif element == const.earth or element == const.shadow or element == const.undead:
+        utils.wait_for_image(img.converter_dropdown_fire_icon)
+        utils.tap_until_notfound(img.converter_dropdown_fire_icon, img.converter_fire_active)
     else:
         utils.tap_until_found(img.converter_dropdown_disable, img.converter_neutral_active)
 
@@ -724,9 +750,26 @@ def guild_quest_aid():
 
 def engrave_gemstone():
     if utils.is_found_any(const.gemstone_help_graves):
-        utils.tap_any_until_found(const.gemstone_help_graves, img.gemstone_page)
-        locations = utils.find_all_images([img.gemstone_empty, img.gemstone_not_empty, img.gemstone_big_empty, img.gemstone_big_not_empty])
-        for location in locations:
-            utils.tap_location(location)
-            func.wait(1)
+        location = utils.find_most_bottom_coordinate(const.gemstone_help_graves)
+        utils.tap_location_until_found(location, img.gemstone_page)
+        tap_all_stone()
+        if check_cooldown('mygem', 3600):
+            utils.tap_until_found(img.gemstone_my_rough_stone, img.gemstone_guild_assist)
+            my_rough_stone_engrave()
         close_any_panel()
+
+
+def my_rough_stone_engrave():
+    utils.tap_if_found(img.gemstone_guild_assist)
+    utils.wait_until_disappear(img.gemstone_guild_assist, timeout=1)
+    if utils.is_found(img.gemstone_guild_assist) and \
+        utils.is_found_within_timeout(img.gemstone_my_rough_stone_engraved, timeout=3):
+        tap_all_stone()
+        set_cooldown('mygem', 999999)
+
+
+def tap_all_stone():
+    locations = utils.find_all_images([img.gemstone_empty, img.gemstone_empty2, img.gemstone_not_empty, img.gemstone_big_empty, img.gemstone_big_not_empty])
+    for location in locations:
+        utils.tap_location(location)
+        func.wait(1)

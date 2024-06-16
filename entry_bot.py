@@ -30,6 +30,7 @@ import event_boss
 import utils
 import ygg
 import phantom
+import doram_quest
 
 
 def is_number(s):
@@ -412,10 +413,17 @@ def monster_research_mode():
             ]
     print_menu('Attack Mode', sub_menu)
     attack_monster = True if get_input(5, sub_menu, "Attack Monster?: ") == 1 else False
+
+    sub_menu = [
+                '0. Back',
+                '1. Detect',
+                '2. Not Detect'
+            ]
+    warp_detect = True if get_input(6, sub_menu, "Warp Detect?: ") == 1 else False
     
-    print(f"Map Name: {mr_name}, Wing Mini?: {wing_mini_mode}, Invite People?: {invite_people}, Attack All Mons?: {attack_monster}")
+    print(f"Map Name: {mr_name}, Wing Mini?: {wing_mini_mode}, Invite People?: {invite_people}, Attack All Mons?: {attack_monster}, Warp Detect?: {warp_detect}")
     preset.change_skill_auto(const.mr)
-    monster_research.start(mr_name, wing_mini_mode, invite_people, attack_monster)
+    monster_research.start(mr_name, wing_mini_mode, invite_people, attack_monster, warp_detect)
 
 
 def guild_expedetion_mode():
@@ -479,7 +487,9 @@ def event_boss_mode():
         '5. Fallen Genesis',
         '6. Fallen Nemesis',
         '7. Antonio',
-        '8. Evil Reindeer'
+        '8. Evil Reindeer',
+        '9. Angelic Picky',
+        '10. Demonic Eggy'
     ]
 
     print_menu('Event Boss', sub_menu)
@@ -504,6 +514,12 @@ def event_boss_mode():
         utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.christmas)
     elif input_number == 8:
         utils.execute_until_valid_state_with_timeout(180, 1, event_boss.christmas_evil_reindeer)
+    elif input_number == 9:
+        boss_name = 'Angelic Picky'
+        utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.picky_boss, boss_name)
+    elif input_number == 10:
+        boss_name = 'Demonic Eggy'
+        utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.picky_boss, boss_name)
 
 
 def farm_mode():
@@ -569,6 +585,36 @@ def extreme_challenge_mode():
         extreme_challenge.start(is_assist=True)
 
 
+def doram_mode():
+    sub_menu = [
+        '0. Back',
+        '1. Divination',
+        '2. Meow Tarot',
+        '3. Wishing',
+        '4. Beach hidden',
+        '5. Onsen'
+    ]
+
+    print_menu('Doram Mode', sub_menu)
+    input_number = get_input(2, sub_menu, 'Choose Mode: ')
+    print(f"Doram Mode: {input_number}")
+    if input_number == 0:
+        return
+    elif input_number == 1:
+        doram_quest.divination()
+    elif input_number == 2:
+        doram_quest.meow_tarot()
+    elif input_number == 3:
+        doram_quest.transform_doram()
+        doram_quest.wishing_pool()
+    elif input_number == 4:
+        doram_quest.transform_doram()
+        doram_quest.beach_hidden_obj()
+    elif input_number == 5:
+        doram_quest.transform_doram()
+        doram_quest.onsen_pool()
+
+
 print("==================================================================")
 print("=====================  Ragnarok Origin v0.1 ======================")
 print("==================================================================")
@@ -602,7 +648,8 @@ while True:
         '21. Event Boss',
         '22. YGG',
         '23. Extreme Challenge',
-        '24. Phantom']
+        '24. Phantom',
+        '25. Doram']
     print_menu('Main Menu', main_menu)
 
     input_number = get_input(1, main_menu)
@@ -665,6 +712,8 @@ while True:
         extreme_challenge_mode()
     elif input_number == 24:
         phantom.start()
+    elif input_number == 25:
+        doram_mode()
     
     func.close_debug_window()
 
