@@ -6,7 +6,7 @@ import utils
 
 def daily_demon_treasure():
     func.wait_profile()
-    utils.tap_any_until_found_offset(const.menu_guides, img.daily_quest_page, offset_x=-200)
+    utils.execute_until_valid_state_with_timeout(30, 1, func.open_daily_page_state)
     if utils.wait_and_tap(img.daily_demon_treasure, timeout=2) is not None:
         utils.tap_until_found(img.button_go, img.daily_demon_treasure_prontera_west)
         utils.wait_and_tap(img.daily_demon_treasure_prontera_west)

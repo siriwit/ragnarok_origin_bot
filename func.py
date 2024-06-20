@@ -659,9 +659,9 @@ def kick_party_member():
         elif utils.is_found(img.party_offline3):
             print("Tap img.party_offline3")
             utils.tap_offset_until_found(img.party_offline3, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
-        # elif utils.is_found(img.party_die_afk):
-        #     print("Tap img.party_die_afk")
-        #     utils.tap_offset_until_found(img.party_die_afk, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
+        elif utils.is_found(img.party_die_afk):
+            print("Tap img.party_die_afk")
+            utils.tap_offset_until_found(img.party_die_afk, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
         # elif utils.is_found(img.party_die_afk2):
         #     print("Tap img.party_die_afk2")
         #     utils.tap_offset_until_found(img.party_die_afk2, img.button_kick_out, offset_x=85, offset_y=-38, similarity=similarity)
@@ -773,3 +773,10 @@ def tap_all_stone():
     for location in locations:
         utils.tap_location(location)
         func.wait(1)
+
+
+def open_daily_page_state():
+    utils.key_press('h')
+    if utils.wait_for_image(img.daily_quest_page, timeout=2) is not None:
+        return True
+    return False

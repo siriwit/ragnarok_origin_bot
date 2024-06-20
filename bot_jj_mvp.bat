@@ -1,6 +1,6 @@
 cd bot/jj
 @REM roobot.exe "Go To Main Page"
-@REM roobot.exe "preset" "party"
+roobot.exe "preset" "party"
 @REM roobot.exe "preset" "boss" "Not Event"
 
 @REM roobot.exe "mvp" "Leader" "active" 114 999 "Not Ignore" "party"
@@ -13,8 +13,8 @@ cd bot/jj
 @REM roobot.exe "Event Boss" "Fallen Nemesis"
 @REM roobot.exe "Event Boss" "Antonio"
 
-@REM roobot.exe "preset" "Card" "brute" "water" "large"
-@REM roobot.exe "Preset" "Element" "water"
+roobot.exe "preset" "Card" "brute" "water" "large"
+roobot.exe "Preset" "Element" "water"
 roobot.exe "Event Boss" "Demonic Eggy"
 
 @REM roobot.exe "Event Boss" "Demonic Eggy"

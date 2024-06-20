@@ -112,11 +112,11 @@ def dev():
     # stalling_item_list = [img.item_dust_999, img.item_insect_leg_999]
     # farm.stalling_item(stalling_item_list, 0.95)
 
-    utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.picky_boss)
+    # utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.picky_boss)
 
     # utils.exit_at_specific_time_or_invalid_state(21, 20, guild_league.fight_state)
     
-    # utils.tap_offset_until_found(img.party_offline, img.button_kick_out, offset_x=80, offset_y=-40, similarity=similarity)
+    utils.tap_offset_until_found(img.party_die_afk, img.button_kick_out, offset_x=80, offset_y=-40, similarity=0.95)
     # func.kick_party_member()
     # phantom.fight()
 

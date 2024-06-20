@@ -18,7 +18,7 @@ def go_to_catpaw_state():
             utils.execute_until_valid_state_with_timeout(120, 1, load_cargo_state)
             return True
     
-    utils.tap_any_until_found_offset(const.menu_guides, img.daily_quest_page, offset_x=-200)
+    utils.execute_until_valid_state_with_timeout(30, 1, func.open_daily_page_state)
     utils.tap_image(img.daily_catpaw)
     utils.tap_until_notfound(img.button_go, img.button_go)
     if utils.wait_and_tap(img.icon_message, timeout=60) is not None:

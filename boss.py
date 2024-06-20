@@ -486,7 +486,7 @@ def find_remaining_time_util_realistic(previous_boss_time, current_boss_time, bo
         time.sleep(1)
 
 
-def boss_wing(boss_type='mvp', timeout=120, coord_imgs=None):
+def boss_wing(boss_type='mvp', timeout=120, coord_imgs=None, ignore_chat_wing_count=5):
     marked_time = time.time()
     diff_time = 0
     similarity = 0.90
@@ -508,7 +508,7 @@ def boss_wing(boss_type='mvp', timeout=120, coord_imgs=None):
                 return True
 
         # someone ping coordinate
-        if wing_count >= 5 and coord_imgs is not None and utils.is_found(img.chat_party_icon):
+        if wing_count >= ignore_chat_wing_count and coord_imgs is not None and utils.is_found(img.chat_party_icon):
             if follow_coord(coord_imgs, (timeout-diff_time), similarity):
                 return True
             
@@ -565,9 +565,9 @@ def follow_coord(coord_imgs, remaining_time, similarity, leader_mode=True):
     return False
 
 
-def boss(boss_type='mvp', fight_timeout=120, timeout=120, boss_fight_icon=None, boss_coord_img=None):
+def boss(boss_type='mvp', fight_timeout=120, timeout=120, boss_fight_icon=None, boss_coord_img=None, ignore_chat_wing_count=5):
     func.wait_profile()
-    if boss_wing(boss_type, timeout, boss_coord_img):
+    if boss_wing(boss_type, timeout, boss_coord_img, ignore_chat_wing_count):
         boss_fight(boss_fight_icon=boss_fight_icon, fight_timeout=fight_timeout, timeout=timeout)
     else:
         utils.wait_and_tap(img.button_auto_attack_close, timeout=2)

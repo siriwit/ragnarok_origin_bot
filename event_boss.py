@@ -9,7 +9,7 @@ import time
 
 def wing_boss(boss_name, boss_fight_icon, boss_coord_img, wait_time=60):
     func.wait_and_find_party(img.picky_mvp, f'{boss_name}', 'world', wait_time, True)
-    boss.boss(fight_timeout=120, timeout=600, boss_fight_icon=boss_fight_icon, boss_coord_img=boss_coord_img)
+    boss.boss(fight_timeout=120, timeout=600, boss_fight_icon=boss_fight_icon, boss_coord_img=boss_coord_img, ignore_chat_wing_count=0)
 
 
 def awakening(boss_name):
