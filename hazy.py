@@ -10,7 +10,7 @@ def start():
 def hazy_state():
     func.close_any_panel()
     func.wait_profile()
-    utils.tap_any_until_found_offset(const.menu_guides, img.daily_hazy, offset_x=-210)
+    func.open_daily_page()
     if utils.wait_and_tap(img.daily_hazy) is not None:
         utils.wait_and_tap(img.quick_pass_ticket)
         utils.wait_and_tap_any(const.button_confirms)

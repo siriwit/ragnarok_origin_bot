@@ -10,7 +10,7 @@ def daily_anthem(skip=False):
 def daily_anthem_state(skip):
     func.close_any_panel()
     func.wait_profile()
-    utils.tap_any_until_found_offset(const.menu_guides, img.daily_anthem, offset_x=-210)
+    func.open_daily_page()
     if utils.wait_and_tap(img.daily_anthem, timeout=2) is not None:
         if skip:
             utils.wait_and_tap(img.quick_pass_ticket)
@@ -52,3 +52,4 @@ def anthem_fight():
     utils.wait_and_tap_any(const.tap_anywheres, timeout=5)
     func.leave_event()
     func.wait_profile()
+

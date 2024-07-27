@@ -42,7 +42,7 @@ def card_armor(tribe, boss_level, element):
     if tribe == const.human:
         card_objects = [func.card_change_object(img.card_dokebi, img.card_dokebi_current, img.card_dokebi_touse)]
     elif boss_level > 0 and boss_level < 100:
-        card_objects = [func.card_change_object(img.card_peco_peco, img.card_peco_peco_current, img.card_peco_peco_touse)]
+        card_objects = []
     elif element == const.earth:
         card_objects = [func.card_change_object(img.card_sandman, img.card_sandman_current, img.card_sandman_touse)]
     elif element == const.fire:
@@ -63,7 +63,7 @@ def card_shield(tribe, boss_level):
     if tribe == const.human:
         card_objects = [func.card_change_object(img.card_tirfing, img.card_tirfing_current, img.card_tirfing_touse)]
     elif boss_level > 0 and boss_level < 100:
-        card_objects = [func.card_change_object(img.card_alice, img.card_alice_current, img.card_alice_touse)]
+        card_objects = []
     else:
         card_objects = [func.card_change_object(img.card_alice, img.card_alice_current, img.card_alice_touse)]
 
@@ -75,8 +75,7 @@ def card_cloak(tribe, element, boss_level):
         card_objects = [func.card_change_object(img.card_jakk, img.card_jakk_current, img.card_jakk_touse),
                         func.card_change_object(img.card_jakk, img.card_jakk_current, img.card_jakk_touse)]
     elif boss_level > 0 and boss_level < 100:
-        card_objects = [func.card_change_object(img.card_isis, img.card_isis_current, img.card_isis_touse),
-                        func.card_change_object(img.card_orc_zombie, img.card_orc_zombie_current, img.card_orc_zombie_touse)]
+        card_objects = []
     elif element == const.earth:
         card_objects = [func.card_change_object(img.card_hode, img.card_hode_current, img.card_hode_touse),
                         func.card_change_object(img.card_hode, img.card_hode_current, img.card_hode_touse)]

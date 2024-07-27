@@ -10,7 +10,7 @@ def hordor_dreamland(mode=img.hordor_poring_dream):
     if func.go_to_event(img.event_hordor):
         utils.wait_for_image(img.hordor_page)
 
-        utils.scroll_down_util_found(mode, img.hordor_magic_ocean, offset_y=300)
+        utils.scroll_down_until_found(mode, img.hordor_magic_ocean, offset_y=300)
         utils.wait_and_tap(mode)
         utils.tap_if_found(img.hordor_use_advance_ticket)
         utils.wait_and_tap(img.hordor_start_button)

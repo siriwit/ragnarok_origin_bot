@@ -67,7 +67,7 @@ def select_boss(is_assist=False):
             return False
         
         if utils.wait_for_image(img.extreme_challenge_reward_claimed, timeout=2) is not None:
-            utils.wait_and_tap(img.extreme_challenge_next_boss)
+            utils.tap_image_offset(img.extreme_challenge_reward_claimed, offset_x=-300, offset_y=-120)
             boss_count += 1
             func.wait(2)
             continue

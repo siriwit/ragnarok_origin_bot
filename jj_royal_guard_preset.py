@@ -36,8 +36,8 @@ def change_skill_manual(preset=const.boss):
 def scroll_to_support_skill():
     scroll_to_damage_skill()
     if not utils.is_found(img.preset_skill_drag_icon_support_skill) and utils.is_found(img.preset_skill_drag_icon_damage_skills):
-        utils.scroll_down_util_found(img.preset_skill_touse_bash, img.preset_skill_drag_icon_damage_skills)
-    utils.scroll_down_util_found(img.preset_skill_touse_shield_of_god, img.preset_skill_drag_icon_support_skill)
+        utils.scroll_down_until_found(img.preset_skill_touse_provoke, img.preset_skill_drag_icon_damage_skills)
+    utils.scroll_down_until_found(img.preset_skill_touse_shield_of_god, img.preset_skill_drag_icon_support_skill)
 
 
 def scroll_to_damage_skill():

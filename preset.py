@@ -138,7 +138,7 @@ def card_deck_preset(preset):
 
 def nexus_preset(preset):
     func.open_hidden_menu()
-    if utils.tap_offset_until_found(img.menu_album, img.nexus_engine_page, offset_x=-450, offset_y=-420):
+    if utils.tap_offset_until_found(img.menu_album, img.nexus_engine_page, offset_x=-450, offset_y=-320):
         utils.wait_for_image(img.nexus_engine_preset)
         utils.tap_until_found(img.nexus_engine_preset, preset)
         utils.tap_until_notfound(preset, preset)
@@ -238,7 +238,8 @@ def pet_selector(pet=img.pet_icon_earthlord):
     func.wait_profile()
     func.close_hidden_menu()
     if settings["preset"] == 'jj_royal_guard':
-        if not utils.is_found(pet):
+        func.close_any_panel(img.butterfly_wing)
+        if not utils.is_found(pet) and utils.is_found_any(const.pets):
             utils.tap_any_offset(const.pets, offset_x=-75)
             most_left_coordinate = utils.find_most_left_coordinate(const.pets)
             utils.tap_image(pet)
@@ -341,8 +342,9 @@ def againt_monster_card(tribe='', element='', size='', boss_level=0):
 
 def card_cloak_preset(tribe=None, element=None, boss_level=0):
     card_edges = [img.card_edge_cloak1, img.card_edge_cloak2]
+    card_cloaks = [img.card_cloak]
     if settings["preset"] == 'jj_royal_guard' or settings["preset"] == 'jj_rune_knight':
-        utils.tap_any_until_found_any([img.card_cloak, img.card_cloak2, img.card_cloak3], card_edges)
+        utils.execute_until_valid_state_with_timeout(20, 1, insert_card_state, card_cloaks, card_edges)
         card_objects = shared_preset.card_cloak(tribe, element, boss_level)
         
     if len(card_objects) > 0:
@@ -351,8 +353,9 @@ def card_cloak_preset(tribe=None, element=None, boss_level=0):
 
 def card_armor(tribe=None, element=None, boss_level=0):
     card_edges = [img.card_edge_armor1, img.card_edge_armor2]
+    card_armors = [img.card_armor]
     if settings["preset"] == 'jj_royal_guard' or settings["preset"] == 'jj_rune_knight':
-        utils.tap_any_until_found_any([img.card_armor], card_edges)
+        utils.execute_until_valid_state_with_timeout(20, 1, insert_card_state, card_armors, card_edges)
         card_objects = shared_preset.card_armor(tribe, boss_level, element)
             
     if len(card_objects) > 0:
@@ -361,8 +364,9 @@ def card_armor(tribe=None, element=None, boss_level=0):
 
 def card_shield_preset(tribe=None, boss_level=0):
     card_edges = [img.card_edge_shield1, img.card_edge_shield2]
+    card_shields = [img.card_shield]
     if settings["preset"] == 'jj_royal_guard' or settings["preset"] == 'jj_rune_knight':
-        utils.tap_any_until_found_any([img.card_shield], card_edges)
+        utils.execute_until_valid_state_with_timeout(20, 1, insert_card_state, card_shields, card_edges)
         card_objects = shared_preset.card_shield(tribe, boss_level)
         
     if len(card_objects) > 0:
@@ -371,12 +375,28 @@ def card_shield_preset(tribe=None, boss_level=0):
 
 def card_weapon_preset(tribe='', element='', size=''):
     card_edges = [img.card_edge_weapon1, img.card_edge_weapon2]
+    card_weapons = [img.card_weapon]
     if settings["preset"] == 'jj_royal_guard' or settings["preset"] == 'jj_rune_knight':
-        utils.tap_any_until_found_any([img.card_weapon], card_edges)
+        utils.execute_until_valid_state_with_timeout(20, 1, insert_card_state, card_weapons, card_edges)
         card_objects = shared_preset.card_weapon(size, element, tribe)
         
     if len(card_objects) > 0:
         card_change(card_edges, card_objects)
+
+
+def insert_card_state(item_tab, card_edges):
+    if utils.is_found_any(card_edges):
+        return True
+    
+    if utils.is_found(img.card_select_a_card_title):
+        func.close_any_panel(img.card_insert_card_title, depth=1)
+        return False
+
+    if utils.is_found(img.card_insert_card_title):  
+        utils.tap_any_until_found_any(item_tab, card_edges, timeout=3)
+        return False
+        
+    return False
 
 
 def card_change(card_edges, card_objects):
@@ -396,7 +416,8 @@ def card_change(card_edges, card_objects):
         utils.tap_location_until_found(card_edge, img.card_select_a_card_title)
         if not utils.is_found(card_object['selected_current_card'], similarity=similarity):
             utils.wait_for_image(card_object['to_be_selected_card'], timeout=3)
-            if utils.scroll_down_util_found(card_object['to_be_selected_card'], img.card_drag_icon, offset_y=200, similarity=similarity, timeout=3):
+            if utils.scroll_down_until_found(card_object['to_be_selected_card'], img.card_drag_icon, offset_y=200, similarity=similarity, timeout=3):
+                func.wait(1)
                 select_card(card_object, similarity)
                 utils.wait_for_image(img.card_page, timeout=1)
             else:
@@ -410,7 +431,7 @@ def select_card(card_object, similarity):
     utils.wait_for_image(card_object['to_be_selected_card'])
     to_be_selected_cards = utils.find_all_images([card_object['to_be_selected_card']], similarity)
     for to_be_selected_card in to_be_selected_cards:
-        utils.tap_location(to_be_selected_card)
+        utils.tap_location_until_found(to_be_selected_card, img.button_replace)
         if utils.tap_until_notfound(img.button_replace, img.button_replace):
             break
 

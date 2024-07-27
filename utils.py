@@ -9,6 +9,7 @@ import windows_capture
 import click
 import cv2 as cv
 import os
+import re
 import sys
 from PIL import Image
 
@@ -309,16 +310,6 @@ def tap_any(menu_images, similarity=0.9):
         if is_found(menu, similarity):
             return tap_image(menu, similarity)
     return None
-        
-
-def tap_any_until_found_offset(to_be_tap_images, expected_found_image, offset_x=0, offset_y=0, timeout=10, similarity=0.9):
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        tap_any_offset(to_be_tap_images, offset_x, offset_y, similarity=similarity)
-        wait_for_image(expected_found_image, timeout=1, similarity=similarity)
-        if is_found(expected_found_image):
-            return True
-    return False
 
 
 def tap_any_offset(images, offset_x=0, offset_y=0, similarity=0.9):
@@ -349,68 +340,89 @@ def wait_until_disappear(image_path, timeout=10, similarity=0.9):
     return False
 
 
-
-def tap_until_found(image_path, util_found_image, interval=1, timeout=10, similarity=0.9, delay=1):
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        time.sleep(interval)
-        tap_image(image_path, similarity)
-        if wait_for_image(util_found_image, timeout=delay, similarity=similarity) is not None:
+def wait_until_all_disappear(image_paths, timeout=10, similarity=0.9):
+    count = 0
+    while count < timeout:
+        if not is_found_any(image_paths, similarity):
             return True
+        count += 1
+        time.sleep(1)
     return False
 
-def tap_any_until_found(image_paths, util_found_image, interval=1, timeout=10, delay=1):
+def check_existence(image_path, timeout=10, appear=2, similarity=0.9):
     start_time = time.time()
     while time.time() - start_time < timeout:
-        time.sleep(interval)
-        tap_any(image_paths)
-        if wait_for_image(util_found_image, timeout=delay) is not None:
-            break
+        if time.time() - start_time > appear and is_found(image_path, similarity):
+            return True
+        else:
+            time.sleep(1)
+    return False
 
 
-def tap_any_until_notfound_any(image_paths, util_notfound_image, interval=1, timeout=10, delay=1):
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        time.sleep(interval)
-        tap_any(image_paths)
-        if wait_any_image(util_notfound_image, timeout=delay) is None:
-            break
+def tap_until_found(image_path, until_found_image, interval=1, timeout=10, similarity=0.9, delay=1):
+    return tap_until(image_path, until_found_image, interval, delay, 0, 0, timeout, similarity, True)
 
-
-def tap_any_until_found_any(image_paths, util_found_images, interval=1, timeout=10, delay=1):
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        time.sleep(interval)
-        tap_any(image_paths)
-        if wait_any_image(util_found_images, timeout=delay) is not None:
-            break
 
 def tap_until_notfound(image_path, util_notfound_image, interval=1, timeout=10, delay=0.25, similarity=0.9):
+    return tap_until(image_path, util_notfound_image, interval, delay, 0, 0, timeout, similarity, False)
+
+
+def tap_any_until_found(image_paths, until_found_image, interval=1, timeout=10, delay=1, similarity=0.9):
+    return tap_until(image_paths, until_found_image, interval, delay, 0, 0, timeout, similarity, True)
+
+
+def tap_any_until_found_offset(image_paths, until_found_image, interval=1, timeout=10, delay=1, offset_x=0, offset_y=0, similarity=0.9):
+    return tap_until(image_paths, until_found_image, interval, delay, offset_x, offset_y, timeout, similarity, True)
+
+
+def tap_any_until_notfound_any(image_paths, until_notfound_images, interval=1, timeout=10, delay=1, similarity=0.9):
+    return tap_until(image_paths, until_notfound_images, interval, delay, 0, 0, timeout, similarity, False)
+
+
+def tap_any_until_found_any(image_paths, until_found_images, interval=1, timeout=10, delay=1, similarity=0.9):
+    return tap_until(image_paths, until_found_images, interval, delay, 0, 0, timeout, similarity, True)
+
+
+def tap_offset_until_found(image_path, until_found_image, interval=1, delay=1, offset_x=0, offset_y=0, timeout=10, similarity=0.9):
+    return tap_until(image_path, until_found_image, interval, delay, offset_x, offset_y, timeout, similarity, True)
+
+
+def tap_offset_until_notfound(image_path, util_notfound_image, interval=1, delay=1, offset_x=0, offset_y=0, timeout=10, similarity=0.9):
+    return tap_until(image_path, util_notfound_image, interval, delay, offset_x, offset_y, timeout, similarity, False)
+
+
+def tap_until(image_path, until_image, interval=1, delay=0, offset_x=0, offset_y=0, timeout=10, similarity=0.9, is_until_found=True):
     start_time = time.time()
     while time.time() - start_time < timeout:
+        # tap section
+        if offset_x != 0 or offset_y != 0:
+            if isinstance(image_path, list):
+                tap_any_offset(image_path, offset_x, offset_y)
+            else:
+                tap_image_offset(image_path, offset_x, offset_y)
+        elif isinstance(image_path, list):
+            tap_any(image_path)
+        else:
+            tap_image(image_path, similarity=similarity)
+
+        # check until found section
+        if is_until_found:
+            if isinstance(until_image, list):
+                if wait_any_image(until_image, timeout=delay) is not None:
+                    return True
+            else:
+                if wait_for_image(until_image, timeout=delay, similarity=similarity) is not None:
+                    return True
+        else:
+            if isinstance(until_image, list):
+                if wait_until_all_disappear(until_image, timeout=delay):
+                    return True
+            else:
+                if wait_until_disappear(until_image, timeout=delay):
+                    return True
+            
         time.sleep(interval)
-        tap_image(image_path, similarity=similarity)
-        time.sleep(delay)
-        if wait_until_disappear(util_notfound_image, timeout=delay, similarity=similarity):
-            return True
     return False
-
-def tap_offset_until_found(image_path, util_found_image, delay=1, offset_x=0, offset_y=0, timeout=10, similarity=0.9):
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        if wait_for_image(util_found_image, timeout=delay, similarity=similarity) is not None:
-            log(f'tap_offset_util_found: {image_path} until found: {util_found_image} - break')
-            return True
-        tap_image_offset(image_path, offset_x, offset_y, similarity=similarity)
-    return False
-
-
-def tap_offset_until_notfound(image_path, util_notfound_image, delay=1, offset_x=0, offset_y=0, timeout=10):
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        tap_image_offset(image_path, offset_x, offset_y)
-        if wait_until_disappear(util_notfound_image, timeout=delay):
-            break
 
 
 def find_image_center(image_location):
@@ -493,7 +505,7 @@ def type(text):
         pyautogui.typewrite(text)
 
 
-def get_text_from_image(image_filename, offset_x=100, offset_y=45):
+def get_text_from_image(image_filename, offset_x=0, offset_y=0, width_offset=0, height_offset=0):
     image_obj = find_image_with_similarity(image_filename)
     if image_obj is not None:
         x, y, width, height = image_obj
@@ -502,18 +514,34 @@ def get_text_from_image(image_filename, offset_x=100, offset_y=45):
             screenshot = window.screenshot()
             x1 = (x + offset_x)
             y1 = (y + offset_y)
-            x2 = (x1 + width - offset_x)
-            y2 = (y1 + height)
+            x2 = (x1 + width + width_offset)
+            y2 = (y1 + height + height_offset)
             roi = screenshot[y1:y2, x1:x2]
             screenshot = Image.fromarray(roi)
         else:
-            screenshot = pyautogui.screenshot(region=((x + offset_x), (y + offset_y), (width - offset_x), height))
+            screenshot = pyautogui.screenshot(region=((x + offset_x), (y + offset_y), (width + width_offset), height + height_offset))
         gray_image = screenshot.convert('L')
         extracted_text = pytesseract.image_to_string(gray_image)
         
         print(extracted_text)
         screenshot.save('test.png')
         return extracted_text
+    
+
+def get_text_from_image_with_expect_pattern(image_filename, offset_x, offset_y, text_pattern):
+    return execute_until_get_expected_value_with_timeout(10, 1, get_text_from_image_with_expect_pattern_state, image_filename, offset_x, offset_y, text_pattern)
+
+
+def get_text_from_image_with_expect_pattern_state(image_filename, offset_x=100, offset_y=45, text_pattern=None):
+    returned_text = get_text_from_image(image_filename, offset_x=offset_x, offset_y=offset_y)
+    try:
+        match_result = re.search(text_pattern, returned_text)
+        if match_result:
+            return returned_text
+    except Exception as e:
+        print("An error occurred:", e)
+        print(f"error with text: {returned_text}")
+    return None
 
 
 def drag_and_drop_image(source_image, target_image):
@@ -565,7 +593,7 @@ def drag_down_location(location, offset_y=100):
     drag_and_drop(center_x, center_y, center_x, center_y + offset_y)
 
 
-def scroll_down_util_found(expected_image, drag_image, offset_y=100, similarity=0.9, timeout=10):
+def scroll_down_until_found(expected_image, drag_image, offset_y=100, similarity=0.9, timeout=10):
     print('scroll to find: ' + expected_image + ' with drag image:' + drag_image)
     return scroll_until_found(expected_image, [drag_image], offset_y=offset_y, is_drag_up=True, similarity=similarity, timeout=timeout)
 
@@ -687,3 +715,13 @@ def execute_until_valid_state_with_timeout(timeout, interval, function, *args):
             return True
         time.sleep(interval)
     return False
+
+
+def execute_until_get_expected_value_with_timeout(timeout, interval, function, *args):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        value = function(*args)
+        if value is not None:
+            return value
+        time.sleep(interval)
+    return None

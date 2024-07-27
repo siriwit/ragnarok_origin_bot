@@ -1,9 +1,9 @@
 cd bot/jj
 @REM roobot.exe "Go To Main Page"
-roobot.exe "preset" "party"
+@REM roobot.exe "preset" "party"
 @REM roobot.exe "preset" "boss" "Not Event"
 
-@REM roobot.exe "mvp" "Leader" "active" 114 999 "Not Ignore" "party"
+@REM roobot.exe "mvp" "Leader" "active" 0 999 "Not Ignore" "party" "PR"
 
 @REM roobot.exe "Event Boss" "Twilight Bringer"
 @REM roobot.exe "Event Boss" "Bijou"
@@ -13,9 +13,10 @@ roobot.exe "preset" "party"
 @REM roobot.exe "Event Boss" "Fallen Nemesis"
 @REM roobot.exe "Event Boss" "Antonio"
 
-roobot.exe "preset" "Card" "brute" "water" "large"
-roobot.exe "Preset" "Element" "water"
-roobot.exe "Event Boss" "Demonic Eggy"
+@REM roobot.exe "preset" "Card" "brute" "earth" "large"
+@REM roobot.exe "Preset" "Element" "earth"
+@REM roobot.exe "Event Boss" "Mournful Sakura Spirit" "PR" "Not Wing"
+@REM roobot.exe "Event Boss" "Mournful Sakura Spirit" "TR" "Not Wing"
 
 @REM roobot.exe "Event Boss" "Demonic Eggy"
 @REM roobot.exe "Go To Main Page"
@@ -24,7 +25,7 @@ roobot.exe "Event Boss" "Demonic Eggy"
 @REM roobot.exe "Farm" "Normal Farm" "133" "Alligator Ch.3"
 
 @REM roobot.exe "preset" "party"
-@REM roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party"
+roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party" "TR"
 @REM roobot.exe "Event Boss" "Antonio"
 
 @REM roobot.exe "mvp" "Leader" "inactive" 100 999 "Not Ignore" "solo"

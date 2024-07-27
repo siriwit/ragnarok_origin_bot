@@ -1,14 +1,14 @@
-@REM make preset_card
-@REM make preset_card size=large
+make preset_card
+make preset_card size=large
 make preset_card size=medium
-@REM make preset_card element=earth
-@REM make preset_card element=fire
-@REM make preset_card element=water
-@REM make preset_card element=wind
-@REM make preset_card element=shadow
-@REM make preset_card element=undead
-@REM make preset_card element=neutral
-@REM make preset_card element=poison
-@REM make preset_card tribe=formless
-@REM make preset_card tribe=brute
-@REM make preset_card tribe=human
+make preset_card element=earth
+make preset_card element=fire
+make preset_card element=water
+make preset_card element=wind
+make preset_card element=shadow
+make preset_card element=undead
+make preset_card element=neutral
+make preset_card element=poison
+make preset_card tribe=formless
+make preset_card tribe=brute
+make preset_card tribe=human

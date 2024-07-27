@@ -11,13 +11,18 @@ def farm(minutes, monster_name, monster_element):
 
 def farm_disable():
     utils.tap_offset_until_found(img.power_up_icon, img.farm_page, offset_y=80)
-    utils.tap_until_found(img.farm_close_button, img.farm_unlock_button)
+    utils.wait_for_image(img.farm_unlock_button, timeout=2)
+    unlocks = utils.find_all_image_with_similarity(img.farm_unlock_button)
+    if len(unlocks) < 2:
+        utils.tap_until_found(img.farm_close_button, img.farm_unlock_button)
     func.close_any_panel()
 
 
 def farm_enable():
     utils.tap_offset_until_found(img.power_up_icon, img.farm_page, offset_y=80)
-    utils.tap_until_found(img.farm_unlock_button, img.farm_close_button)
+    unlocks = utils.find_all_image_with_similarity(img.farm_unlock_button)
+    if len(unlocks) >= 2:
+        utils.tap_location_until_found(unlocks[1], img.farm_close_button)
     func.close_any_panel()
 
 
@@ -68,8 +73,8 @@ def handle_material():
 
 
 def stalling_item(stalling_item_list, similarity):
-    if utils.wait_any_image(stalling_item_list, timeout=1, similarity=similarity) is not None:
-        utils.wait_and_tap_any(stalling_item_list, similarity=similarity)
+    if utils.wait_any_image(stalling_item_list, timeout=5, similarity=similarity) is not None:
+        utils.tap_any_until_found(stalling_item_list, img.button_more, similarity=similarity)
         utils.tap_until_found(img.button_more, img.button_stall)
         utils.tap_until_found(img.button_stall, img.button_list_item)
         utils.execute_until_invalid_state(60, 1, stalling_item_loop, stalling_item_list, similarity)

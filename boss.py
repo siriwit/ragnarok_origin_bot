@@ -14,16 +14,18 @@ settings = config['SETTINGS']
 
 boss_remaining_time_dict = {}
 
-def boss_hunt_loop(is_active=True, min_level=0, max_level=999, ignore_spawn=True, party_mode=True):
+def boss_hunt_loop(is_active=True, min_level=0, max_level=999, ignore_spawn=True, party_mode=True, tr=True):
+    func.create_party_and_invite()
+
     if func.go_to_event(img.event_boss):
         utils.wait_and_tap(img.boss_title_mvp)
         if is_active:
             count5x5 = utils.count_image_on_screen(img.event_boss_5x5)
             print('found 5x5: ' + str(count5x5))
-            if not party_mode and count5x5 >= 1:
+            if not tr and count5x5 >= 1:
                 close_boss_page()
                 return True
-            elif min_level == 0 and count5x5 >= 2:
+            elif tr and min_level == 0 and count5x5 >= 2:
                 close_boss_page()
                 func.wait_profile()
                 func.send_message('Finished 5/5 TR [z1][z1]')
@@ -33,8 +35,8 @@ def boss_hunt_loop(is_active=True, min_level=0, max_level=999, ignore_spawn=True
                 return True
 
         else:
-            utils.scroll_down_util_found(img.event_drag_icon_inactive, img.event_drag_icon, offset_y=300)
-            utils.scroll_down_util_found(img.event_boss_inactive, img.event_drag_icon_inactive, offset_y=300)
+            utils.scroll_down_until_found(img.event_drag_icon_inactive, img.event_drag_icon, offset_y=300)
+            utils.scroll_down_until_found(img.event_boss_inactive, img.event_drag_icon_inactive, offset_y=300)
             utils.tap_image(img.event_boss_inactive)
 
         while True:
@@ -44,6 +46,9 @@ def boss_hunt_loop(is_active=True, min_level=0, max_level=999, ignore_spawn=True
     else:
         utils.tap_if_found(img.button_back)
         utils.tap_any(const.button_closes)
+
+    func.send_message("[z1]")
+    func.leave_party()
     
     return False
 
@@ -93,7 +98,7 @@ def boss_hunt_specific():
 
     func.wait_profile()
     if func.go_to_event():
-        utils.scroll_down_util_found(img.event_boss, img.event_drag_icon, offset_y=300)
+        utils.scroll_down_until_found(img.event_boss, img.event_drag_icon, offset_y=300)
         utils.tap_image(img.event_boss)
 
         boss_configs = get_boss_config_list()
@@ -323,7 +328,7 @@ def boss_monitoring(min_level=0, max_level=999, ignore_spawn=True, party_mode=Tr
 
 
 def boss_monitoring_with_config(boss_config, threshold, ignore_spawn, send_message_to='world', party_mode=True):
-    utils.scroll_down_util_found(boss_config['boss_region_icon'], img.boss_drag_icon, timeout=120)
+    utils.scroll_down_until_found(boss_config['boss_region_icon'], img.boss_drag_icon, timeout=120)
     time_left = find_boss_time(
         boss_config['boss_remaining_time_icon'], boss_config['boss_region_icon'], 
         boss_config['boss_map_icon'], threshold, 
@@ -354,7 +359,7 @@ def wait_boss_coming_icon_disapear(boss_coming_icon, boss_name,
         func.send_message(boss_name)
         func.find_boss_party(boss_name, send_message_to)
 
-    if time_left > 60:
+    if time_left > 90:
         if settings["preset"] == 'jj_royal_guard':
             preset.againt_monster_card(boss_tribe, boss_element, boss_size, boss_level)
             preset.pet_selector(img.pet_icon_genesis)
@@ -441,7 +446,7 @@ def get_boss_cache_remain_time(boss_image):
 
 
 def boss_remaining_time(image_filename, boss_region_icon, count=0):
-    text = utils.get_text_from_image(image_filename)
+    text = utils.get_text_from_image(image_filename, offset_x=100, offset_y=45, width_offset=-100, height_offset=0)
 
     if count > 10 and utils.is_found(img.boss_drag_icon):
         utils.drag_up(img.boss_drag_icon, offset_y=25)
@@ -474,7 +479,7 @@ def boss_remaining_time(image_filename, boss_region_icon, count=0):
             if boss_region_icon == img.boss_region_angeling:
                 utils.scroll_up_util_found(boss_region_icon, img.boss_drag_icon, timeout=2)
             else:
-                utils.scroll_down_util_found(boss_region_icon, img.boss_drag_icon, timeout=2)
+                utils.scroll_down_until_found(boss_region_icon, img.boss_drag_icon, timeout=2)
         count += 1
         return boss_remaining_time(image_filename, boss_region_icon, count)
 
@@ -486,12 +491,13 @@ def find_remaining_time_util_realistic(previous_boss_time, current_boss_time, bo
         time.sleep(1)
 
 
-def boss_wing(boss_type='mvp', timeout=120, coord_imgs=None, ignore_chat_wing_count=5):
+def boss_wing(boss_type='mvp', timeout=120, coord_imgs=None, ignore_chat_wing_count=5, boss_fight_icon=None):
     marked_time = time.time()
     diff_time = 0
     similarity = 0.90
     wing_count = 0
     while True:
+        func.close_any_panel(img.butterfly_wing)
         print(f"Wing boss: {int(diff_time)}/{timeout}")
         if diff_time > timeout:
             return False
@@ -504,12 +510,12 @@ def boss_wing(boss_type='mvp', timeout=120, coord_imgs=None, ignore_chat_wing_co
             func.open_map()
             utils.tap_any(const.boss_icons)
             func.close_map()
-            if utils.execute_until_valid_state_with_timeout(30, 1, check_boss_icon, boss_type, 5):
+            if utils.execute_until_valid_state_with_timeout(30, 1, check_boss_icon, boss_type, 5, 0.9, boss_fight_icon, True):
                 return True
 
         # someone ping coordinate
         if wing_count >= ignore_chat_wing_count and coord_imgs is not None and utils.is_found(img.chat_party_icon):
-            if follow_coord(coord_imgs, (timeout-diff_time), similarity):
+            if follow_coord(coord_imgs, (timeout-diff_time), similarity, boss_fight_icon=boss_fight_icon):
                 return True
             
         # wing
@@ -519,29 +525,38 @@ def boss_wing(boss_type='mvp', timeout=120, coord_imgs=None, ignore_chat_wing_co
         wing_count += 1
 
 
-def check_boss_icon(boss_type='mvp', delay=0, similarity=0.9):
+def check_boss_icon(boss_type='mvp', delay=0, similarity=0.9, boss_fight_icon=None, should_send_location=True):
     func.wait(delay)
-    utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, delay=0.3, offset_x=85, similarity=similarity)
+    utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, interval=1, delay=1, offset_x=85, similarity=similarity)
 
     if boss_type == 'mvp':
-        return auto_attack()
+        return auto_attack(timeout=5, boss_fight_icon=boss_fight_icon, should_send_location=should_send_location)
     elif boss_type == 'mini':
         return auto_attack(img.icon_auto_attack_mini)
 
 
-def auto_attack(target=img.icon_auto_attack_boss, should_send_location=True):
+def auto_attack(target=img.icon_auto_attack_boss, target_active=img.boss_fight_sword, timeout=5, should_send_location=True, boss_fight_icon=None):
     if utils.is_found(target):
-        utils.wait_and_tap(target)
-        utils.tap_until_notfound(img.button_auto_attack_close, img.button_auto_attack_close)
-        if should_send_location:
-            func.send_location()
-        return True
+        utils.wait_for_image(target, timeout=timeout)
+        if utils.tap_until_found(target, target_active, delay=3) and utils.check_existence(target_active, appear=2):
+            utils.tap_until_notfound(img.button_auto_attack_close, img.button_auto_attack_close)
+
+            if boss_fight_icon is not None and utils.wait_for_image(boss_fight_icon, timeout=5) is None:
+                print("boss fight icon not found")
+                return False
+            else:
+                print("boss fight icon found!")
+            
+            if should_send_location:
+                func.send_location()
+            return True
     else:
         utils.tap_image(img.button_auto_attack_close)
+
     return False
 
 
-def follow_coord(coord_imgs, remaining_time, similarity, leader_mode=True):
+def follow_coord(coord_imgs, remaining_time, similarity, leader_mode=True, boss_fight_icon=None):
     marked_time_main = time.time()
     while time.time() - marked_time_main < remaining_time:
         func.open_chat()
@@ -553,11 +568,8 @@ def follow_coord(coord_imgs, remaining_time, similarity, leader_mode=True):
         func.close_chat()
 
         if leader_mode:
-            utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, delay=0.3, offset_x=85, similarity=similarity)
-            marked_time = time.time()
-            while time.time() - marked_time < 5:
-                if auto_attack(should_send_location=False):
-                    return True
+            if utils.execute_until_valid_state_with_timeout(10, 1, check_boss_icon, 'mvp', 5, similarity, boss_fight_icon, False):
+                return True
         else:
             return True
     utils.tap_image(img.button_auto_attack_close)
@@ -565,13 +577,14 @@ def follow_coord(coord_imgs, remaining_time, similarity, leader_mode=True):
     return False
 
 
-def boss(boss_type='mvp', fight_timeout=120, timeout=120, boss_fight_icon=None, boss_coord_img=None, ignore_chat_wing_count=5):
+def boss(boss_type='mvp', fight_timeout=120, timeout=120, boss_fight_icon=None, boss_coord_img=None, ignore_chat_wing_count=5, butterflywing=True):
     func.wait_profile()
-    if boss_wing(boss_type, timeout, boss_coord_img, ignore_chat_wing_count):
-        boss_fight(boss_fight_icon=boss_fight_icon, fight_timeout=fight_timeout, timeout=timeout)
+    if boss_wing(boss_type, timeout, boss_coord_img, ignore_chat_wing_count, boss_fight_icon):
+        boss_fight(butterflywing=butterflywing, boss_fight_icon=boss_fight_icon, fight_timeout=fight_timeout, timeout=timeout)
     else:
         utils.wait_and_tap(img.button_auto_attack_close, timeout=2)
-        func.butterfly_wing_morroc()
+        if butterflywing:
+            func.butterfly_wing_morroc()
 
 
 def boss_fight(butterflywing=True, boss_fight_icon=None, fight_timeout=60, timeout=60):

@@ -12,11 +12,10 @@ def start(mode='foraging', expected_food=img.life_skill_cooking_seafood_fried_no
 
 def life_skill_state(mode, expected_food):
     func.use_items()
-    func.close_any_panel()
+    func.close_any_panel(img.butterfly_wing)
     func.open_hidden_menu()
     func.wait(1)
-    utils.tap_image(img.menu_life_skill)
-    utils.wait_for_image(img.life_skill_path_of_arts, timeout=2)
+    utils.tap_any_until_found_any([img.menu_life_skill], img.life_skill_path_of_arts)
     if mode == 'foraging' or mode == 'fishing':
         if not utils.is_found(img.life_skill_path_of_arts):
             utils.tap_until_found(img.life_skill_path_of_nature, img.life_skill_path_of_arts)
@@ -34,7 +33,7 @@ def life_skill_state(mode, expected_food):
     if mode == 'foraging' or mode == 'fishing':
         utils.wait_for_image(img.life_skill_magnifying_glass)
         utils.tap_until_found(img.life_skill_magnifying_glass, img.life_skill_nature_go)
-        utils.wait_and_tap(img.life_skill_nature_go)
+        utils.tap_until_notfound(img.life_skill_nature_go, img.life_skill_nature_go)
         func.close_hidden_menu()
     elif mode == 'cooking':
         utils.wait_and_tap(img.life_skill_arts_go)
@@ -118,7 +117,6 @@ def cooking(expected_food):
     cooking_3star(expected_food)
 
 
-
 def cooking_normal_food(expected_food):
     while True:
         if utils.is_found(img.life_skill_cooking_page):
@@ -160,7 +158,7 @@ def cooking_3star(expected_food):
 
 
 def cook(food_image, number, is_star_food=False, main_food=img.life_skill_cooking_seafood_fried_noodles):
-    utils.scroll_down_util_found(food_image, img.life_skill_cooking_drag_icon, timeout=30, offset_y=200)
+    utils.scroll_down_until_found(food_image, img.life_skill_cooking_drag_icon, timeout=30, offset_y=200)
     utils.wait_and_tap(food_image)
 
     if is_star_food:

@@ -9,10 +9,11 @@ def divination():
 
 def divination_state():
     utils.tap_until_found(img.divination_house_daily_fortune, img.icon_message)
-    func.wait(1)
+    func.wait(2)
     icons = utils.find_all_image_with_similarity(img.icon_message)
     if len(icons) > 1:
         utils.tap_location_until_found(icons[1], img.divination_house_daily_fortune_item_orange)
+        func.wait(2)
         utils.drag_and_drop_image(img.divination_house_daily_fortune_item_orange, img.divination_house_daily_fortune_item_target)
         utils.drag_and_drop_image(img.divination_house_daily_fortune_item_teeth, img.divination_house_daily_fortune_item_target)
         utils.wait_and_tap(img.divination_house_daily_fortune_tap_anywhere)

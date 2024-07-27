@@ -6,6 +6,7 @@ import utils
 
 def start():
     func.open_hidden_menu()
+    utils.wait_for_image(img.menu_album)
     utils.tap_offset_until_found(img.menu_album, img.guild_menu_info, offset_y=-320)
     utils.tap_image_offset(img.guild_menu_info, offset_y=300)
 
@@ -19,7 +20,7 @@ def collect_sign_in():
 
 
 def collect_city_lord():
-    utils.scroll_down_util_found(img.guild_collect_city_lord_room, img.guild_collect_guild_sign_in, offset_y=200)
+    utils.scroll_down_until_found(img.guild_collect_city_lord_room, img.guild_collect_guild_sign_in, offset_y=200)
     utils.wait_and_tap(img.guild_collect_city_lord_room)
 
     if utils.wait_for_image(img.guild_collect_city_lord_room_not_available, timeout=3) is not None:

@@ -4,7 +4,7 @@ roobot.exe "Go To Main Page"
 roobot.exe "Farm" "Disable"
 roobot.exe "preset" "party"
 roobot.exe "preset" "boss" "Not Event"
-roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party"
+roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party" "PR"
 
 roobot.exe "Go To Main Page"
 roobot.exe "Alfhelm" "Collect Item"
@@ -15,7 +15,6 @@ roobot.exe "daily" "anthem" "skip"
 roobot.exe "daily" "hazy"
 roobot.exe "life skill" "foraging"
 roobot.exe "life skill" "fishing"
-roobot.exe "life skill" "cooking" "seafood fried noodles"
 roobot.exe "hellheim"
 roobot.exe "Guild Collect Item"
 roobot.exe "Oracle"
@@ -31,5 +30,12 @@ roobot.exe "Doram" "Meow Tarot"
 roobot.exe "Doram" "Wishing"
 roobot.exe "Doram" "Beach Hidden"
 roobot.exe "Doram" "Onsen"
+
+roobot.exe "preset" "party"
+roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party" "TR"
+
+@REM roobot.exe "life skill" "cooking" "seafood fried noodles"
+
+
 
 

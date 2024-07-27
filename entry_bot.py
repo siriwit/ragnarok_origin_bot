@@ -196,6 +196,13 @@ def boss_hunt_mode():
             ]
         party_mode = True if get_input(7, sub_menu, "Party?: ") == 1 else False
 
+        sub_menu = [
+            '0. Back',
+            '1. TR',
+            '2. PR'
+        ]
+        tr_mode = True if get_input(8, sub_menu, "PR/TR Mode?: ") == 1 else False
+
         print(f"\n")
         print(f"Start boss hunt:")
         print(f" is_active= {is_active}")
@@ -203,13 +210,14 @@ def boss_hunt_mode():
         print(f" max_level= {max_level}")
         print(f" ignore_spawn= {ignore_spawn}")
         print(f" party= {party_mode}\n")
-        utils.exit_at_specific_time_or_invalid_state(4, 50, boss_loop_state, is_active, min_level, max_level, ignore_spawn, party_mode)
+        print(f" tr_mode= {tr_mode}\n")
+        utils.exit_at_specific_time_or_invalid_state(4, 50, boss_loop_state, is_active, min_level, max_level, ignore_spawn, party_mode, tr_mode)
     elif input_number == 2:
         boss.boss_follower()
 
 
-def boss_loop_state(is_active, min_level, max_level, ignore_spawn, party_mode):
-    if boss.boss_hunt_loop(is_active, min_level, max_level, ignore_spawn, party_mode):
+def boss_loop_state(is_active, min_level, max_level, ignore_spawn, party_mode, tr_mode):
+    if boss.boss_hunt_loop(is_active, min_level, max_level, ignore_spawn, party_mode, tr_mode):
         return False
     return True
 
@@ -489,11 +497,26 @@ def event_boss_mode():
         '7. Antonio',
         '8. Evil Reindeer',
         '9. Angelic Picky',
-        '10. Demonic Eggy'
+        '10. Demonic Eggy',
+        '11. Mournful Sakura Spirit'
     ]
 
     print_menu('Event Boss', sub_menu)
     input_number = get_input(2, sub_menu, 'Choose Boss: ')
+
+    sub_menu = [
+        '0. Back',
+        '1. TR',
+        '2. PR'
+    ]
+    tr_mode = True if get_input(3, sub_menu, "PR/TR Mode?: ") == 1 else False
+
+    sub_menu = [
+        '0. Back',
+        '1. Wing to Morroc',
+        '2. Not Wing'
+    ]
+    butterflywing = True if get_input(4, sub_menu, "Butterfly Wing Mode?: ") == 1 else False
 
     # preset.boss()
     if input_number == 0:
@@ -516,10 +539,12 @@ def event_boss_mode():
         utils.execute_until_valid_state_with_timeout(180, 1, event_boss.christmas_evil_reindeer)
     elif input_number == 9:
         boss_name = 'Angelic Picky'
-        utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.picky_boss, boss_name)
+        utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.picky_boss, boss_name, tr_mode, butterflywing)
     elif input_number == 10:
         boss_name = 'Demonic Eggy'
-        utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.picky_boss, boss_name)
+        utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.picky_boss, boss_name, tr_mode, butterflywing)
+    elif input_number == 11:
+        utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.sakura, tr_mode, butterflywing)
 
 
 def farm_mode():

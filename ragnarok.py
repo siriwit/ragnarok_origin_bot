@@ -103,10 +103,15 @@ def maintain_woe():
 
 def dev():
     func.wait_profile(timeout=1)
-
-    # while True:
-    #     utils.hilight_image(img.menu_album, offset_x=-450, offset_y=-420)
-
+    # time_pattern = r"([\d]{2})[:-]([\d]{2})"
+    while True:
+        utils.hilight_image(img.extreme_challenge_reward_claimed, offset_x=-300, offset_y=-120)
+        # utils.count_image_on_screen(img.picky_boss_3x3)
+        # remaining_time = utils.get_text_from_image_with_expect_pattern(img.sakura_spirit_anomaly_southern_payon, offset_x=250, offset_y=0, text_pattern=time_pattern)
+        # print(remaining_time)
+    # func.butterfly_wing_morroc()
+    
+    # utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, offset_x=85, timeout=10)
     # func.open_bag()
     # utils.tap_image_offset(img.button_close, offset_x=100, offset_y=270)
     # stalling_item_list = [img.item_dust_999, img.item_insect_leg_999]
@@ -116,14 +121,16 @@ def dev():
 
     # utils.exit_at_specific_time_or_invalid_state(21, 20, guild_league.fight_state)
     
-    utils.tap_offset_until_found(img.party_die_afk, img.button_kick_out, offset_x=80, offset_y=-40, similarity=0.95)
+    # utils.tap_offset_until_found(img.party_die_afk, img.button_kick_out, offset_x=80, offset_y=-40, similarity=0.95)
+    
     # func.kick_party_member()
     # phantom.fight()
-
+    # func.element_convert(const.neutral)
     # woe.maintain_woe()
 
     # phantom.fight()
     # doram_quest.onsen_pool()
+    # farm.handle_material()
 
     sys.exit(0)
 

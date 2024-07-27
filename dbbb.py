@@ -23,7 +23,7 @@ def party_finder():
 
 def use_branch():
     func.open_bag()
-    utils.scroll_down_util_found(img.dbbb_dead_branch, img.item_drag, 300)
+    utils.scroll_down_until_found(img.dbbb_dead_branch, img.item_drag, 300)
     tap_until_used(img.dbbb_dead_branch)
     tap_until_used(img.dbbb_bloody_branch)
     func.close_any_panel()

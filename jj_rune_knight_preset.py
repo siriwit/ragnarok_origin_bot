@@ -6,7 +6,7 @@ import utils
 
 def change_skill_auto(preset=const.boss):
     scroll_to_damage_skill()
-    utils.scroll_down_util_found(img.preset_skill_dragon_breath_water_touse, img.preset_skill_drag_icon_damage_skills)
+    utils.scroll_down_until_found(img.preset_skill_dragon_breath_water_touse, img.preset_skill_drag_icon_damage_skills)
     if preset == const.mr:
         func.remove_skill_if_needed(img.preset_skill_dragon_howling)
         func.remove_skill_if_needed(img.preset_skill_dragon_breath_fire)
@@ -33,10 +33,10 @@ def change_skill_manual(preset=const.boss):
 
 def scroll_to_support_skill():
     scroll_to_damage_skill()
-    utils.scroll_down_util_found(img.preset_skill_dragon_breath_water_touse, img.preset_skill_drag_icon_damage_skills)
+    utils.scroll_down_until_found(img.preset_skill_dragon_breath_water_touse, img.preset_skill_drag_icon_damage_skills)
     if not utils.is_found(img.preset_skill_drag_icon_support_skill) and utils.is_found(img.preset_skill_drag_icon_damage_skills):
-        utils.scroll_down_util_found(img.preset_skill_full_throttle_touse, img.preset_skill_drag_icon_damage_skills)
-    utils.scroll_down_util_found(img.preset_skill_full_throttle_touse, img.preset_skill_drag_icon_support_skill)
+        utils.scroll_down_until_found(img.preset_skill_full_throttle_touse, img.preset_skill_drag_icon_damage_skills)
+    utils.scroll_down_until_found(img.preset_skill_full_throttle_touse, img.preset_skill_drag_icon_support_skill)
 
 
 def scroll_to_damage_skill():

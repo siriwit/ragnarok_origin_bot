@@ -5,11 +5,12 @@ import utils
 import img
 import sys
 import time
+import preset
 
 
-def wing_boss(boss_name, boss_fight_icon, boss_coord_img, wait_time=60):
+def wing_boss(boss_name, boss_fight_icon, boss_coord_img, wait_time=60, butterflywing=True):
     func.wait_and_find_party(img.picky_mvp, f'{boss_name}', 'world', wait_time, True)
-    boss.boss(fight_timeout=120, timeout=600, boss_fight_icon=boss_fight_icon, boss_coord_img=boss_coord_img, ignore_chat_wing_count=0)
+    boss.boss(fight_timeout=120, timeout=600, boss_fight_icon=boss_fight_icon, boss_coord_img=boss_coord_img, ignore_chat_wing_count=0, butterflywing=butterflywing)
 
 
 def awakening(boss_name):
@@ -125,8 +126,8 @@ def christmas_evil_reindeer():
         func.wait(5)
     return False
 
-def picky_boss(boss_name):
-
+def picky_boss(boss_name, tr=True, butterflywing=True):
+    print(f"boss name: {boss_name}, TR?: {tr}, Butterfly Wing: {butterflywing}")
     ultimate_clash_boss_icon = ''
     coords = []
     boss_fight_icon = ''
@@ -145,7 +146,11 @@ def picky_boss(boss_name):
     utils.tap_until_found(img.picky_boss_ultimate_clash, img.picky_boss_ultimate_clash_page)
     if utils.is_found(img.picky_boss_ultimate_clash_page):
 
-        if utils.is_found(img.picky_boss_3_3, similarity=0.99):
+        count3x3 = utils.count_image_on_screen(img.picky_boss_3x3)
+        tr_mode_3x3_count = 4 if tr else 2
+        print(f"3x3 check: {tr_mode_3x3_count} and actual found:{count3x3}")
+        if count3x3 >= tr_mode_3x3_count:
+            print(f'finished 3/3')
             func.close_any_panel()
             return False
         
@@ -169,11 +174,76 @@ def picky_boss(boss_name):
                 elif found_image == img.picky_boss_19m or found_image == img.picky_boss_20m:
                     boss_wait_time = 0
 
-                boss_wait_time = boss_wait_time - 10
-                wing_boss(boss_name, boss_fight_icon, coords, boss_wait_time)
+                boss_wait_time = boss_wait_time - 15
+                wing_boss(boss_name, boss_fight_icon, coords, boss_wait_time, butterflywing)
                 
                 return True
             
             time.sleep(1)
+
+
+def sakura(tr=True, butterflywing=True):
+    func.close_any_panel()
+    func.create_party_and_invite()
+    utils.key_press('u')
+    utils.wait_for_image(img.sakura_wedding_page)
+
+    if utils.is_found(img.sakura_wedding_spirit_anomaly):
+        utils.tap_until_found(img.sakura_wedding_spirit_anomaly, img.sakura_spirit_anomaly_page)
+
+        count3x3 = utils.count_image_on_screen(img.sakura_spirit_anomaly_3x3, similarity=0.95)
+        tr_mode_3x3_count = 2 if tr else 1
+        print(f"3x3 check: {tr_mode_3x3_count} and actual found:{count3x3}")
+        if count3x3 >= tr_mode_3x3_count:
+            func.close_any_panel()
+            func.send_message("done 3/3 [z1]")
+            func.leave_party()
+            return False
+
+        utils.wait_for_image(img.sakura_spirit_anomaly_go_button)
+        go_button = utils.find_most_top_coordinate([img.sakura_spirit_anomaly_go_button])
+        utils.tap_location_until_found(go_button, img.sakura_spirit_anomaly_southern_payon)
+        
+        utils.execute_until_valid_state_with_timeout(300, 1, sakura_boss_state, butterflywing)
+
+    return True
+
+
+def sakura_boss_state(butterflywing):
+    func.close_any_panel(img.sakura_spirit_anomaly_southern_payon)
+    time_pattern = r"([\d]{2})[:-]([\d]{2})"
+    remaining_time = utils.get_text_from_image_with_expect_pattern(img.sakura_spirit_anomaly_southern_payon, offset_x=250, offset_y=0, text_pattern=time_pattern)
+    if remaining_time is None:
+        return False
+
+    try:
+        minutes, seconds = map(int, remaining_time.split(":"))
+        boss_wait_time = (minutes * 60 + seconds)
+        print(f"waiting time: minutes: {minutes}, seconds: {seconds} = {boss_wait_time}")
+    except ValueError as e:
+        print(f"Error: {e}")
+        return False
+    
+    if remaining_time is not None and boss_wait_time <= 180:
+        utils.tap_until_notfound(img.sakura_spirit_anomaly_southern_payon, img.sakura_spirit_anomaly_southern_payon)
+        start_time = time.time()
+        if not utils.execute_until_valid_state_with_timeout(150, 1, boss.running_to_boss_map_state, img.sakura_boss_map):
+            func.butterfly_wing_morroc()
+            return True
+        elapsed_running_time = time.time() - start_time
+
+        boss_wait_time = boss_wait_time - elapsed_running_time -5
+        wing_boss('Event Boss', 
+                    img.boss_incarnation_of_love_fight, 
+                    [img.chat_party_coord_southern_payon1, img.chat_party_coord_southern_payon2], 
+                    boss_wait_time, 
+                    butterflywing)
+        
+        func.send_message("[z1]")
+        func.leave_party()
+        preset.attack_preset()
+        return True
+    
+    return False
             
             

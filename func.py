@@ -175,23 +175,24 @@ def rune_knight_preset_fight():
     return fight_state_count
 
 def butterfly_wing_morroc():
-    if utils.is_found(img.map_morroc):
-        return
     func.close_hidden_menu()
     utils.execute_until_valid_state_with_timeout(30, 1, try_butterfly_wing)
-    wait_loading_screen()
     close_any_panel()
     func.wait_profile()
     time.sleep(3)
 
 
 def try_butterfly_wing():
-    if utils.is_found(img.map_morroc):
-        return True
     if utils.is_found(img.loading):
+        wait_loading_screen()
         return True
     utils.tap_until_found(img.butterfly_wing, img.city_morroc, timeout=2)
-    utils.tap_until_notfound(img.city_morroc, img.city_morroc, timeout=2)
+    if utils.wait_for_image(img.city_morroc, timeout=2) is not None:
+        utils.tap_until_notfound(img.city_morroc, img.city_morroc, timeout=2)
+        open_map()
+        if utils.wait_for_image(img.map_morroc, timeout=2) is not None:
+            close_map()
+            return True
     return False
 
 
@@ -204,8 +205,8 @@ def wait_loading_screen():
 def send_message(message, send_to='party'):
     open_chat(send_to)
     if utils.is_found(img.chat_tap_to_type):
-        utils.tap_image(img.chat_tap_to_type)
-    time.sleep(0.3)
+        utils.tap_until_found(img.chat_tap_to_type, img.chat_button_ok)
+    time.sleep(0.5)
     utils.type(message)
     utils.key_press("enter")
     utils.wait_and_tap(img.button_send)
@@ -276,7 +277,7 @@ def close_map_state():
 def send_location(send_to='party'):
     open_chat(send_to)
     utils.tap_image(img.chat_button_plus)
-    utils.wait_and_tap(img.chat_button_map, timeout=7)
+    utils.wait_and_tap(img.chat_button_map, timeout=20)
     utils.tap_until_notfound(img.chat_button_send_background, img.chat_button_map, timeout=3)
     utils.wait_and_tap(img.chat_button_send, timeout=3)
     close_chat()
@@ -315,7 +316,8 @@ def wait_and_find_party(boss_coming_icon, boss_name, send_to, timeout=180, is_ic
         else:
             if not utils.is_found(boss_coming_icon):
                 return
-            
+        
+        func.close_any_panel()
         diff_last_sent = time.time() - last_sent_time
         message = boss_name + ' ' + find_remaining_party_number() + ' auto join'
         kick_party_member()
@@ -343,25 +345,25 @@ def find_remaining_party_number():
 
         
 def auto_attack(mode=const.boss, all_radius=True, timeout=10):
-    result = False
-    while True:
-        if not utils.is_found(img.auto_attack_title):
-            if utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, offset_x=85, timeout=timeout):
-                continue
-        if mode == const.boss:
-            utils.wait_for_image(img.icon_auto_attack_boss, timeout=1)
-            if utils.is_found(img.icon_auto_attack_boss):
-                utils.wait_and_tap(img.icon_auto_attack_boss)
-                result = True
-            else:
-                utils.wait_and_tap(img.auto_attack_allmonster)
-        else:
-            utils.wait_and_tap(img.auto_attack_allmonster)
-        if all_radius:
-            utils.tap_if_found(img.auto_attack_all)
-        utils.tap_image(img.button_auto_attack_close)
-        break
-    return result
+    return utils.execute_until_valid_state_with_timeout(timeout, 1, auto_attack_state, mode, all_radius, timeout)
+
+
+def auto_attack_state(mode, all_radius, timeout):
+    if not utils.is_found(img.auto_attack_title):
+        if utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, offset_x=85, timeout=timeout):
+            return False
+    if mode == const.boss:
+        utils.wait_for_image(img.icon_auto_attack_boss, timeout=1)
+        if utils.is_found(img.icon_auto_attack_boss):
+            utils.tap_until_found(img.icon_auto_attack_boss, img.auto_attack_boss_active)
+            return True
+    else:
+        utils.wait_and_tap(img.auto_attack_allmonster)
+    if all_radius:
+        utils.tap_if_found(img.auto_attack_all)
+    utils.tap_image(img.button_auto_attack_close)
+    return True
+
 
 def use_items():
     while True:
@@ -399,15 +401,15 @@ def go_to_event(event_image=None):
     if utils.execute_until_valid_state_with_timeout(10, 1, open_event_page_state):
         if event_image != None:
             if utils.is_found(img.event_moonlit_arena):
-                utils.scroll_down_util_found(event_image, img.event_moonlit_arena, offset_y=100, timeout=1)
+                utils.scroll_down_until_found(event_image, img.event_moonlit_arena, offset_y=100, timeout=1)
             if utils.is_found(img.event_theme_party):
-                utils.scroll_down_util_found(event_image, img.event_theme_party, offset_y=100, timeout=1)
+                utils.scroll_down_until_found(event_image, img.event_theme_party, offset_y=100, timeout=1)
             if utils.is_found(img.event_initial_trial_of_nerdiness):
-                utils.scroll_down_util_found(event_image, img.event_initial_trial_of_nerdiness, offset_y=100, timeout=1)
+                utils.scroll_down_until_found(event_image, img.event_initial_trial_of_nerdiness, offset_y=100, timeout=1)
             if utils.is_found(img.event_initial_trial_of_nerdiness):
-                utils.scroll_down_util_found(event_image, img.event_initial_trial_of_nerdiness, offset_y=100, timeout=1)
-            if not utils.scroll_down_util_found(event_image, img.event_drag_icon, offset_y=200, timeout=10, similarity=0.85):
-                utils.scroll_down_util_found(event_image, img.event_drag_icon_inactive, offset_y=200, similarity=0.85)
+                utils.scroll_down_until_found(event_image, img.event_initial_trial_of_nerdiness, offset_y=100, timeout=1)
+            if not utils.scroll_down_until_found(event_image, img.event_drag_icon, offset_y=200, timeout=10, similarity=0.85):
+                utils.scroll_down_until_found(event_image, img.event_drag_icon_inactive, offset_y=200, similarity=0.85)
 
             if event_image not in [img.event_boss, img.event_guild_expedition]:
                 utils.tap_until_found(event_image, img.button_go_orange_small)
@@ -530,7 +532,8 @@ def create_party_and_invite(auto_accept=True):
         if auto_accept:
             utils.wait_for_image(img.party_member)
             utils.tap_image_offset(img.party_member, offset_y=120)
-            utils.wait_and_tap(img.party_auto_accept)
+            utils.tap_offset_until_found(img.party_member, img.party_auto_accept, offset_y=120)
+            utils.tap_until_found(img.party_auto_accept, img.party_auto_accept_enable)
             utils.tap_image_offset(img.party_request, offset_y=-120)
         # utils.wait_and_tap(img.party_tap_to_invite)
         # utils.wait_for_image(img.party_friend_tap)
@@ -575,6 +578,7 @@ def close_hidden_menu():
         utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)
 
 def open_bag():
+    func.close_any_panel(img.butterfly_wing)
     utils.tap_any_until_found(const.menu_bags, img.backpack_title)
 
 
@@ -679,13 +683,42 @@ def party_checking():
 
 
 def element_convert(element=None):
-    open_bag()
-    utils.tap_until_found(img.weapon7, img.button_more, delay=3)
-    utils.tap_until_found(img.button_more, img.button_element, delay=2)
-    utils.tap_until_found(img.button_element, img.converter_page, delay=2)
+    utils.execute_until_valid_state_with_timeout(10, 1, element_convert_state, element)
 
-    element_select(element)
-    close_any_panel()
+
+def element_convert_state(element=None):
+    if element == const.water and utils.is_found(img.converter_wind_active):
+        return True
+    elif element == const.fire and utils.is_found(img.converter_water_active):
+        return True
+    elif element == const.wind and utils.is_found(img.converter_earth_active):
+        return True
+    elif element == const.earth and utils.is_found(img.converter_fire_active):
+        return True
+
+    utils.key_press("l")
+    if element == const.water and utils.wait_for_image(img.converter_wind, timeout=2) is not None:
+        utils.tap_until_notfound(img.converter_wind, img.converter_wind, timeout=2)
+        return True
+    elif element == const.fire and utils.wait_for_image(img.converter_water, timeout=2) is not None:
+        utils.tap_until_notfound(img.converter_water, img.converter_water, timeout=2)
+        return True
+    elif element == const.wind and utils.wait_for_image(img.converter_earth, timeout=2) is not None:
+        utils.tap_until_notfound(img.converter_earth, img.converter_earth, timeout=2)
+        return True
+    elif (element == const.earth or element == const.shadow or element == const.undead) \
+        and utils.wait_for_image(img.converter_fire, timeout=2) is not None:
+        utils.tap_until_notfound(img.converter_fire, img.converter_fire, timeout=2)
+        return True
+    else:  
+        if utils.wait_for_image(img.converter_neutral, timeout=2) is not None:
+            utils.tap_until_notfound(img.converter_neutral, img.converter_neutral, timeout=2)
+            return True
+    
+    if utils.is_found(img.converter_wind):
+        utils.key_press("l")
+
+    return False
 
 
 def element_select(element):
@@ -778,5 +811,17 @@ def tap_all_stone():
 def open_daily_page_state():
     utils.key_press('h')
     if utils.wait_for_image(img.daily_quest_page, timeout=2) is not None:
+        return True
+    return False
+
+
+def open_daily_page():
+    utils.execute_until_valid_state_with_timeout(10, 1, open_daily_page_state)
+
+
+def open_daily_state():
+    func.close_any_panel()
+    utils.key_press('h')
+    if utils.wait_for_image(img.daily_anthem, timeout=2) is not None:
         return True
     return False

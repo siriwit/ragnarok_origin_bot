@@ -9,7 +9,7 @@ def start():
     func.wait_profile()
     while True:
         utils.tap_any_until_found(const.menu_bags, img.backpack_title)
-        utils.scroll_down_util_found(img.treasure_map_icon, img.item_drag, 300, timeout=30)
+        utils.scroll_down_until_found(img.treasure_map_icon, img.item_drag, 300, timeout=30)
 
         if not utils.is_found(img.treasure_map_icon):
             break
