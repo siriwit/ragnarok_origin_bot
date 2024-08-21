@@ -108,7 +108,7 @@ def royal_guard_fight():
             # utils.tap_if_found(img.swordman_skill_endure)
             # utils.tap_if_found(img.swordman_skill_provoke)
             # utils.tap_if_found(img.paladin_skill_providence)
-        # utils.tap_if_found(img.sigil_skill_descending_swords)
+        utils.tap_if_found(img.soul_force_skill)
 
         if utils.is_found(img.royal_guard_skill_battle_chant):
             enable_battle_chant()
@@ -255,9 +255,9 @@ def open_map():
 
 
 def open_map_state():
-    utils.key_press('m')
     if utils.wait_for_image(img.wing, timeout=1) is not None:
         return False
+    utils.key_press('m')
     return True
 
 
@@ -501,18 +501,22 @@ def move_up(hold=0.5):
 
 
 def can_move():
-    return utils.is_found(img.ride_peco) or utils.is_found_any(const.guilds) is not None
+    return utils.is_found(img.ride_peco) or utils.is_found_any(const.guilds) is not None or utils.is_found(img.icon_speaker)
 
 
 def get_move_area():
-    if utils.is_found(img.ride_peco):
-        offset_x = 238
-        offset_y = 22
-        return get_move_area_location([img.ride_peco], offset_x, offset_y)
+    if utils.is_found(img.icon_speaker):
+        offset_x = 246
+        offset_y = 66
+        return get_move_area_location([img.icon_speaker], offset_x, offset_y)
     elif utils.is_found_any(const.guilds):
         offset_x = -223
-        offset_y = -118
+        offset_y = -114
         return get_move_area_location(const.guilds, offset_x, offset_y)
+    elif utils.is_found(img.ride_peco):
+        offset_x = 157
+        offset_y = -55
+        return get_move_area_location([img.ride_peco], offset_x, offset_y)
 
 def get_move_area_location(image_paths, offset_x, offset_y):
     image_objs = utils.find_all_images(image_paths, similarity=0.8)
@@ -572,10 +576,18 @@ def wait(timeout=10):
         utils.wait_for_image(img.power_up_icon, timeout=0.5)
 
 def close_hidden_menu():
-    func.close_any_panel(img.butterfly_wing)
+    func.close_any_panel(img.menu_album)
     func.wait_profile()
     if utils.is_found_any(const.menu_guilds):
-        utils.tap_offset_until_found(img.menu_bag, img.butterfly_wing, offset_x=180)
+        utils.execute_until_valid_state_with_timeout(5, 1, close_hidden_menu_state)
+
+
+def close_hidden_menu_state():
+    utils.key_press('p')
+    if utils.wait_for_image(img.butterfly_wing, timeout=2) is not None:
+        return True
+    return False
+
 
 def open_bag():
     func.close_any_panel(img.butterfly_wing)
@@ -584,7 +596,14 @@ def open_bag():
 
 def open_hidden_menu():
     if not utils.is_found_any(const.menu_guilds):
-        utils.tap_offset_until_found(img.menu_bag, img.menu_album, offset_x=180)
+        utils.execute_until_valid_state_with_timeout(5, 1, open_hidden_menu_state)
+
+
+def open_hidden_menu_state():
+    utils.key_press('p')
+    if utils.wait_for_image(img.menu_album, timeout=2) is not None:
+        return True
+    return False
 
 
 def close_debug_window():

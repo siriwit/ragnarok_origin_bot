@@ -19,6 +19,14 @@ Use LDPlayer, configure setting like below
 - Graphic Med
 - Framerate 60 FPS
 
+## Map hotkey in LDPlayer
+- H is daily
+- F is Event
+- G is guild
+- M is Map
+- T is Transform to Doram
+- Enter is chat
+
 ## Bot.ini
 Update LDPlayer Window Name
 

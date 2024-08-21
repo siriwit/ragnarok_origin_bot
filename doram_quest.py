@@ -34,7 +34,7 @@ def meow_tarot_state():
     icons = utils.find_all_image_with_similarity(img.icon_message)
     if len(icons) > 1:
         utils.tap_location_until_found(icons[1], img.divination_house_meow_tarot_sanity)
-        utils.tap_until_found(img.divination_house_meow_tarot_sanity, img.divination_house_meow_tarot_gift_x1)
+        utils.tap_until_found(img.divination_house_meow_tarot_impulsive, img.divination_house_meow_tarot_gift_x1)
         utils.tap_until_notfound(img.divination_house_meow_tarot_gift_x1, img.divination_house_meow_tarot_gift_x1)
         if utils.wait_and_tap(img.divination_house_meow_tarot_close_button, timeout=30) is not None and \
             utils.wait_for_image(img.divination_house_meow_tarot_nala) is not None:

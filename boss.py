@@ -527,7 +527,7 @@ def boss_wing(boss_type='mvp', timeout=120, coord_imgs=None, ignore_chat_wing_co
 
 def check_boss_icon(boss_type='mvp', delay=0, similarity=0.9, boss_fight_icon=None, should_send_location=True):
     func.wait(delay)
-    utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, interval=1, delay=1, offset_x=85, similarity=similarity)
+    utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, interval=1, delay=1, offset_x=85, similarity=similarity)
 
     if boss_type == 'mvp':
         return auto_attack(timeout=5, boss_fight_icon=boss_fight_icon, should_send_location=should_send_location)
@@ -607,7 +607,7 @@ def boss_fight(butterflywing=True, boss_fight_icon=None, fight_timeout=60, timeo
             return
         
         if func.use_manual_skill() == 0:
-            func.close_any_panel(img.royal_guard_skill_over_band, is_boss_mode=True)
+            func.close_any_panel(img.royal_guard_skill_shield_reflection, is_boss_mode=True)
         
         if boss_fight_icon != None:
             if utils.is_found(boss_fight_icon) or utils.is_found(img.button_return_to_checkpoint):

@@ -280,12 +280,12 @@ def tap_location(coordinate, offset_x=0, offset_y=0):
     tap(center_x + offset_x, center_y + offset_y)
 
 
-def tap_location_until_found(location, expected_found_image, timeout=10, delay=1):
+def tap_location_until_found(location, expected_found_image, offset_x=0, offset_y=0, timeout=10, delay=1):
     start_time = time.time()
     while time.time() - start_time < timeout:
         if wait_for_image(expected_found_image, timeout=delay) is not None:
             return True
-        tap_location(location)
+        tap_location(location, offset_x, offset_y)
     return False
 
 def tap_if_found(image_path):
@@ -322,6 +322,11 @@ def tap_any_offset(images, offset_x=0, offset_y=0, similarity=0.9):
 def wait_and_tap(image_path, timeout=10, similarity=0.9):
     wait_for_image(image_path, timeout)
     return tap_image(image_path, similarity=similarity)
+
+
+def wait_and_tap_offset(image_path, timeout=10, offset_x=0, offset_y=0, similarity=0.9):
+    wait_for_image(image_path, timeout)
+    return tap_image_offset(image_path, offset_x, offset_y, similarity=similarity)
 
 
 def wait_and_tap_any(image_paths, timeout=10, similarity=0.9):
@@ -496,6 +501,17 @@ def key_press(key):
         # myclick.send_key(ld_hwid, key)
     else:
         pyautogui.press(key)
+
+
+def key_press_until_found(key, until_found, timeout=10, interval=1, delay=2):
+    execute_until_valid_state_with_timeout(timeout, interval, key_press_until_found_state, key, until_found, delay)
+
+
+def key_press_until_found_state(key, until_found, timeout=10):
+    key_press(key)
+    if wait_for_image(until_found, timeout) is not None:
+        return True
+    return False
 
 
 def type(text):

@@ -27,6 +27,7 @@ def farm():
     if settings["preset"] == 'jj_royal_guard':
         card_deck_preset(img.card_album_decks_preset_rgpve)
         nexus_preset(img.nexus_engine_preset_pve)
+        soul_force_preset(img.soul_force_atk1)
         card_preset(img.preset_card_cripve)
         character_preset(1)
         change_skill_auto(const.farm)
@@ -44,6 +45,7 @@ def boss(is_event=False):
         card_deck_preset(img.card_album_decks_preset_rgpve)
         card_preset(img.preset_card_cripve)
         nexus_preset(img.nexus_engine_preset_pve)
+        soul_force_preset(img.soul_force_atk1)
         character_preset(1)
         if is_event:
             change_skill_auto(const.boss_event)
@@ -66,6 +68,7 @@ def tank():
         card_deck_preset(img.card_album_decks_preset_rgtank)
         card_preset(img.preset_card_tankpvp)
         nexus_preset(img.nexus_engine_preset_tank)
+        soul_force_preset(img.soul_force_tank)
         character_preset(0)
         pet_selector()
         attack_preset()
@@ -79,6 +82,7 @@ def pvp():
         card_deck_preset(img.card_album_decks_preset_rgtank)
         card_preset(img.preset_card_tankpvp)
         nexus_preset(img.nexus_engine_preset_tank)
+        soul_force_preset(img.soul_force_tank)
         character_preset(0)
         pet_selector(img.pet_icon_genesis)
         attack_preset()
@@ -138,9 +142,18 @@ def card_deck_preset(preset):
 
 def nexus_preset(preset):
     func.open_hidden_menu()
-    if utils.tap_offset_until_found(img.menu_album, img.nexus_engine_page, offset_x=-450, offset_y=-320):
+    if utils.tap_offset_until_found(img.menu_album, img.nexus_engine_page, offset_x=-450, offset_y=-220):
         utils.wait_for_image(img.nexus_engine_preset)
         utils.tap_until_found(img.nexus_engine_preset, preset)
+        utils.tap_until_notfound(preset, preset)
+    func.close_hidden_menu()
+
+
+def soul_force_preset(preset):
+    func.open_hidden_menu()
+    if utils.tap_offset_until_found(img.menu_album, img.soul_force_page, offset_x=-450, offset_y=-80):
+        utils.wait_for_image(img.soul_force_dropdown)
+        utils.tap_until_found(img.soul_force_dropdown, preset)
         utils.tap_until_notfound(preset, preset)
     func.close_hidden_menu()
 
@@ -292,8 +305,8 @@ def change_skill_auto(preset=None):
 
 def open_preset_skill():
     # sometime the offset need to be 80
-    utils.tap_any_until_found_offset(const.menu_guides, img.preset_skill, offset_x=80, offset_y=-80)
-    # utils.tap_any_until_found_offset(const.menu_guides, img.preset_skill, offset_x=220, offset_y=-80)
+    # utils.tap_any_until_found_offset(const.menu_guides, img.preset_skill, offset_x=80, offset_y=-80)
+    utils.key_press_until_found(';', img.preset_skill, 5)
     utils.wait_and_tap(img.preset_skill)
     utils.tap_image_offset(img.preset_tab_skill, offset_y=120)
     utils.wait_for_image(img.preset_settings_drag_your_skill_text)
@@ -306,7 +319,7 @@ def dismiss_skill(tobe_dismiss):
 
 def attack_preset():
     func.wait_profile()
-    utils.tap_offset_until_found(img.menu_bag, img.auto_attack_title, offset_x=85)
+    utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, interval=1, delay=1, offset_x=85, similarity=0.9)
     utils.tap_if_found(img.auto_attack_all)
     utils.tap_image(img.button_auto_attack_close)
 
@@ -413,7 +426,7 @@ def card_change(card_edges, card_objects):
     print(f"found card_edges: {len(card_edges)} {card_edges}")
     for card_edge in card_edges:
         card_object = card_objects[index]
-        utils.tap_location_until_found(card_edge, img.card_select_a_card_title)
+        utils.tap_location_until_found(card_edge, img.card_select_a_card_title, offset_x=30, offset_y=-30)
         if not utils.is_found(card_object['selected_current_card'], similarity=similarity):
             utils.wait_for_image(card_object['to_be_selected_card'], timeout=3)
             if utils.scroll_down_until_found(card_object['to_be_selected_card'], img.card_drag_icon, offset_y=200, similarity=similarity, timeout=3):

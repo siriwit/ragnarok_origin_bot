@@ -49,6 +49,7 @@ def in_queue_state():
 def fight():
     func.wait_loading_screen()
     func.open_map()
+    utils.wait_for_image(img.extreme_challenge_map)
     utils.tap_image_offset(img.extreme_challenge_map, offset_y=-100)
     utils.tap_image_offset(img.extreme_challenge_map, offset_y=-100)
     func.close_map()

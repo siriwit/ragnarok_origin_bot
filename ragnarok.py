@@ -39,6 +39,7 @@ import phantom
 import jj_royal_guard_preset
 import woe
 import doram_quest
+import home
 
 
 def convert_weapon(element='fire'):
@@ -104,19 +105,19 @@ def maintain_woe():
 def dev():
     func.wait_profile(timeout=1)
     # time_pattern = r"([\d]{2})[:-]([\d]{2})"
-    while True:
-        utils.hilight_image(img.extreme_challenge_reward_claimed, offset_x=-300, offset_y=-120)
+    # while True:
+    #     utils.hilight_image(img.menu_album, offset_x=-450, offset_y=-220)
         # utils.count_image_on_screen(img.picky_boss_3x3)
         # remaining_time = utils.get_text_from_image_with_expect_pattern(img.sakura_spirit_anomaly_southern_payon, offset_x=250, offset_y=0, text_pattern=time_pattern)
         # print(remaining_time)
     # func.butterfly_wing_morroc()
-    
+    # utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, interval=1, delay=1, offset_x=85, similarity=0.9)
     # utils.tap_any_until_found_offset(const.menu_bags, img.auto_attack_title, offset_x=85, timeout=10)
     # func.open_bag()
     # utils.tap_image_offset(img.button_close, offset_x=100, offset_y=270)
     # stalling_item_list = [img.item_dust_999, img.item_insect_leg_999]
     # farm.stalling_item(stalling_item_list, 0.95)
-
+    # preset.character_preset(1)
     # utils.exit_at_specific_time_or_invalid_state(4, 50, event_boss.picky_boss)
 
     # utils.exit_at_specific_time_or_invalid_state(21, 20, guild_league.fight_state)
@@ -125,11 +126,13 @@ def dev():
     
     # func.kick_party_member()
     # phantom.fight()
-    # func.element_convert(const.neutral)
+    # func.move_left(1)
     # woe.maintain_woe()
+    # utils.hold_press('a', 2)
+    # utils.execute_until_valid_state_with_timeout(15, 1, home.moveup_farm_state, [img.home_farm_harvest, img.home_farm_plant])
+    home.farm('plant')
 
     # phantom.fight()
-    # doram_quest.onsen_pool()
     # farm.handle_material()
 
     sys.exit(0)

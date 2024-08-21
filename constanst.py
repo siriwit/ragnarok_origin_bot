@@ -75,7 +75,7 @@ button_uses = [img.button_use, img.button_use_small_blue, img.item_button_use]
 button_starts = [img.button_start, img.button_start_blue_medium]
 escape_buttons = [img.button_escape]
 event_menus = [img.event_menu1, img.event_menu2, img.event_menu3]
-guilds = [img.guild, img.guild2]
+guilds = [img.guild, img.guild2, img.guild3]
 city_lord_room_treasures = [
     img.guild_collect_city_lord_room_treasure1, img.guild_collect_city_lord_room_treasure2, 
     img.guild_collect_city_lord_room_treasure3, img.guild_collect_city_lord_room_treasure4,
@@ -83,7 +83,7 @@ city_lord_room_treasures = [
 guild_exp_maps = [img.guild_expedition_map_fun_arena, img.guild_expedition_map_fun_arena2, img.guild_expedition_map_fun_hideout]
 gemstone_help_graves = [img.gemstone_help_grave1, img.gemstone_help_grave2, img.gemstone_help_grave3]
 life_skill_waters = [img.life_skill_water1, img.life_skill_water2, img.life_skill_water3]
-menu_bags = [img.menu_bag, img.menu_bag2, img.menu_bag3]
+menu_bags = [img.menu_bag, img.menu_bag2, img.menu_bag3, img.menu_bag4]
 menu_guides = [img.menu_guide1, img.menu_guide2, img.menu_guide3, img.menu_guide4, img.menu_guide5, img.menu_guide6, img.menu_guide7, img.menu_guide8]
 menu_guilds = [img.menu_guild, img.menu_guild2]
 mounts = [img.mount, img.mount2]

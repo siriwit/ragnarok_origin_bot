@@ -23,7 +23,7 @@ roobot.exe "YGG" "Skip"
 roobot.exe "Extreme Challenge" "Fight"
 roobot.exe "Extreme Challenge" "Assist"
 
-@REM roobot.exe "Doram" "Divination"
+roobot.exe "Doram" "Divination"
 roobot.exe "Doram" "Meow Tarot"
 roobot.exe "Doram" "Wishing"
 roobot.exe "Doram" "Beach Hidden"

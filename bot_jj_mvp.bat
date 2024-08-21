@@ -24,10 +24,10 @@ cd bot/jj
 @REM roobot.exe "mvp" "Leader" "inactive" 0 100 "ignore"
 @REM roobot.exe "Farm" "Normal Farm" "133" "Alligator Ch.3"
 
-@REM roobot.exe "preset" "party"
+roobot.exe "preset" "party"
 roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party" "TR"
 @REM roobot.exe "Event Boss" "Antonio"
 
-@REM roobot.exe "mvp" "Leader" "inactive" 100 999 "Not Ignore" "solo"
+@REM roobot.exe "mvp" "Leader" "inactive" 0 999 "Not Ignore" "solo" "TR"
 roobot.exe "Preset" "Element" "Neutral"
 roobot.exe "Go To Main Page"
