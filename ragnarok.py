@@ -106,7 +106,7 @@ def dev():
     func.wait_profile(timeout=1)
     # time_pattern = r"([\d]{2})[:-]([\d]{2})"
     # while True:
-    #     utils.hilight_image(img.menu_album, offset_x=-450, offset_y=-220)
+    #     utils.hilight_image(img.home_farm_plant_home_icon, offset_x=0, offset_y=200)
         # utils.count_image_on_screen(img.picky_boss_3x3)
         # remaining_time = utils.get_text_from_image_with_expect_pattern(img.sakura_spirit_anomaly_southern_payon, offset_x=250, offset_y=0, text_pattern=time_pattern)
         # print(remaining_time)
@@ -129,9 +129,11 @@ def dev():
     # func.move_left(1)
     # woe.maintain_woe()
     # utils.hold_press('a', 2)
-    # utils.execute_until_valid_state_with_timeout(15, 1, home.moveup_farm_state, [img.home_farm_harvest, img.home_farm_plant])
-    home.farm('plant')
-
+    # utils.execute_until_invalid_state(10, 1, home.collect_feed_animal_template, img.home_corral_milk_bottle, img.home_corral_harvest)
+    home.farm()
+    # utils.scroll_down_until_found(img.home_corral_lock_icon, img.home_corral_chicken_icon, timeout=3)
+    # utils.tap_offset_until_found(img.home_farm_plant_home_icon, img.icon_speaker, offset_x=0, offset_y=200)
+    # func.move_up()
     # phantom.fight()
     # farm.handle_material()
 

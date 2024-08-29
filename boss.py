@@ -306,7 +306,31 @@ def get_boss_config_list(min_level=0, max_level=999):
             img.boss_map_papuchicha_forest, img.boss_coming_mutant_dragon, 
             'Mutant Dragon', boss_wing_base_timeout+270, const.dragon, const.fire, const.large,
             122, img.boss_mutant_dragon_fight,
-            [img.chat_party_coord_papuchicha_forest1, img.chat_party_coord_papuchicha_forest2])
+            [img.chat_party_coord_papuchicha_forest1, img.chat_party_coord_papuchicha_forest2]),
+        boss_config_obj(
+            img.boss_region_atroce, img.boss_atroce, 
+            img.boss_map_el_mes_gorge, img.boss_coming_atroce, 
+            'Atroce', boss_wing_base_timeout+270, const.brute, const.shadow, const.large,
+            130, img.boss_atroce_fight,
+            [img.chat_party_coord_el_mes_gorge1, img.chat_party_coord_el_mes_gorge2]),
+        # boss_config_obj(
+        #     img.boss_region_ifrit, img.boss_ifrit, 
+        #     img.boss_map_magma_dungeon, img.boss_coming_atroce, 
+        #     'Ifrit', boss_wing_base_timeout+270, const.formless, const.fire, const.large,
+        #     135, img.boss_atroce_fight,
+        #     [img.chat_party_coord_magma_dungeon1]),
+        # boss_config_obj(
+        #     img.boss_region_buwaya, img.boss_buwaya, 
+        #     img.boss_map_comodo_beach, img.boss_coming_atroce, 
+        #     'Buwaya', boss_wing_base_timeout+270, const.dragon, const.water, const.large,
+        #     137, img.boss_atroce_fight,
+        #     [img.chat_party_coord_comodo_beach1]),
+        # boss_config_obj(
+        #     img.boss_region_kraken, img.boss_kraken, 
+        #     img.boss_map_undersea_4f, img.boss_coming_atroce, 
+        #     'Kraken', boss_wing_base_timeout+270, const.fish, const.water, const.large,
+        #     138, img.boss_atroce_fight,
+        #     [img.chat_party_coord_undersea_tunnel_4f1])
     ]
     filtered_boss_config = filter(lambda config: config['level'] >= min_level and config['level'] <= max_level, boss_configs)
     return list(filtered_boss_config)

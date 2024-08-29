@@ -32,6 +32,8 @@ roobot.exe "Doram" "Onsen"
 roobot.exe "preset" "party"
 roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party" "TR"
 
+roobot.exe "Home Collection"
+
 @REM roobot.exe "life skill" "cooking" "seafood fried noodles"
 
 

@@ -844,3 +844,10 @@ def open_daily_state():
     if utils.wait_for_image(img.daily_anthem, timeout=2) is not None:
         return True
     return False
+
+
+def waiting_loop_state():
+    func.ang_pao()
+    func.use_items()
+    func.guild_quest_aid()
+    return True

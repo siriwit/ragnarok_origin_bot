@@ -11,6 +11,7 @@ from datetime import datetime
 import demon_treasure
 import hazy
 import hellheim
+import home
 import hordor
 import farm
 import feast
@@ -674,7 +675,8 @@ while True:
         '22. YGG',
         '23. Extreme Challenge',
         '24. Phantom',
-        '25. Doram']
+        '25. Doram',
+        '26. Home Collection']
     print_menu('Main Menu', main_menu)
 
     input_number = get_input(1, main_menu)
@@ -739,6 +741,8 @@ while True:
         phantom.start()
     elif input_number == 25:
         doram_mode()
+    elif input_number == 26:
+        home.farm()
     
     func.close_debug_window()
 

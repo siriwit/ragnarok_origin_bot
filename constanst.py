@@ -13,6 +13,7 @@ insect = 'insect'
 demi_human = 'demi-human'
 human = 'human'
 poison = 'poison'
+fish = 'fish'
 
 # element
 holy = 'holy'
