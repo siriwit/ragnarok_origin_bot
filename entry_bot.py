@@ -641,6 +641,22 @@ def doram_mode():
         doram_quest.onsen_pool()
 
 
+def home_mode():
+    sub_menu = [
+        '0. Back',
+        '1. Loop',
+        '2. Onetime',
+    ]
+    print_menu('Home Mode', sub_menu)
+    input_number = get_input(2, sub_menu, 'Choose Mode: ')
+    print(f"Home Mode: {input_number}")
+    if input_number == 0:
+        return
+    elif input_number == 1:
+        home.farm('loop')
+    elif input_number == 2:
+        home.farm()
+
 print("==================================================================")
 print("=====================  Ragnarok Origin v0.1 ======================")
 print("==================================================================")
@@ -742,7 +758,7 @@ while True:
     elif input_number == 25:
         doram_mode()
     elif input_number == 26:
-        home.farm()
+        home_mode()
     
     func.close_debug_window()
 

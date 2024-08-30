@@ -4,7 +4,9 @@ roobot.exe "Go To Main Page"
 roobot.exe "Farm" "Disable"
 roobot.exe "preset" "party"
 roobot.exe "preset" "boss" "Not Event"
+roobot.exe "Home Collection" "onetime"
 roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party" "PR"
+roobot.exe "Home Collection" "onetime"
 
 roobot.exe "Go To Main Page"
 roobot.exe "Alfhelm" "Collect Item"
@@ -32,7 +34,7 @@ roobot.exe "Doram" "Onsen"
 roobot.exe "preset" "party"
 roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party" "TR"
 
-roobot.exe "Home Collection"
+roobot.exe "Home Collection" "loop"
 
 @REM roobot.exe "life skill" "cooking" "seafood fried noodles"
 

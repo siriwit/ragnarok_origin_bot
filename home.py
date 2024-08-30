@@ -17,13 +17,16 @@ plant_point = {img.home_farm_plant_wheat: 10,
                img.home_farm_plant_carrot: 60,
                img.home_farm_plant_mushroom: 120}
 
-def farm():
+def farm(mode='onetime'):
     plants = [img.home_farm_plant_wheat, img.home_farm_plant_corn, img.home_farm_plant_flax, img.home_farm_plant_carrot, img.home_farm_plant_mushroom]
     restore_plant_point()
     print(f"restore plant: {plant_cache}")
     func.create_party_and_invite()
     if go_to_home():
-        utils.exit_at_specific_time_or_invalid_state(4, 50, farm_state, plants, True)
+        if mode == 'loop':
+            utils.exit_at_specific_time_or_invalid_state(4, 50, farm_state, plants, True, True)
+        elif mode == 'onetime':
+            farm_state(plants, True, False)
     func.close_hidden_menu()
     func.leave_event()
 
@@ -43,11 +46,12 @@ def restore_plant_point():
                img.home_farm_plant_mushroom: 0}
 
 
-def farm_state(seeds, random_plant=False):
+def farm_state(seeds, random_plant=False, is_loop_mode=True):
     plant_mode_state(seeds, random_plant)
     animal_farm_state()
     midtown()
-    utils.execute_until_invalid_state(120, 1, func.waiting_loop_state)
+    if is_loop_mode:
+        utils.execute_until_invalid_state(120, 1, func.waiting_loop_state)
     return True
 
 

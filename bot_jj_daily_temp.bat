@@ -4,7 +4,9 @@ cd bot/jj
 @REM roobot.exe "Farm" "Disable"
 @REM roobot.exe "preset" "party"
 @REM roobot.exe "preset" "boss" "Not Event"
+@REM roobot.exe "Home Collection" "onetime"
 @REM roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party" "PR"
+@REM roobot.exe "Home Collection" "onetime"
 
 @REM roobot.exe "Go To Main Page"
 @REM roobot.exe "Alfhelm" "Collect Item"
@@ -23,7 +25,7 @@ cd bot/jj
 @REM roobot.exe "Extreme Challenge" "Fight"
 @REM roobot.exe "Extreme Challenge" "Assist"
 
-@REM roobot.exe "Doram" "Divination"
+@REM @REM roobot.exe "Doram" "Divination"
 @REM roobot.exe "Doram" "Meow Tarot"
 @REM roobot.exe "Doram" "Wishing"
 @REM roobot.exe "Doram" "Beach Hidden"
@@ -32,7 +34,7 @@ cd bot/jj
 @REM roobot.exe "preset" "party"
 @REM roobot.exe "mvp" "Leader" "active" 0 999 "ignore" "party" "TR"
 
-roobot.exe "Home Collection"
+roobot.exe "Home Collection" "loop"
 
 @REM roobot.exe "life skill" "cooking" "seafood fried noodles"
 
