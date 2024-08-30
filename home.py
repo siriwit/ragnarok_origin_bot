@@ -110,7 +110,7 @@ def animal_farm_state():
         utils.tap_offset_until_found(img.home_corral_cow_active, img.home_corral_sheep_active, offset_y=150)
         if utils.wait_for_image(img.home_corral_sheep_active, timeout=2) is not None:
             # collect sheep
-            # utils.execute_until_invalid_state(10, 1, collect_feed_animal_template, img.home_corral_milk_bottle, img.home_corral_harvest)
+            utils.execute_until_invalid_state(10, 1, collect_feed_animal_template, img.home_corral_wool, img.home_corral_harvest)
             # feed cow
             utils.execute_until_invalid_state(10, 1, collect_feed_animal_template, img.home_corral_feed_corral, img.home_corral_feed_button)
 
